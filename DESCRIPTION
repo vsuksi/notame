@@ -7,8 +7,7 @@ Authors@R: c(
     person("Jussi", "Paananen", role = "aut"),
     person("Oskari", "Timonen", role = "aut"),
     person("Atte", "Lihtamo", role = "aut"))
-Description: Automates common preprocessing steps in a LC-MS metabolomics workflow
-    such as drift correction, quality control and common visualizations.
+Description: Automates common preprocessing steps in a LC-MS metabolomics workflow such as drift correction, quality control and common visualizations.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -16,9 +15,9 @@ biocViews:
 Depends:
     R (>= 3.5),
     Biobase,
-    BiocGenerics,
-    futile.logger,
     ggplot2,
+    futile.logger,
+    BiocGenerics,
     magrittr
 Imports:
     dplyr,
@@ -29,14 +28,17 @@ Imports:
     tibble,
     tidyr
 Suggests:
+    BiocManager,
     car,
     cowplot,
     devEMF,
+    devtools,
     doParallel,
     fpc,
     ggbeeswarm,
     ggdendro,
     ggrepel,
+    ggtext,
     Hmisc,
     hexbin,
     igraph,
@@ -45,14 +47,18 @@ Suggests:
     lmerTest,
     missForest,
     mixOmics,
+    MuMIn,
     pcaMethods,
+    PERMANOVA,
     PK,
     randomForest,
     rmcorr,
     RColorBrewer,
     Rtsne,
     RUVSeq,
+    scales,
+    stringr,
     supraHex,
     testthat
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
