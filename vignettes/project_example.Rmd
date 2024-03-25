@@ -29,15 +29,15 @@ library(doParallel)
 
 ##### Set up path and logging
 
-Let's set up a path for our project. This is safer than using ```setwd()```
+Let's set up a path for our project. This is safer than using ```setwd()```.
 
-```{r}
+```{r, eval = FALSE}
 ppath <- "~/test_project/"
 ```
 
-Then we will set up a log file. many functions of the package will log information when they have finished. This helps monitoring the analysis process in case something goes wrong AND to review the results later.
+Set up a log file in the path directory manually. Many functions of the package will log information when they have finished. This helps monitoring the analysis process in case something goes wrong AND to review the results later.
 
-```{r}
+```{r, eval = FALSE}
 init_log(log_file = paste0(ppath, "log.txt"))
 # Check logging state
 log_state()
@@ -311,8 +311,6 @@ write_to_excel(imputed, file = paste0(ppath, "results.xlsx"))
 
 And that concludes our project example! The last thing to do is finish the log we started. This will record the time and date when the project finished, as well as the output of ```sessionInfo()```, which contains information about the system, and most importantly version numbers of R and all the packages used.
 
-```{r}
+```{r, eval = FALSE}
 finish_log()
 ```
-
-
