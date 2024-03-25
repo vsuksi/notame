@@ -81,8 +81,8 @@ assess_quality <- function(object) {
 #'   Or, as before, a non-parametric, robust alternative:
 #'   \deqn{D_ratio_r = MAD(QC) / MAD(biolofical) }
 #' The default condition keeps features that pass either of the two following conditions:
-#' \deqn{RSD_r < 0.2 & D_ratio_r < 0.4}
-#' \deqn{RSD < 0.1 & RSD_r < 0.1 & D_ratio < 0.1}
+#' \deqn{RSD_r < 0.2 \& D_ratio_r < 0.4}
+#' \deqn{RSD < 0.1 \& RSD_r < 0.1 \& D_ratio < 0.1}
 #'
 #' @return a MetaboSet object with the features flagged
 #'
