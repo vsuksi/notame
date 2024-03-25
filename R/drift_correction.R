@@ -38,6 +38,7 @@ comb <- function(x, ...) {
 #'
 #' @importFrom Biobase exprs exprs<-
 #'
+#' @importFrom stats predict smooth.spline
 #' @export
 dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL, spar_lower = 0.5, spar_upper = 1.5) {
   # Start log

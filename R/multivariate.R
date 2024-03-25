@@ -253,6 +253,7 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
 
 #' @rdname pls
 #'
+#' @importFrom graphics title
 #' @export
 mixomics_spls_optimize <- function(object, y, ncomp,
                                    n_features = c(1:10, seq(20, 300, 10)), folds = 5, nrepeat = 50,

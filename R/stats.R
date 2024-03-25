@@ -244,6 +244,7 @@ cohens_d_fun <- function(object, group, id, time) {
 #'   time = "Time", id = "Subject_ID"
 #' )
 #'
+#' @importFrom utils combn
 #' @export
 cohens_d <- function(object, group = group_col(object),
                      id = NULL, time = NULL) {
@@ -457,6 +458,7 @@ fold_change <- function(object, group = group_col(object)) {
 #' @seealso \code{\link{cor.test}}, \code{\link[rmcorr]{rmcorr}}
 #'
 #' @importFrom foreach %do%
+#' @importFrom stats cor.test
 #' @export
 perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NULL, fdr = TRUE,
                                       all_pairs = TRUE, duplicates = FALSE, ...) {
@@ -660,6 +662,7 @@ perform_auc <- function(object, time = time_col(object), subject = subject_col(o
 }
 
 # Helper function for FDR correction
+#' @importFrom stats p.adjust
 adjust_p_values <- function(x, flags) {
   p_cols <- colnames(x)[grepl("_P$", colnames(x))]
   for (p_col in p_cols) {
@@ -695,6 +698,7 @@ fill_results <- function(results_df, features) {
 }
 
 # Helper function for running a variety of simple statistical tests
+#' @importFrom stats as.formula
 perform_test <- function(object, formula_char, result_fun, all_features, fdr = TRUE, packages = NULL) {
   data <- combined_data(object)
   features <- Biobase::featureNames(object)
@@ -761,6 +765,7 @@ perform_test <- function(object, formula_char, result_fun, all_features, fdr = T
 #'
 #' @seealso \code{\link[stats]{lm}}
 #'
+#' @importFrom stats confint
 #' @export
 perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
   log_text("Starting linear regression.")
@@ -840,6 +845,7 @@ perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
 #'
 #' @seealso \code{\link[stats]{lm}}
 #'
+#' @importFrom stats anova
 #' @export
 perform_lm_anova <- function(object, formula_char, all_features = FALSE,
                              lm_args = NULL, anova_args = NULL) {
@@ -906,6 +912,8 @@ perform_lm_anova <- function(object, formula_char, all_features = FALSE,
 #' )
 #'
 #' @seealso \code{\link[stats]{glm}}
+#'
+#' @importFrom stats binomial glm
 #'
 #' @export
 perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
@@ -1158,6 +1166,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
 #'
 #' @seealso \code{\link{bartlett.test}}, \code{\link[car]{leveneTest}}, \code{\link{fligner.test}}
 #'
+#' @importFrom stats bartlett.test fligner.test
 #' @export
 perform_homoscedasticity_tests <- function(object, formula_char, all_features = FALSE) {
   if (!requireNamespace("car", quietly = TRUE)) {
@@ -1222,6 +1231,7 @@ perform_homoscedasticity_tests <- function(object, formula_char, all_features = 
 #' @examples
 #' perform_kruskal_wallis(example_set, formula_char = "Feature ~ Group")
 #'
+#' @importFrom stats kruskal.test
 #' @export
 perform_kruskal_wallis <- function(object, formula_char, all_features = FALSE) {
   log_text("Starting Kruskal_wallis tests.")
@@ -1279,6 +1289,7 @@ perform_kruskal_wallis <- function(object, formula_char, all_features = FALSE) {
 #' @examples
 #' perform_oneway_anova(example_set, formula_char = "Feature ~ Group")
 #'
+#' @importFrom stats oneway.test
 #' @export
 perform_oneway_anova <- function(object, formula_char, all_features = FALSE, ...) {
   log_text("Starting ANOVA tests.")
@@ -1333,6 +1344,7 @@ perform_oneway_anova <- function(object, formula_char, all_features = FALSE, ...
 #'
 #' @seealso \code{\link{t.test}}
 #'
+#' @importFrom stats t.test
 #' @export
 perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
   message(paste0(
@@ -1692,6 +1704,7 @@ perform_mann_whitney <- function(object, formula_char, all_features = FALSE, ...
 #' @examples
 #' perform_wilcoxon_signed_rank(drop_qcs(example_set), group = "Time", id = "Subject_ID")
 #'
+#' @importFrom stats wilcox.test
 #' @export
 perform_wilcoxon_signed_rank <- function(object, group, id, all_features = FALSE, ...) {
   perform_paired_test(object, group, id,

@@ -89,6 +89,7 @@ ruvs_qc <- function(object, batch, replicates, k = 3, ...) {
 #' pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 #' pca_bhattacharyya_dist(batch_corrected, batch = "Batch")
 #' }
+#' @importFrom stats cov
 #' @export
 pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE, center = TRUE,
                                    scale = "uv", nPcs = 3, ...) { # nolint: object_name_linter.

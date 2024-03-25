@@ -13,6 +13,7 @@
 #'
 #' @seealso \code{\link{log_text}}, \code{\link{finish_log}}, \code{\link{log_state}}
 #'
+#' @import futile.logger
 #' @export
 init_log <- function(log_file) {
   futile.logger::flog.appender(futile.logger::appender.tee(log_file), name = "notame")
@@ -50,6 +51,7 @@ log_text <- function(text) {
 #'
 #' @seealso \code{\link{init_log}}, \code{\link{log_text}}, \code{\link{log_state}}
 #'
+#' @importFrom utils sessionInfo
 #' @export
 finish_log <- function() {
   # Return default option for error

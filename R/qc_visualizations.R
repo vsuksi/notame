@@ -173,6 +173,7 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, x_label = "
 #' @examples
 #' plot_quality(example_set)
 #'
+#' @importFrom stats relevel
 #' @export
 plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
   if (!requireNamespace("cowplot", quietly = TRUE)) {
@@ -236,6 +237,7 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
 #' @examples
 #' plot_sample_boxplots(merged_sample, order_by = "Group", fill_by = "Group")
 #'
+#' @importFrom grDevices boxplot.stats
 #' @export
 plot_sample_boxplots <- function(
     object, all_features = FALSE,

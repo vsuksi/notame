@@ -358,6 +358,7 @@ impute_simple <- function(object, value, na_limit = 0) {
 #' @examples
 #' normalized <- inverse_normalize(merged_sample)
 #'
+#' @importFrom stats qnorm
 #' @export
 inverse_normalize <- function(object) {
   exprs(object) <- exprs(object) %>%

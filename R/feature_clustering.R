@@ -239,6 +239,7 @@ pull_clusters <- function(data, features, name_col) {
 #' }
 #'
 #' @importFrom foreach "%dopar%"
+#' @importFrom stats cor
 #'
 #' @export
 find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 60,

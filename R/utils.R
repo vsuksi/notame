@@ -1,7 +1,12 @@
+#' @importFrom grDevices dev.off
+#' @importFrom stats dist hclust lm na.omit runif
+#' @importFrom utils capture.output citation type.convert
+NULL
+
 #' Set default color scales on load
 #'
 #' @param libname,pkgname default parameters
-#'
+#' @rawNamespace import(ggplot2, except = Position)
 #' @importFrom grDevices rgb
 .onLoad <- function(libname, pkgname) {
   op <- options()
@@ -25,6 +30,7 @@
   invisible()
 }
 
+#' @importFrom utils install.packages
 install_helper <- function(cran, bioconductor, github, gitlab, ...) {
   if (!missing(cran)) {
     for (pckg in cran) {
@@ -232,6 +238,7 @@ finite_mean <- function(x) {
   mean(x[is.finite(x)], na.rm = TRUE)
 }
 
+#' @importFrom stats median
 #' @export
 #' @rdname finite_helpers
 finite_median <- function(x) {
@@ -262,6 +269,7 @@ finite_mad <- function(x) {
   mad(x[is.finite(x)], center = median(x[is.finite(x)], na.rm = TRUE), na.rm = TRUE)
 }
 
+#' @importFrom stats quantile
 #' @export
 #' @rdname finite_helpers
 finite_quantile <- function(x, ...) {

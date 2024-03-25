@@ -13,6 +13,8 @@
 #' \code{\link[grDevices]{png}},
 #' \code{\link[grDevices]{tiff}}
 #'
+#' @importFrom grDevices pdf svg png tiff
+#' @importFrom utils tail
 #' @export
 save_plot <- function(p, file, ...) {
   # Create folder automatically

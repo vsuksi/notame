@@ -439,6 +439,7 @@ name_features <- function(feature_data) {
 #'
 #' @param object a MetaboSet object
 #'
+#' @import BiocGenerics
 #' @import methods
 #' @importClassesFrom Biobase ExpressionSet
 MetaboSet <- setClass("MetaboSet", # nolint: object_name_linter.
@@ -673,22 +674,6 @@ setMethod(
   "show", c(object = "MetaboSet"),
   metaboset_shower
 )
-
-setGeneric("combined_data",
-  signature = "object",
-  function(object) standardGeneric("combined_data")
-)
-
-#' @describeIn MetaboSet sample information and features combined to a single data frame, one row per sample
-#' @export
-setMethod(
-  "combined_data", c(object = "MetaboSet"),
-  function(object) {
-    cbind(pData(object), t(exprs(object)))
-  }
-)
-
-
 
 #' Retrieve both sample information and features
 #'

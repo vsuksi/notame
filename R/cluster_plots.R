@@ -21,6 +21,7 @@
 #'
 #' @seealso \code{\link{dist}} \code{\link{hclust}}
 #'
+#' @importFrom stats as.dendrogram
 #' @export
 plot_dendrogram <- function(
     object, all_features = FALSE, color = group_col(object),
