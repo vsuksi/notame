@@ -18,5 +18,4 @@ a normal distribution.
 }
 \examples{
 normalized <- inverse_normalize(merged_sample)
-
 }

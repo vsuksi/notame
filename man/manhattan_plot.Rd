@@ -2,9 +2,45 @@
 % Please edit documentation in R/scatter.R
 \name{manhattan_plot}
 \alias{manhattan_plot}
+\alias{manhattan_plot,MetaboSet-method}
+\alias{manhattan_plot,data.frame-method}
 \title{Manhattan plot}
 \usage{
 manhattan_plot(
+  object,
+  x,
+  p,
+  effect = NULL,
+  p_fdr = NULL,
+  color = NULL,
+  p_breaks = c(0.05, 0.01, 0.001, 1e-04),
+  fdr_limit = 0.05,
+  x_lim = NULL,
+  y_lim = NULL,
+  color_scale = getOption("notame.color_scale_con"),
+  title = "Manhattan plot",
+  subtitle = NULL,
+  ...
+)
+
+\S4method{manhattan_plot}{MetaboSet}(
+  object,
+  x,
+  p,
+  effect = NULL,
+  p_fdr = NULL,
+  color = NULL,
+  p_breaks = c(0.05, 0.01, 0.001, 1e-04),
+  fdr_limit = 0.05,
+  x_lim = NULL,
+  y_lim = NULL,
+  color_scale = getOption("notame.color_scale_con"),
+  title = "Manhattan plot",
+  subtitle = NULL,
+  ...
+)
+
+\S4method{manhattan_plot}{data.frame}(
   object,
   x,
   p,

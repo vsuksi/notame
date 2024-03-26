@@ -29,6 +29,8 @@ save_scatter_plots(
 
 \item{x}{character, name of the column to be used as x-axis}
 
+\item{save}{logical, if false, the plots are not saved but returned as a list}
+
 \item{file_path}{character, a file path for PDF or prefix added to the file paths for other formats}
 
 \item{format}{character, format in which the plots should be saved}

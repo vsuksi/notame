@@ -644,6 +644,8 @@ minus_log10 <- scales::trans_new("minus_log10",
 #' @param label_limit numeric, p-value which is used to limit label plotting. Defaults to 0.05.
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param title,subtitle the title and subtitle of the plot
+#' @param text_base_size integer, base size for text in figures
+#' @param label_text_size numeric, size of the labels
 #' @param ...  parameters passed to \code{\link[ggplot2]{geom_point}},
 #' such as shape and alpha values. New aesthetics can
 #' also be passed using \code{mapping = aes(...)}.
@@ -673,7 +675,7 @@ setGeneric("volcano_plot",
   }
 )
 
-
+#' @rdname volcano_plot
 #' @export
 setMethod(
   "volcano_plot", c(object = "MetaboSet"),
@@ -692,6 +694,7 @@ setMethod(
   }
 )
 
+#' @rdname volcano_plot
 #' @export
 setMethod(
   "volcano_plot", c(object = "data.frame"),
@@ -861,7 +864,7 @@ setGeneric("manhattan_plot",
   }
 )
 
-
+#' @rdname manhattan_plot
 #' @export
 setMethod(
   "manhattan_plot", c(object = "MetaboSet"),
@@ -880,6 +883,7 @@ setMethod(
   }
 )
 
+#' @rdname manhattan_plot
 #' @export
 setMethod(
   "manhattan_plot", c(object = "data.frame"),
@@ -996,6 +1000,9 @@ manhattan_plotter <- function(data, x, p, effect, p_fdr, color,
 #' @param subtitle The plot subtitle
 #' @param color_scale color scale as returned by a ggplot function. Defaults to current continuous color scale.
 #' @param all_features logical, should all features be retained? Should be used only if x is a MetaboSet object.
+#' @param ...  parameters passed to \code{\link[ggplot2]{geom_point}},
+#' such as shape and alpha values. New aesthetics can
+#' also be passed using \code{mapping = aes(...)}.
 #'
 #' @return a ggplot object
 #'
@@ -1022,6 +1029,7 @@ setGeneric("mz_rt_plot",
   }
 )
 
+#' @rdname mz_rt_plot
 #' @export
 setMethod(
   "mz_rt_plot", c(object = "MetaboSet"),
@@ -1035,6 +1043,7 @@ setMethod(
   }
 )
 
+#' @rdname mz_rt_plot
 #' @export
 setMethod(
   "mz_rt_plot", c(object = "data.frame"),

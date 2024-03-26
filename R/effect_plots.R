@@ -2,7 +2,11 @@
 #'
 #' Helper function for saving plots of individual features
 #' to either one multi-page PDF or separate EMF figures
-#'
+#' @param object a MetaboSet object
+#' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
+#' @param format character, format in which the plots should be saved
+#' @param title,subtitle column names from fData to use as plot title/filename and subtitle
+#' @param text_base_size integer, base size for text in figures
 #' @param plot_fun a function with arguments:
 #' data frame from combined_data(object)
 #' feature id
@@ -312,8 +316,8 @@ save_group_boxplots <- function(object,
 #' A separate plot is drawn and saved for each feature.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? If FALSE (the default), flagged features are removed before visualization.
+#' @param save logical, if false, the plots are not saved but returned as a list
 #' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param x character, name of the column to be used as x-axis
@@ -412,6 +416,7 @@ save_beeswarm_plots <- function(object,
 #'
 #' @param object a MetaboSet object
 #' @param x character, name of the column to be used as x-axis
+#' @param save logical, if false, the plots are not saved but returned as a list
 #' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param all_features logical, should all features be used? If FALSE
@@ -506,8 +511,8 @@ save_scatter_plots <- function(object,
 #' A separate plot is drawn for each feature.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? If FALSE (the default), flagged features are removed before visualization
+#' @param save logical, if false, the plots are not saved but returned as a list
 #' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param x character, name of the column to be used as x-axis

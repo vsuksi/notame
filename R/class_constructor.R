@@ -702,14 +702,14 @@ setMethod(
 )
 
 
-# group
-
+#' These generic functions access and set the special column for group labels
+#' @param object a MetaboSet object
 #' @export
 setGeneric("group_col",
   signature = "object",
   function(object) standardGeneric("group_col")
 )
-#' @describeIn MetaboSet access and set group_col
+#' @describeIn MetaboSet access name of column for group labels
 #'
 #' @export
 setMethod(
@@ -717,12 +717,17 @@ setMethod(
   function(object) object@group_col
 )
 
+#' @rdname group_col
+#' @param object a MetaboSet object
+#' @param value string, name of column to be designated for holding group labels
 #' @export
 setGeneric("group_col<-",
   signature = "object",
   function(object, value) standardGeneric("group_col<-")
 )
 
+#' @describeIn MetaboSet set name of column for group labels
+#' @param value string, character vector for \code{\link{flag}}
 #' @export
 setMethod(
   "group_col<-", "MetaboSet",
@@ -734,26 +739,31 @@ setMethod(
   }
 )
 
-# time
+#' These generic functions access and set the special column for time point
+#' @param object a MetaboSet object
 #' @export
 setGeneric("time_col",
   signature = "object",
   function(object) standardGeneric("time_col")
 )
 
-#' @describeIn MetaboSet access and set time_col
+#' @describeIn MetaboSet access name of column for time point
 #' @export
 setMethod(
   "time_col", "MetaboSet",
   function(object) object@time_col
 )
 
+#' @rdname time_col
+#' @param object a MetaboSet object
+#' @param value string, name of column to be designated for holding time point
 #' @export
 setGeneric("time_col<-",
   signature = "object",
   function(object, value) standardGeneric("time_col<-")
 )
 
+#' @describeIn MetaboSet set name of column for time point
 #' @export
 setMethod(
   "time_col<-", "MetaboSet",
@@ -765,26 +775,31 @@ setMethod(
   }
 )
 
-# subject ID
+#' These generic functions access and set the special column for subject identifiers
+#' @param object a MetaboSet object
 #' @export
 setGeneric("subject_col",
   signature = "object",
   function(object) standardGeneric("subject_col")
 )
 
-#' @describeIn MetaboSet access and set subject_col
+#' @describeIn MetaboSet access name of column for subject subject identifiers
 #' @export
 setMethod(
   "subject_col", "MetaboSet",
   function(object) object@subject_col
 )
 
+#' @rdname subject_col
+#' @param object a MetaboSet object
+#' @param value string, name of column to be designated for holding subject identifiers
 #' @export
 setGeneric("subject_col<-",
   signature = "object",
   function(object, value) standardGeneric("subject_col<-")
 )
 
+#' @describeIn MetaboSet set name of column for subject identifiers
 #' @export
 setMethod(
   "subject_col<-", "MetaboSet",
@@ -797,26 +812,31 @@ setMethod(
 )
 
 
-# Extract flags of features
+#' These generic functions access and set the values in the flag column
+#' @param object a MetaboSet object
 #' @export
 setGeneric("flag",
   signature = "object",
   function(object) standardGeneric("flag")
 )
 
-#' @describeIn MetaboSet access and set results
+#' @describeIn MetaboSet access flags
 #' @export
 setMethod(
   "flag", "MetaboSet",
   function(object) fData(object)$Flag
 )
 
+#' @rdname flag
+#' @param object a MetaboSet object
+#' @param value character vector, values for flag column
 #' @export
 setGeneric("flag<-",
   signature = "object",
   function(object, value) standardGeneric("flag<-")
 )
 
+#' @describeIn MetaboSet set flags
 #' @export
 setMethod(
   "flag<-", "MetaboSet",
@@ -857,6 +877,7 @@ setGeneric("join_fData",
 )
 
 #' @describeIn MetaboSet join new information to fData
+#' @param dframe a data frame with the new information
 #' @export
 setMethod(
   "join_fData", c("MetaboSet", "data.frame"),
@@ -896,6 +917,7 @@ setGeneric("join_pData",
 )
 
 #' @describeIn MetaboSet join new information to fData
+#' @param dframe a data frame with the new information
 #' @export
 setMethod(
   "join_pData", c("MetaboSet", "data.frame"),

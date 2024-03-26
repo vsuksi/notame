@@ -16,6 +16,16 @@ save_feature_plots(
 )
 }
 \arguments{
+\item{object}{a MetaboSet object}
+
+\item{file_path}{character, a file path for PDF or prefix added to the file paths for other formats}
+
+\item{format}{character, format in which the plots should be saved}
+
+\item{title, subtitle}{column names from fData to use as plot title/filename and subtitle}
+
+\item{text_base_size}{integer, base size for text in figures}
+
 \item{plot_fun}{a function with arguments:
 data frame from combined_data(object)
 feature id

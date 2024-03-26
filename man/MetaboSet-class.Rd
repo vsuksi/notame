@@ -6,24 +6,34 @@
 \alias{MetaboSet}
 \alias{combined_data,MetaboSet-method}
 \alias{group_col,MetaboSet-method}
+\alias{group_col<-,MetaboSet-method}
 \alias{time_col,MetaboSet-method}
+\alias{time_col<-,MetaboSet-method}
 \alias{subject_col,MetaboSet-method}
+\alias{subject_col<-,MetaboSet-method}
 \alias{flag,MetaboSet-method}
+\alias{flag<-,MetaboSet-method}
 \alias{join_fData,MetaboSet,data.frame-method}
 \alias{join_pData,MetaboSet,data.frame-method}
 \title{An S4 class used to represent LC-MS datasets}
 \usage{
 \S4method{combined_data}{MetaboSet}(object)
 
-\S4method{combined_data}{MetaboSet}(object)
-
 \S4method{group_col}{MetaboSet}(object)
+
+\S4method{group_col}{MetaboSet}(object) <- value
 
 \S4method{time_col}{MetaboSet}(object)
 
+\S4method{time_col}{MetaboSet}(object) <- value
+
 \S4method{subject_col}{MetaboSet}(object)
 
+\S4method{subject_col}{MetaboSet}(object) <- value
+
 \S4method{flag}{MetaboSet}(object)
+
+\S4method{flag}{MetaboSet}(object) <- value
 
 \S4method{join_fData}{MetaboSet,data.frame}(object, dframe)
 
@@ -31,6 +41,10 @@
 }
 \arguments{
 \item{object}{a MetaboSet object}
+
+\item{value}{string, character vector for \code{\link{flag}}}
+
+\item{dframe}{a data frame with the new information}
 }
 \description{
 MetaboSet is the main class used to represent data in the notame package.
@@ -45,15 +59,21 @@ defaults.
 \itemize{
 \item \code{combined_data(MetaboSet)}: sample information and features combined to a single data frame, one row per sample
 
-\item \code{combined_data(MetaboSet)}: sample information and features combined to a single data frame, one row per sample
+\item \code{group_col(MetaboSet)}: access name of column for group labels
 
-\item \code{group_col(MetaboSet)}: access and set group_col
+\item \code{group_col(MetaboSet) <- value}: set name of column for group labels
 
-\item \code{time_col(MetaboSet)}: access and set time_col
+\item \code{time_col(MetaboSet)}: access name of column for time point
 
-\item \code{subject_col(MetaboSet)}: access and set subject_col
+\item \code{time_col(MetaboSet) <- value}: set name of column for time point
 
-\item \code{flag(MetaboSet)}: access and set results
+\item \code{subject_col(MetaboSet)}: access name of column for subject subject identifiers
+
+\item \code{subject_col(MetaboSet) <- value}: set name of column for subject identifiers
+
+\item \code{flag(MetaboSet)}: access flags
+
+\item \code{flag(MetaboSet) <- value}: set flags
 
 \item \code{join_fData(object = MetaboSet, dframe = data.frame)}: join new information to fData
 

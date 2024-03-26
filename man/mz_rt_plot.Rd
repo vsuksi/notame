@@ -2,6 +2,8 @@
 % Please edit documentation in R/scatter.R
 \name{mz_rt_plot}
 \alias{mz_rt_plot}
+\alias{mz_rt_plot,MetaboSet-method}
+\alias{mz_rt_plot,data.frame-method}
 \title{Plot m/z vs retention time plot}
 \usage{
 mz_rt_plot(
@@ -15,6 +17,31 @@ mz_rt_plot(
   subtitle = NULL,
   color_scale = getOption("notame.color_scale_con"),
   ...
+)
+
+\S4method{mz_rt_plot}{MetaboSet}(
+  object,
+  p_col = NULL,
+  p_limit = NULL,
+  mz_col = NULL,
+  rt_col = NULL,
+  color = NULL,
+  title = "m/z vs retention time",
+  subtitle = NULL,
+  color_scale = getOption("notame.color_scale_con"),
+  all_features = FALSE
+)
+
+\S4method{mz_rt_plot}{data.frame}(
+  object,
+  p_col = NULL,
+  p_limit = NULL,
+  mz_col = NULL,
+  rt_col = NULL,
+  color = NULL,
+  title = "m/z vs retention time",
+  subtitle = NULL,
+  color_scale = getOption("notame.color_scale_con")
 )
 }
 \arguments{
@@ -34,6 +61,10 @@ If x is a data frame, it is used as is.}
 \item{subtitle}{The plot subtitle}
 
 \item{color_scale}{color scale as returned by a ggplot function. Defaults to current continuous color scale.}
+
+\item{...}{parameters passed to \code{\link[ggplot2]{geom_point}},
+such as shape and alpha values. New aesthetics can
+also be passed using \code{mapping = aes(...)}.}
 
 \item{all_features}{logical, should all features be retained? Should be used only if x is a MetaboSet object.}
 }

@@ -2,9 +2,53 @@
 % Please edit documentation in R/scatter.R
 \name{volcano_plot}
 \alias{volcano_plot}
+\alias{volcano_plot,MetaboSet-method}
+\alias{volcano_plot,data.frame-method}
 \title{Volcano plot}
 \usage{
 volcano_plot(
+  object,
+  x,
+  p,
+  p_fdr = NULL,
+  color = NULL,
+  p_breaks = c(0.05, 0.01, 0.001, 1e-04),
+  fdr_limit = 0.05,
+  log2_x = FALSE,
+  center_x_axis = TRUE,
+  x_lim = NULL,
+  label = NULL,
+  label_limit = 0.05,
+  color_scale = getOption("notame.color_scale_con"),
+  title = "Volcano plot",
+  subtitle = NULL,
+  text_base_size = 14,
+  label_text_size = 4,
+  ...
+)
+
+\S4method{volcano_plot}{MetaboSet}(
+  object,
+  x,
+  p,
+  p_fdr = NULL,
+  color = NULL,
+  p_breaks = c(0.05, 0.01, 0.001, 1e-04),
+  fdr_limit = 0.05,
+  log2_x = FALSE,
+  center_x_axis = TRUE,
+  x_lim = NULL,
+  label = NULL,
+  label_limit = 0.05,
+  color_scale = getOption("notame.color_scale_con"),
+  title = "Volcano plot",
+  subtitle = NULL,
+  text_base_size = 14,
+  label_text_size = 4,
+  ...
+)
+
+\S4method{volcano_plot}{data.frame}(
   object,
   x,
   p,
@@ -53,6 +97,10 @@ be on the middle of the plot. The "zero effect" is 0 if \code{log2_x = FALSE} an
 \item{color_scale}{the color scale as returned by a ggplot function}
 
 \item{title, subtitle}{the title and subtitle of the plot}
+
+\item{text_base_size}{integer, base size for text in figures}
+
+\item{label_text_size}{numeric, size of the labels}
 
 \item{...}{parameters passed to \code{\link[ggplot2]{geom_point}},
 such as shape and alpha values. New aesthetics can

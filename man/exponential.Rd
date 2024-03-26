@@ -2,9 +2,12 @@
 % Please edit documentation in R/transformations.R
 \name{exponential}
 \alias{exponential}
+\alias{exponential,MetaboSet-method}
 \title{Exponential function}
 \usage{
 exponential(object, base = exp(1))
+
+\S4method{exponential}{MetaboSet}(object, base = exp(1))
 }
 \arguments{
 \item{object}{a MetaboSet object}

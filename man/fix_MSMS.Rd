@@ -15,6 +15,8 @@ fix_MSMS(
 \arguments{
 \item{object}{a MetaboSet object}
 
+\item{ms_ms_spectrum_col}{name of column with original MS/MS spectra}
+
 \item{peak_num}{maximum number of peak that is kept (Recommended: 4-10)}
 
 \item{min_abund}{minimum relative abundance to be kept (Recommended: 1-5)}

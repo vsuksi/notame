@@ -36,6 +36,7 @@ mark_nas <- function(object, value) {
 #' 73.03 (100), 23.193 (27), 73.14 (12.8), 55.016 (8.7)
 #'
 #' @param object a MetaboSet object
+#' @param ms_ms_spectrum_col name of column with original MS/MS spectra
 #' @param peak_num maximum number of peak that is kept (Recommended: 4-10)
 #' @param min_abund minimum relative abundance to be kept (Recommended: 1-5)
 #' @param deci_num maximum number of decimals to m/z value (Recommended: >2)
@@ -357,7 +358,6 @@ impute_simple <- function(object, value, na_limit = 0) {
 #'
 #' @examples
 #' normalized <- inverse_normalize(merged_sample)
-#'
 #' @importFrom stats qnorm
 #' @export
 inverse_normalize <- function(object) {
@@ -469,7 +469,7 @@ setGeneric("exponential",
   function(object, base = exp(1)) standardGeneric("exponential")
 )
 
-
+#' @rdname exponential
 #' @export
 setMethod(
   "exponential", c(object = "MetaboSet"),
