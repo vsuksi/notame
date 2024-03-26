@@ -11,7 +11,7 @@
 #' # Print the contents of the file
 #' scan(file_name, sep = "\n", what = "character")
 #'
-#' @seealso \code{\link{log_text}}, \code{\link{finish_log}}, \code{\link{log_state}}
+#' @seealso \code{\link{log_text}}, \code{\link{finish_log}}
 #'
 #' @import futile.logger
 #' @export
@@ -38,7 +38,7 @@ init_log <- function(log_file) {
 #' # Print the contents of the file
 #' scan(file_name, sep = "\n", what = "character")
 #'
-#' @seealso \code{\link{init_log}}, \code{\link{finish_log}}, \code{\link{log_state}}
+#' @seealso \code{\link{init_log}}, \code{\link{finish_log}}
 #'
 #' @export
 log_text <- function(text) {
@@ -49,7 +49,7 @@ log_text <- function(text) {
 #'
 #' Logs the current date and time and session info, and switches logging off.
 #'
-#' @seealso \code{\link{init_log}}, \code{\link{log_text}}, \code{\link{log_state}}
+#' @seealso \code{\link{init_log}}, \code{\link{log_text}}
 #'
 #' @importFrom utils sessionInfo
 #' @export

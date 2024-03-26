@@ -21,5 +21,5 @@ scan(file_name, sep = "\n", what = "character")
 
 }
 \seealso{
-\code{\link{log_text}}, \code{\link{finish_log}}, \code{\link{log_state}}
+\code{\link{log_text}}, \code{\link{finish_log}}
 }
