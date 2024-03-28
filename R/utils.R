@@ -1,7 +1,10 @@
 #' @importFrom grDevices dev.off
 #' @importFrom stats dist hclust lm na.omit runif
 #' @importFrom utils capture.output citation type.convert
+#' @importFrom Biobase exprs exprs<- phenoData pData pData<- featureData fData fData<- sampleNames sampleNames<- featureNames featureNames<- assayData protocolData
 NULL
+
+utils::globalVariables(c('i', '.'))
 
 #' Set default color scales on load
 #'
