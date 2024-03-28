@@ -53,11 +53,11 @@ plot_dendrogram <- function(
     ggdendro::dendro_data()
 
   labels <- ggdendro::label(d_data) %>%
-    dplyr::mutate(label = as.character(label)) %>%
+    dplyr::mutate(label = .data$label) %>%
     dplyr::left_join(pData(object)[c("Sample_ID", color)], by = c("label" = "Sample_ID"))
   labels[, color] <- as.factor(labels[, color])
   p <- ggplot(ggdendro::segment(d_data)) +
-    geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
+    geom_segment(aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend)) +
     geom_text(
       data = labels, aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]], color = .data[[color]]),
       angle = 90, hjust = 1
@@ -130,13 +130,13 @@ plot_sample_heatmap <- function(object, all_features = FALSE, dist_method = "euc
   distances_df <- as.matrix(distances) %>%
     as.data.frame() %>%
     tibble::rownames_to_column("X") %>%
-    tidyr::gather("Y", "Distance", -X)
+    tidyr::gather("Y", "Distance", -"X")
   # Set the correct order given by hclust
   distances_df$X <- factor(distances_df$X, levels = hc_order, ordered = TRUE)
   distances_df$Y <- factor(distances_df$Y, levels = rev(hc_order), ordered = TRUE)
 
   # Heatmap
-  p <- ggplot(distances_df, aes(X, Y, fill = Distance)) +
+  p <- ggplot(distances_df, aes(.data$X, .data$Y, fill = .data$Distance)) +
     geom_tile(color = NA) +
     fill_scale_con +
     labs(x = NULL, y = NULL, title = title, subtitle = subtitle) +

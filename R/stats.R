@@ -391,7 +391,7 @@ fold_change <- function(object, group = group_col(object)) {
   comp_labels <- groups %>%
     t() %>%
     as.data.frame() %>%
-    tidyr::unite("Comparison", V2, V1, sep = "_vs_")
+    tidyr::unite("Comparison", "V2", "V1", sep = "_vs_")
   comp_labels <- paste0(comp_labels[, 1], "_FC")
   results_df <- data.frame(features, results_df, stringsAsFactors = FALSE)
   colnames(results_df) <- c("Feature_ID", comp_labels)
@@ -538,12 +538,12 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NUL
           cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp], ...)
         } else {
           id_tmp <- data1[, id]
-          df_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp], y_var = data2[, y_tmp])
-          cor_tmp <- rmcorr::rmcorr(
-            participant = id_var,
-            measure1 = x_var,
-            measure2 = y_var,
-            dataset = df_tmp
+          cor_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp], y_var = data2[, y_tmp]) %>%
+          rmcorr::rmcorr(
+            participant = .$id_var,
+            measure1 = .$x_var,
+            measure2 = .$y_var,
+            dataset = .
           )
           cor_tmp <- list(estimate = cor_tmp$r, p.value = cor_tmp$p)
         }
@@ -569,7 +569,7 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NUL
     cor_results_dup$X <- cor_results$Y
     cor_results_dup$Y <- cor_results$X
     # Remove possible duplicated correlations of a variable with itself
-    cor_results_dup <- dplyr::filter(cor_results_dup, X != Y)
+    cor_results_dup <- dplyr::filter(cor_results_dup, "X" != "Y")
     cor_results <- rbind(cor_results, cor_results_dup)
   }
 
@@ -683,7 +683,7 @@ adjust_p_values <- function(x, flags) {
 # Some statistical tests may fail for some features, due to e.g. missing values.
 fill_results <- function(results_df, features) {
   # Add NA rows for features where the test failed
-  results_df <- results_df %>% dplyr::select(Feature_ID, dplyr::everything())
+  results_df <- results_df %>% dplyr::select("Feature_ID", dplyr::everything())
   missing_features <- setdiff(features, results_df$Feature_ID)
   fill_nas <- matrix(NA, nrow = length(missing_features), ncol = ncol(results_df) - 1) %>%
     as.data.frame()
@@ -793,9 +793,9 @@ perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
           "Std_Error" = "Std..Error", "t_value" = "t.value",
           "P" = "Pr...t..", "LCI95" = "X2.5..", "UCI95" = "X97.5.."
         ) %>%
-        tidyr::gather("Metric", "Value", -Variable) %>%
-        tidyr::unite("Column", Variable, Metric, sep = "_") %>%
-        tidyr::spread(Column, Value)
+        tidyr::gather("Metric", "Value", -"Variable") %>%
+        tidyr::unite("Column", "Variable", "Metric", sep = "_") %>%
+        tidyr::spread("Column", "Value")
       # Add R2 statistics and feature ID
       result_row$R2 <- summary(fit)$r.squared
       result_row$Adj_R2 <- summary(fit)$adj.r.squared
@@ -810,7 +810,7 @@ perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
   variables <- gsub("_P$", "", colnames(results_df)[grep("P$", colnames(results_df))])
   statistics <- c("Estimate", "LCI95", "UCI95", "Std_Error", "t_value", "P", "P_FDR")
   col_order <- expand.grid(statistics, variables, stringsAsFactors = FALSE) %>%
-    tidyr::unite("Column", Var2, Var1)
+    tidyr::unite("Column", "Var2", "Var1")
   col_order <- c("Feature_ID", col_order$Column, c("R2", "Adj_R2"))
 
 
@@ -942,9 +942,9 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
           "Std_Error" = "Std..Error", "z_value" = "z.value",
           "P" = "Pr...z..", "LCI95" = "X2.5..", "UCI95" = "X97.5.."
         ) %>%
-        tidyr::gather("Metric", "Value", -Variable) %>%
-        tidyr::unite("Column", Variable, Metric, sep = "_") %>%
-        tidyr::spread(Column, Value)
+        tidyr::gather("Metric", "Value", -"Variable") %>%
+        tidyr::unite("Column", "Variable", "Metric", sep = "_") %>%
+        tidyr::spread("Column", "Value")
       result_row$Feature_ID <- feature
     }
     result_row
@@ -956,7 +956,7 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
   variables <- gsub("_P$", "", colnames(results_df)[grep("P$", colnames(results_df))])
   statistics <- c("Estimate", "LCI95", "UCI95", "Std_Error", "z_value", "P", "P_FDR")
   col_order <- expand.grid(statistics, variables, stringsAsFactors = FALSE) %>%
-    tidyr::unite("Column", Var2, Var1)
+    tidyr::unite("Column", "Var2", "Var1")
   col_order <- c("Feature_ID", col_order$Column)
   results_df <- results_df[col_order]
   # Add odds ratios
@@ -1073,9 +1073,9 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
           "Std_Error" = "Std..Error", "t_value" = "t.value",
           "P" = "Pr...t..", "LCI95" = "X2.5..", "UCI95" = "X97.5.."
         ) %>%
-        tidyr::gather("Metric", "Value", -Variable) %>%
-        tidyr::unite("Column", Variable, Metric, sep = "_") %>%
-        tidyr::spread(Column, Value)
+        tidyr::gather("Metric", "Value", -"Variable") %>%
+        tidyr::unite("Column", "Variable", "Metric", sep = "_") %>%
+        tidyr::spread("Column", "Value")
       # Add R2 statistics
       result_row$Marginal_R2 <- NA
       result_row$Conditional_R2 <- NA
@@ -1095,7 +1095,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
     if (test_random) {
       tryCatch(
         {
-          r_tests <- as.data.frame(ranova(fit))[-1, c(4, 6)]
+          r_tests <- as.data.frame(lmerTest::ranova(fit))[-1, c(4, 6)]
           r_tests$Variable <- rownames(r_tests) %>%
             gsub("[(]1 [|] ", "", .) %>%
             gsub("[)]", "", .)
@@ -1107,10 +1107,10 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
           # Join all the information together
           r_result_row <- dplyr::inner_join(r_variances, confints, by = c("grp" = "Variable")) %>%
             dplyr::left_join(r_tests, by = c("grp" = "Variable")) %>%
-            dplyr::rename(SD = sdcor, "LCI95" = "X2.5..", "UCI95" = "X97.5..", "P" = "Pr(>Chisq)") %>%
-            tidyr::gather("Metric", "Value", -grp) %>%
-            tidyr::unite("Column", grp, Metric, sep = "_") %>%
-            tidyr::spread(Column, Value)
+            dplyr::rename(SD = "sdcor", "LCI95" = "X2.5..", "UCI95" = "X97.5..", "P" = "Pr(>Chisq)") %>%
+            tidyr::gather("Metric", "Value", "-grp") %>%
+            tidyr::unite("Column", "grp", "Metric", sep = "_") %>%
+            tidyr::spread("Column", "Value")
           result_row <- cbind(result_row, r_result_row)
         },
         error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
@@ -1126,14 +1126,14 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
   fixed_effects <- gsub("_Estimate$", "", colnames(results_df)[grep("Estimate$", colnames(results_df))])
   statistics <- c("Estimate", "LCI95", "UCI95", "Std_Error", "t_value", "P", "P_FDR")
   col_order <- expand.grid(statistics, fixed_effects, stringsAsFactors = FALSE) %>%
-    tidyr::unite("Column", Var2, Var1)
+    tidyr::unite("Column", "Var2", "Var1")
   col_order <- c("Feature_ID", col_order$Column, c("Marginal_R2", "Conditional_R2"))
 
   if (test_random) {
     random_effects <- gsub("_SD$", "", colnames(results_df)[grep("SD$", colnames(results_df))])
     statistics <- c("SD", "LCI95", "UCI95", "LRT", "P", "P_FDR")
     random_effect_order <- expand.grid(statistics, random_effects, stringsAsFactors = FALSE) %>%
-      tidyr::unite("Column", Var2, Var1)
+      tidyr::unite("Column", "Var2", "Var1")
     col_order <- c(col_order, random_effect_order$Column)
   }
 
@@ -1571,7 +1571,8 @@ pairwise_fun <- function(object, fun, group_, ...) {
 #' # Including QCs as a study group for example
 #' t_test_results <- perform_pairwise_t_test(merged_sample, group = "Group")
 #' # Using paired mode (pairs with QC are skipped as there are no common IDs in 'example_set')
-#' t_test_results <- perform_pairwise_t_test(example_set, group = "Time", is_paired = TRUE, id = "Subject_ID")
+#' t_test_results <- perform_pairwise_t_test(example_set, group = "Time",
+#'   is_paired = TRUE, id = "Subject_ID")
 #'
 #' @seealso \code{\link{perform_t_test}},
 #' \code{\link{perform_paired_t_test}},

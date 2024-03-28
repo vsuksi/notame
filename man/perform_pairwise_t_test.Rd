@@ -41,7 +41,8 @@ P-values of each comparison are corrected separately from each other.
 # Including QCs as a study group for example
 t_test_results <- perform_pairwise_t_test(merged_sample, group = "Group")
 # Using paired mode (pairs with QC are skipped as there are no common IDs in 'example_set')
-t_test_results <- perform_pairwise_t_test(example_set, group = "Time", is_paired = TRUE, id = "Subject_ID")
+t_test_results <- perform_pairwise_t_test(example_set, group = "Time",
+  is_paired = TRUE, id = "Subject_ID")
 
 }
 \seealso{

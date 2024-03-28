@@ -12,6 +12,7 @@ plot_sample_suprahex(
   grid_ydim = NULL,
   title.xy = c(0.35, 1),
   title.rotate = 0,
+  height = 7,
   fontsize = 10,
   colormap = "jet",
   ...
@@ -29,6 +30,8 @@ plot_sample_suprahex(
 \item{title.xy}{position of the sample label relative to the supraHex}
 
 \item{title.rotate}{rotation of the sample label in degrees}
+
+\item{height}{a numeric value specifying the height of device}
 
 \item{fontsize}{the fontsize for sample labels}
 

@@ -436,7 +436,7 @@ plot_features <- function(features, cluster, name_col, mz_col, rt_col, rt_window
 
   p2 <- ggplot(features_tmp, aes(.data[[rt_col]], .data[[mz_col]])) +
     geom_point(size = 3, color = "steelblue4") +
-    geom_errorbarh(aes(xmin = rtmin, xmax = rtmax), color = "steelblue4") +
+    geom_errorbarh(aes(xmin = .data$rtmin, xmax = .data$rtmax), color = "steelblue4") +
     theme_minimal() +
     labs(x = "Retention time", y = "Mass-to-charge ratio", title = "Retention time & tolerance")
 
@@ -466,14 +466,14 @@ plot_heatmaps <- function(data, features, cluster, name_col, mz_col, rt_col) {
   mz_rt$x <- factor(mz_rt$x, levels = mz_ord)
   mz_rt$y <- factor(mz_rt$y, levels = rev(mz_ord))
 
-  p1 <- ggplot(mz_rt, aes(x = x, y = y, fill = mz_diff)) +
+  p1 <- ggplot(mz_rt, aes(x = .data$x, y = .data$y, fill = .data$mz_diff)) +
     geom_tile(color = "grey80") +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 90, vjust = 1)) +
     scale_fill_gradient2()
 
   if (nrow(mz_rt) <= 10) {
-    p1 <- p1 + geom_text(aes(label = round(mz_diff, digits = 2)))
+    p1 <- p1 + geom_text(aes(label = round(.data$mz_diff, digits = 2)))
   }
 
   plot(p1)

@@ -9,6 +9,7 @@
 #' @param grid_xdim,grid_ydim dimensions of the grid for the samples
 #' @param title.xy position of the sample label relative to the supraHex
 #' @param title.rotate rotation of the sample label in degrees
+#' @param height a numeric value specifying the height of device
 #' @param fontsize the fontsize for sample labels
 #' @param colormap colormap for the hexagons
 #' @param ... other parameters for supraHex::sPipeline
@@ -28,7 +29,7 @@
 plot_sample_suprahex <- function(object, all_features = FALSE,
                                  sample_labels = "Sample_ID",
                                  grid_xdim = NULL, grid_ydim = NULL,
-                                 title.xy = c(0.35, 1), title.rotate = 0, fontsize = 10, # nolint: object_name_linter.
+                                 title.xy = c(0.35, 1), title.rotate = 0, height = 7, fontsize = 10, # nolint: object_name_linter.
                                  colormap = "jet", ...) {
   if (!requireNamespace("supraHex", quietly = TRUE)) {
     stop("Package \"supraHex\" needed for this function to work. Please install it.",

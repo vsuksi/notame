@@ -96,7 +96,7 @@ check_pheno_data <- function(x, id_prefix, id_column = NULL, log_messages = FALS
 
   x <- best_classes(x)
   rownames(x) <- x$Sample_ID
-  x <- as.data.frame(dplyr::select(x, Sample_ID, dplyr::everything()))
+  x <- as.data.frame(dplyr::select(x, "Sample_ID", dplyr::everything()))
   x
 }
 
@@ -319,7 +319,7 @@ read_from_excel <- function(file, sheet = 1, id_column = NULL, corner_row = NULL
   }
   # Reorganise columns and change classes
   feature_data <- feature_data %>%
-    dplyr::select(Feature_ID, Split, dplyr::everything()) %>%
+    dplyr::select("Feature_ID", "Split", dplyr::everything()) %>%
     best_classes() %>%
     dplyr::mutate_if(is.factor, as.character)
   rownames(feature_data) <- feature_data$Feature_ID
@@ -578,7 +578,7 @@ write_to_excel <- function(object, file, ...) {
 
   # All columns must be characters to allow combination with the top block
   bottom <- bottom %>%
-    dplyr::mutate(across(everything(), as.character)) %>%
+    dplyr::mutate(dplyr::across(dplyr::everything(), as.character)) %>%
     rbind(colnames(.), .)
   # Top block holds the sample information
   pd <- pData(object)

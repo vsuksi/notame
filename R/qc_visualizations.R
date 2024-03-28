@@ -133,7 +133,7 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, x_label = "
   # THree separate histograms
   plots <- list()
   for (i in seq_along(p_values)) {
-    p <- ggplot(data.frame(P = p_values[[i]]), aes(P)) +
+    p <- ggplot(data.frame(P = p_values[[i]]), aes(.data$P)) +
       geom_histogram(breaks = breaks, col = "grey50", fill = "grey80", size = 1) +
       labs(x = x_label, y = "Frequency") +
       ggtitle(names(p_values)[i]) +
@@ -269,16 +269,16 @@ plot_sample_boxplots <- function(
 
   data <- tidyr::gather(data, "Variable", "Value", rownames(exprs(object)))
 
-  p <- ggplot(data, aes(x = Sample_ID, y = Value, fill = fill_by))
+  p <- ggplot(data, aes(x = .data$Sample_ID, y = .data$Value, fill = fill_by))
 
   ## Zooming outliers out of view
   if (zoom_boxplot) {
     # compute lower and upper whiskers
     ylimits <- data %>%
-      dplyr::group_by(Sample_ID) %>%
+      dplyr::group_by(.data$Sample_ID) %>%
       dplyr::summarise(
-        low = boxplot.stats(Value)$stats[1],
-        high = boxplot.stats(Value)$stats[5]
+        low = boxplot.stats(.data$Value)$stats[1],
+        high = boxplot.stats(.data$Value)$stats[5]
       )
 
 

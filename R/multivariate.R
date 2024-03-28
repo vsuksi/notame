@@ -206,8 +206,8 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
   # Plot Mean Square Error
   p1 <- ggplot(data.frame(
     ncomp = seq_len(ncomp),
-    MSEP = as.vector(perf_pls$MSEP)
-  ), aes(x = ncomp, y = MSEP)) +
+    MSEP = as.vector(perf_pls$measure$MSEP$summary$mean)
+  ), aes(x = ncomp, y = .data$MSEP)) +
     geom_line() +
     labs(color = NULL, title = "Mean Square Error") +
     theme_bw() +
@@ -216,13 +216,13 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
 
   # Plot R2 and Q2
   plot_data <- data.frame(
-    R2 = as.vector(perf_pls$R2),
-    Q2 = as.vector(perf_pls$Q2),
+    R2 = as.vector(perf_pls$measure$R2$summary$mean),
+    Q2 = as.vector(perf_pls$measure$Q2$summary$mean),
     ncomp = seq_len(ncomp)
   ) %>%
     tidyr::gather(key = "key", value = "value", -ncomp)
 
-  p2 <- ggplot(plot_data, aes(x = ncomp, y = value, color = key)) +
+  p2 <- ggplot(plot_data, aes(x = ncomp, y = .data$value, color = .data$key)) +
     geom_line() +
     labs(color = NULL, title = "R2 and Q2") +
     theme_bw() +

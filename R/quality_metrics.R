@@ -160,9 +160,9 @@ flag_detection <- function(object, qc_limit = 0.7, group_limit = 0.5, group = gr
   # Compute proportions found in each study group
   if (!is.na(group)) {
     proportions <- combined_data(object)[, c("Sample_ID", group, featureNames(object))] %>%
-      tidyr::gather(Feature_ID, Intensity, featureNames(object)) %>%
-      dplyr::group_by(Feature_ID, !!as.name(group)) %>%
-      dplyr::summarise(proportion_found = prop_found(Intensity)) %>%
+      tidyr::gather("Feature_ID", "Intensity", featureNames(object)) %>%
+      dplyr::group_by(.data$Feature_ID, !!as.name(group)) %>%
+      dplyr::summarise(proportion_found = prop_found("Intensity")) %>%
       tidyr::spread(!!as.name(group), "proportion_found")
     # Remove a possible QC column
     proportions$QC <- NULL

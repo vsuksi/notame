@@ -185,12 +185,12 @@ repeatability <- function(x, group) {
 perform_repeatability <- function(object, group) {
   group <- pData(object)[, group]
   repeatabilities <- foreach::foreach(
-    feature = featureNames(object),
+    i = featureNames(object),
     .combine = rbind
   ) %dopar% { # nolint: object_usage_linter.
     result_row <- data.frame( # nolint: object_usage_linter.
-      Feature_ID = feature, # nolint: object_usage_linter.
-      Repeatability = repeatability(exprs(object)[feature, ], group)
+      Feature_ID = i, # nolint: object_usage_linter.
+      Repeatability = repeatability(exprs(object)[i, ], group)
     )
   }
   repeatabilities
@@ -336,7 +336,7 @@ save_batch_plots <- function(orig, corrected, file, width = 14, height = 10,
 
   batch_injections <- data_orig %>%
     dplyr::group_by(!!dplyr::sym(batch)) %>%
-    dplyr::summarise(start = min(Injection_order), end = max(Injection_order)) # nolint: object_usage_linter.
+    dplyr::summarise(start = min(.data$Injection_order), end = max(.data$Injection_order)) # nolint: object_usage_linter.
 
   batch_mean_helper <- function(data) {
     data %>%
@@ -349,7 +349,7 @@ save_batch_plots <- function(orig, corrected, file, width = 14, height = 10,
     batch_means <- batch_mean_helper(data) %>%
       dplyr::mutate(QC = "Sample")
     batch_means_qc <- data %>%
-      dplyr::filter(QC == "QC") %>%
+      dplyr::filter(.data$QC == "QC") %>%
       batch_mean_helper() %>%
       dplyr::mutate(QC = "QC")
 
