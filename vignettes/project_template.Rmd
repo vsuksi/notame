@@ -2,7 +2,10 @@
 title: "Project template"
 author: "Anton Klåvus"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Project template}
   %\VignetteEngine{knitr::rmarkdown}
@@ -117,5 +120,11 @@ save_group_boxplots(merged[interesting, ], color = "Group",
 
 # Finish logging and save session information
 finish_log()
+```
+
+## Session info
+
+```{r}
+sessionInfo()
 ```
 

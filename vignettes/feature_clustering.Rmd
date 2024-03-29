@@ -2,7 +2,10 @@
 title: "Feature clustering"
 author: "Anton Klåvus"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Feature clustering}
   %\VignetteEngine{knitr::rmarkdown}
@@ -167,3 +170,10 @@ cluster_features <- pulled$cfeatures
 ```
 
 Now, ```cluster_data``` only has one feature per cluster, and the features that are "inside" each cluster are still recorded in ```cluster_features```.
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```

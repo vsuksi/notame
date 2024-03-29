@@ -2,7 +2,10 @@
 title: "Statistics"
 author: "Anton Klåvus"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Statistics}
   %\VignetteEngine{knitr::rmarkdown}
@@ -92,6 +95,11 @@ There are also wrappers for PLS(-DA) functions from the mixOmics package:
 - ```mixomics_spls and mixomics_splsda_optimize``` fits sPLS(-DA), which uses a clever variable selection scheme to select the optimal number of components AND the optimal number of features for each component.
 
 
+## Session info
+
+```{r}
+sessionInfo()
+```
 
 
 

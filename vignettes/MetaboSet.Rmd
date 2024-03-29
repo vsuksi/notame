@@ -2,7 +2,10 @@
 title: "MetaboSet utility"
 author: "Anton Klåvus"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{MetaboSet utility}
   %\VignetteEngine{knitr::rmarkdown}
@@ -131,5 +134,12 @@ In addition, there are many functions that modify MetaboSets:
 - ```drop_flagged``` removes all features that have been flagged (low-quality features)  
 - ```merge_metabosets``` is used to merge MetaboSets from multiple modes together  
 - ```join_fData``` can be used to merge a data frame to the ```fData``` part of an object. This is mainly used to add results from statistical tests.
+
+
+## Session info
+
+```{r}
+sessionInfo()
+```
 
 

@@ -2,7 +2,10 @@
 title: "Preprocessing"
 author: "Anton Klåvus"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Preprocessing}
   %\VignetteEngine{knitr::rmarkdown}
@@ -155,5 +158,10 @@ You should also visually inspect the results with PCA and t-SNE plots (```plot_p
 <img src="batch_correction.jpg" alt="" width="700"/>
 
 
+## Session info
+
+```{r}
+sessionInfo()
+```
 
 

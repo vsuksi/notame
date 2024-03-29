@@ -2,7 +2,10 @@
 title: "Visualizations"
 author: "Anton Klåvus"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Visualizations}
   %\VignetteEngine{knitr::rmarkdown}
@@ -75,4 +78,9 @@ The function ```visualizations``` automatically runs many of the visualizations 
 If you want to modify the visualizations, it is a very good idea to create a project specific version, e.g. ```myproject_visualizations```. To do this, simply run ```visualizations``` **without parentheses** and copy-paste the code to an external file for modifications. You might want to add visualizations or modify the size of the figures to be saved.
 
 
+## Session info
+
+```{r}
+sessionInfo()
+```
 

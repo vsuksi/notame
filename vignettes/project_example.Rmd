@@ -2,7 +2,10 @@
 title: "Project example"
 author: "Anton Klåvus"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Project example}
   %\VignetteEngine{knitr::rmarkdown}
@@ -313,4 +316,10 @@ And that concludes our project example! The last thing to do is finish the log w
 
 ```{r, eval = FALSE}
 finish_log()
+```
+
+## Session info
+
+```{r}
+sessionInfo()
 ```
