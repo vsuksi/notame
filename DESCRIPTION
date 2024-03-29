@@ -11,7 +11,7 @@ Description: Automates common preprocessing steps in a LC-MS metabolomics workfl
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-biocViews:
+biocViews: BiomedicalInformatics, Metabolomics, DataImport, MassSpectrometry, BatchEffect, MultipleComparison, Normalization, QualityControl, Visualization
 Depends:
     R (>= 3.5),
     Biobase,
