@@ -112,14 +112,16 @@ create_feature_plot_list <- function(object, plot_fun) {
 #' \code{\link[notame]{save_plot}}
 #'
 #' @examples
-#' \dontrun{
-#' save_subject_line_plots(drop_qcs(example_set),
+#' \dontshow{.old_wd <- setwd(tempdir())}
+#' save_subject_line_plots(drop_qcs(example_set)[1:10],
 #'   file_path = "./subject_line_plots.pdf",
 #'   format = "pdf"
 #' )
-#' }
+#'
 #' # Plot one feature
 #' save_subject_line_plots(drop_qcs(example_set[1, ]), save = FALSE)
+#' \dontshow{setwd(.old_wd)}
+#'
 #' @export
 save_subject_line_plots <- function(object,
                                     all_features = FALSE,
@@ -236,9 +238,9 @@ save_subject_line_plots <- function(object,
 #' \code{\link[notame]{save_plot}}
 #'
 #' @examples
-#' \dontrun{
+#' \dontshow{.old_wd <- setwd(tempdir())}
 #' # Default boxplots by group
-#' save_group_boxplots(drop_qcs(merged_sample),
+#' save_group_boxplots(drop_qcs(merged_sample)[1:10],
 #'   file_path = "./group_boxplots.pdf",
 #'   format = "pdf", title = NULL
 #' )
@@ -249,9 +251,10 @@ save_subject_line_plots <- function(object,
 #'   x = "Time",
 #'   color = "Group", title = NULL
 #' )
-#' }
 #' # Plot one feature
 #' save_group_boxplots(drop_qcs(merged_sample)[5, ], save = FALSE)
+#' \dontshow{setwd(.old_wd)}
+#' 
 #' @export
 save_group_boxplots <- function(object,
                                 all_features = FALSE,
@@ -337,9 +340,9 @@ save_group_boxplots <- function(object,
 #' \code{\link[notame]{save_plot}}
 #'
 #' @examples
-#' \dontrun{
+#' \dontshow{.old_wd <- setwd(tempdir())}
 #' # Default beeswarms by group
-#' save_beeswarm_plots(drop_qcs(merged_sample),
+#' save_beeswarm_plots(drop_qcs(merged_sample)[1:10],
 #'   file_path = "./beeswarm_plots.pdf",
 #'   format = "pdf"
 #' )
@@ -350,9 +353,11 @@ save_group_boxplots <- function(object,
 #'   x = "Time",
 #'   color = "Group"
 #' )
-#' }
+#' 
 #' # Plot one feature
 #' save_beeswarm_plots(drop_qcs(merged_sample)[5, ], save = FALSE)
+#' \dontshow{setwd(.old_wd)}
+#'
 #' @export
 save_beeswarm_plots <- function(object,
                                 all_features = FALSE,
@@ -438,7 +443,7 @@ save_beeswarm_plots <- function(object,
 #' \code{\link[notame]{save_plot}}
 #'
 #' @examples
-#' \dontrun{
+#' \dontshow{.old_wd <- setwd(tempdir())}
 #' # Against injection order, colored by group
 #' save_scatter_plots(
 #'   object = merged_sample[1:10],
@@ -447,9 +452,10 @@ save_beeswarm_plots <- function(object,
 #'   file_path = "./scatter_plots.pdf",
 #'   format = "pdf"
 #' )
-#' }
 #' # Plot one feature
 #' save_scatter_plots(merged_sample[5, ], save = FALSE, color = "Group")
+#' \dontshow{setwd(.old_wd)}
+#'
 #' @export
 save_scatter_plots <- function(object,
                                x = "Injection_order",
@@ -537,8 +543,8 @@ save_scatter_plots <- function(object,
 #' \code{\link[ggplot2]{stat_summary}}
 #'
 #' @examples
-#' \dontrun{
-#' save_group_lineplots(drop_qcs(merged_sample),
+#' \dontshow{.old_wd <- setwd(tempdir())}
+#' save_group_lineplots(drop_qcs(merged_sample)[1:10],
 #'   file_path = "./group_line_plots.pdf",
 #'   format = "pdf"
 #' )
@@ -546,9 +552,10 @@ save_scatter_plots <- function(object,
 #'   file_path = "./group_line_plots/",
 #'   format = "png"
 #' )
-#' }
 #' # Plot one feature
 #' save_group_lineplots(drop_qcs(merged_sample[5, ]), save = FALSE)
+#' \dontshow{setwd(.old_wd)}
+#'
 #' @export
 save_group_lineplots <- function(object,
                                  all_features = FALSE,

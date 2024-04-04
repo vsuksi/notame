@@ -63,9 +63,9 @@ Draws a beeswarm plot of feature abundances in each group.
 A separate plot is drawn and saved for each feature.
 }
 \examples{
-\dontrun{
+\dontshow{.old_wd <- setwd(tempdir())}
 # Default beeswarms by group
-save_beeswarm_plots(drop_qcs(merged_sample),
+save_beeswarm_plots(drop_qcs(merged_sample)[1:10],
   file_path = "./beeswarm_plots.pdf",
   format = "pdf"
 )
@@ -76,9 +76,11 @@ save_beeswarm_plots(drop_qcs(merged_sample)[1:10],
   x = "Time",
   color = "Group"
 )
-}
+
 # Plot one feature
 save_beeswarm_plots(drop_qcs(merged_sample)[5, ], save = FALSE)
+\dontshow{setwd(.old_wd)}
+
 }
 \seealso{
 \code{\link[notame]{save_plot}}

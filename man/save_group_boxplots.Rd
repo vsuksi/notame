@@ -64,9 +64,9 @@ Draws a boxplot of feature abundances in each group.
 A separate plot is drawn and saved for each feature.
 }
 \examples{
-\dontrun{
+\dontshow{.old_wd <- setwd(tempdir())}
 # Default boxplots by group
-save_group_boxplots(drop_qcs(merged_sample),
+save_group_boxplots(drop_qcs(merged_sample)[1:10],
   file_path = "./group_boxplots.pdf",
   format = "pdf", title = NULL
 )
@@ -77,9 +77,10 @@ save_group_boxplots(drop_qcs(merged_sample)[1:10],
   x = "Time",
   color = "Group", title = NULL
 )
-}
 # Plot one feature
 save_group_boxplots(drop_qcs(merged_sample)[5, ], save = FALSE)
+\dontshow{setwd(.old_wd)}
+
 }
 \seealso{
 \code{\link[notame]{save_plot}}

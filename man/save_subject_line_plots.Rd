@@ -68,14 +68,16 @@ A line is drawn for each subject and a mean line is added.
 A separate plot is drawn and saved for each feature.
 }
 \examples{
-\dontrun{
-save_subject_line_plots(drop_qcs(example_set),
+\dontshow{.old_wd <- setwd(tempdir())}
+save_subject_line_plots(drop_qcs(example_set)[1:10],
   file_path = "./subject_line_plots.pdf",
   format = "pdf"
 )
-}
+
 # Plot one feature
 save_subject_line_plots(drop_qcs(example_set[1, ]), save = FALSE)
+\dontshow{setwd(.old_wd)}
+
 }
 \seealso{
 \code{\link[notame]{save_plot}}

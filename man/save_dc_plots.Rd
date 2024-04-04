@@ -50,7 +50,7 @@ If \code{shape} is set to \code{NULL} (the default), the column used for color
 is also used for shape
 }
 \examples{
-\dontrun{
+\dontshow{.old_wd <- setwd(tempdir())}
 dc <- dc_cubic_spline(merged_sample)
 corrected <- dc$object
 inspected <- inspect_dc(
@@ -58,10 +58,11 @@ inspected <- inspect_dc(
   check_quality = TRUE
 )
 save_dc_plots(
-  orig = merged_sample, dc = corrected, predicted = dc$predicted,
+  orig = merged_sample[1:10], dc = corrected[1:10], 
+  predicted = dc$predicted[1:10, ],
   file = "drift_plots.pdf"
 )
-}
+\dontshow{setwd(.old_wd)}
 }
 \seealso{
 \code{\link{correct_drift}}, \code{\link{inspect_dc}}

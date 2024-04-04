@@ -1006,12 +1006,10 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
 #' @examples
 #' # A simple example without QC samples
 #' # Features predicted by Group and Time as fixed effects with Subject ID as a random effect
-#' \dontrun{
 #' lmer_results <- perform_lmer(drop_qcs(example_set),
 #'   formula_char = "Feature ~ Group + Time + (1 | Subject_ID)",
 #'   ci_method = "Wald"
 #' )
-#' }
 #' @seealso \code{\link[lmerTest]{lmer}} for model specification and
 #' \code{\link[lme4]{confint.merMod}} for the computation of confidence intervals
 #'

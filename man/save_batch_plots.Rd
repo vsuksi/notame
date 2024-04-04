@@ -39,13 +39,14 @@ NOTE: if you change the shape variable, be sure to set a shape scale as well,
 the default scale only has 2 values, so it can only accomodate 2 shapes.
 }
 \examples{
-\dontrun{
+\dontshow{.old_wd <- setwd(tempdir())}
 # Batch correction
-batch_corrected <- normalize_batches(merged_sample, batch = "Batch", group = "QC", ref_label = "QC")
+replicates <- list(which(merged_sample$QC == "QC"))
+batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
 # Plots of each features
 save_batch_plots(
-  orig = merged_sample, corrected = batch_corrected,
+  orig = merged_sample[1:10], corrected = batch_corrected[1:10],
   file = "batch_plots.pdf"
 )
-}
+\dontshow{setwd(.old_wd)}
 }

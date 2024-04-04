@@ -15,12 +15,11 @@
 #' @param ... other parameters for supraHex::sPipeline
 #'
 #' @examples
-#' \dontrun{
 #' plot_sample_suprahex(merged_sample[, 1:20],
 #'   xdim = 5, title.xy = c(0.35, 1),
 #'   grid_xdim = 7, grid_ydim = 7, sample_labels = "Group"
 #' )
-#' }
+#'
 #' @seealso \code{\link[supraHex]{sPipeline}},
 #' \code{\link[supraHex]{sCompReorder}},
 #'  \code{\link[supraHex]{visCompReorder}}

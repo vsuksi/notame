@@ -74,8 +74,8 @@ A line is drawn for each group and error bars are added.
 A separate plot is drawn for each feature.
 }
 \examples{
-\dontrun{
-save_group_lineplots(drop_qcs(merged_sample),
+\dontshow{.old_wd <- setwd(tempdir())}
+save_group_lineplots(drop_qcs(merged_sample)[1:10],
   file_path = "./group_line_plots.pdf",
   format = "pdf"
 )
@@ -83,9 +83,10 @@ save_group_lineplots(drop_qcs(merged_sample)[1:10],
   file_path = "./group_line_plots/",
   format = "png"
 )
-}
 # Plot one feature
 save_group_lineplots(drop_qcs(merged_sample[5, ]), save = FALSE)
+\dontshow{setwd(.old_wd)}
+
 }
 \seealso{
 \code{\link[notame]{save_plot}},

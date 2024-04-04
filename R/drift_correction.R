@@ -244,7 +244,7 @@ inspect_dc <- function(orig, dc, check_quality, condition = "RSD_r < 0 & D_ratio
 #' @seealso \code{\link{correct_drift}}, \code{\link{inspect_dc}}
 #'
 #' @examples
-#' \dontrun{
+#' \dontshow{.old_wd <- setwd(tempdir())}
 #' dc <- dc_cubic_spline(merged_sample)
 #' corrected <- dc$object
 #' inspected <- inspect_dc(
@@ -252,10 +252,11 @@ inspect_dc <- function(orig, dc, check_quality, condition = "RSD_r < 0 & D_ratio
 #'   check_quality = TRUE
 #' )
 #' save_dc_plots(
-#'   orig = merged_sample, dc = corrected, predicted = dc$predicted,
+#'   orig = merged_sample[1:10], dc = corrected[1:10], 
+#'   predicted = dc$predicted[1:10, ],
 #'   file = "drift_plots.pdf"
 #' )
-#' }
+#' \dontshow{setwd(.old_wd)}
 #' @export
 save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE, width = 16, height = 8, color = "QC",
                           shape = color, color_scale = getOption("notame.color_scale_dis"),

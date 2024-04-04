@@ -103,8 +103,8 @@ plot_pls <- function(model, Y, y, title) { # nolint: object_name_linter.
   colnames(scores) <- c("X1", "X2")
   scores[, y[1]] <- Y[, 1]
   # Explained variance as percentage
-  var_exp <- 100 * model$explained_variance$X[1:2] %>% round(digits = 3)
-  p <- ggplot(scores, aes(x = .data[["X1"]], y = .data[["X2"]], color = y)) +
+  var_exp <- 100 * model$prop_expl_var$X[1:2] %>% round(digits = 3)
+  p <- ggplot(scores, aes(x = .data[["X1"]], y = .data[["X2"]], color = .data[[y]])) +
     geom_point() +
     getOption("notame.color_scale_con") +
     theme_minimal() +
@@ -146,14 +146,12 @@ plot_pls <- function(model, Y, y, title) { # nolint: object_name_linter.
 #' @return an object of class "mixo_pls" or "mixo_spls"
 #'
 #' @examples
-#' \dontrun{
 #' pls_res <- mixomics_pls(merged_sample, y = "Injection_order", ncomp = 3)
 #' pls_opt <- mixomics_pls_optimize(merged_sample, y = "Injection_order", ncomp = 3)
 #' pls_res <- mixomics_spls_optimize(merged_sample,
 #'   y = "Injection_order", ncomp = 3,
 #'   n_features <- c(1:10, 12, 15, 20)
 #' )
-#' }
 #' @name pls
 #' @seealso \code{\link[mixOmics]{pls}}, \code{\link[mixOmics]{perf}},
 #' \code{\link[mixOmics]{spls}}, \code{\link[mixOmics]{tune.spls}}
@@ -239,7 +237,7 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
 
 
   # Find the optimal number of components
-  ncomp_opt <- which(perf_pls$MSEP == min(perf_pls$MSEP))[1]
+  ncomp_opt <- which(perf_pls$measure$MSEP$summary$mean == min(perf_pls$measure$MSEP$summary$mean))[1]
   log_text(paste0(
     "Choosing a PLS model with ", ncomp_opt, " component(s) based on the minimal MSE\n",
     "Take a look at the plot and make sure this is the correct number of components"
@@ -279,8 +277,7 @@ mixomics_spls_optimize <- function(object, y, ncomp,
     measure = "MAE"
   )
   # Plot error for each component with different number of features
-  plot(tuned_spls)
-  title("Performance of sPLS models")
+  print(plot(tuned_spls) + ggtitle("Performance of sPLS models"))
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_spls$choice.ncomp$ncomp
   keep_x <- tuned_spls$choice.keepX[1:ncomp_opt]
@@ -342,7 +339,6 @@ plot_plsda <- function(model, y, title, dist = "max.dist") {
 #' @return an object of class "mixo_plsda"
 #'
 #' @examples
-#' \dontrun{
 #' noqc <- drop_qcs(merged_sample)
 #' plsda_res <- mixomics_plsda(noqc, y = "Group", ncomp = 2)
 #' set.seed(38)
@@ -352,7 +348,7 @@ plot_plsda <- function(model, y, title, dist = "max.dist") {
 #'   y = "Group", dist = "max.dist", ncomp = 2,
 #'   n_features <- c(1:10, 12, 15, 20)
 #' )
-#' }
+#' 
 #' @name pls_da
 #' @seealso \code{\link[mixOmics]{plsda}}, \code{\link[mixOmics]{perf}},
 #' \code{\link[mixOmics]{splsda}}, \code{\link[mixOmics]{tune.splsda}}
@@ -458,8 +454,8 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
     test.keepX = n_features
   )
   # Plot error rate of different components as a function of number of features
-  plot(tuned_splsda)
-  title("Performance of sPLS-DA models")
+  print(plot(tuned_splsda) + ggtitle("Performance of sPLS-DA models"))
+  
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_splsda$choice.ncomp$ncomp
   keep_x <- tuned_splsda$choice.keepX[1:ncomp_opt]

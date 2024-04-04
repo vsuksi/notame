@@ -85,7 +85,6 @@ choose the one with minimal balanced error rate}
 }
 }
 \examples{
-\dontrun{
 noqc <- drop_qcs(merged_sample)
 plsda_res <- mixomics_plsda(noqc, y = "Group", ncomp = 2)
 set.seed(38)
@@ -95,7 +94,7 @@ splsda_opt <- mixomics_splsda_optimize(noqc,
   y = "Group", dist = "max.dist", ncomp = 2,
   n_features <- c(1:10, 12, 15, 20)
 )
-}
+
 }
 \seealso{
 \code{\link[mixOmics]{plsda}}, \code{\link[mixOmics]{perf}},

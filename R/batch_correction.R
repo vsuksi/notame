@@ -27,13 +27,12 @@ dobc <- function(object, batch, ref, ref_label, ...) {
 #'
 #' @examples
 #' # Batch correction
-#' \dontrun{
 #' replicates <- list(which(merged_sample$QC == "QC"))
 #' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
 #' # Evaluate batch correction
 #' pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 #' pca_bhattacharyya_dist(batch_corrected, batch = "Batch")
-#' }
+#'
 #' @export
 ruvs_qc <- function(object, batch, replicates, k = 3, ...) {
   if (!requireNamespace("RUVSeq", quietly = TRUE)) {
@@ -83,12 +82,12 @@ ruvs_qc <- function(object, batch, replicates, k = 3, ...) {
 #'
 #' @examples
 #' # Batch correction
-#' \dontrun{
-#' batch_corrected <- normalize_batches(merged_sample, batch = "Batch", group = "QC", ref_label = "QC")
+#' replicates <- list(which(merged_sample$QC == "QC"))
+#' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
 #' # Evaluate batch correction
 #' pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 #' pca_bhattacharyya_dist(batch_corrected, batch = "Batch")
-#' }
+#'
 #' @importFrom stats cov
 #' @export
 pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE, center = TRUE,
@@ -173,14 +172,14 @@ repeatability <- function(x, group) {
 #'
 #' @examples
 #' # Batch correction
-#' \dontrun{
-#' batch_corrected <- normalize_batches(merged_sample, batch = "Batch", group = "QC", ref_label = "QC")
+#' replicates <- list(which(merged_sample$QC == "QC"))
+#' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
 #' # Evaluate batch correction
 #' rep_orig <- perform_repeatability(merged_sample, group = "Group")
-#' mean(rep_orig$Repeatability)
+#' mean(rep_orig$Repeatability, na.rm = TRUE)
 #' rep_corr <- perform_repeatability(batch_corrected, group = "Group")
-#' mean(rep_corr$Repeatability)
-#' }
+#' mean(rep_corr$Repeatability, na.rm = TRUE)
+#'
 #' @export
 perform_repeatability <- function(object, group) {
   group <- pData(object)[, group]
@@ -317,15 +316,16 @@ normalize_batches <- function(object, batch, group, ref_label, population = "all
 #' @param color_scale,shape_scale scales for color and scale as returned by ggplot functions.
 #'
 #' @examples
-#' \dontrun{
+#' \dontshow{.old_wd <- setwd(tempdir())}
 #' # Batch correction
-#' batch_corrected <- normalize_batches(merged_sample, batch = "Batch", group = "QC", ref_label = "QC")
+#' replicates <- list(which(merged_sample$QC == "QC"))
+#' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
 #' # Plots of each features
 #' save_batch_plots(
-#'   orig = merged_sample, corrected = batch_corrected,
+#'   orig = merged_sample[1:10], corrected = batch_corrected[1:10],
 #'   file = "batch_plots.pdf"
 #' )
-#' }
+#' \dontshow{setwd(.old_wd)}
 #' @export
 save_batch_plots <- function(orig, corrected, file, width = 14, height = 10,
                              batch = "Batch", color = "Batch", shape = "QC",

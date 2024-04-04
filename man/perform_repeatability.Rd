@@ -22,12 +22,12 @@ variation between batches.
 }
 \examples{
 # Batch correction
-\dontrun{
-batch_corrected <- normalize_batches(merged_sample, batch = "Batch", group = "QC", ref_label = "QC")
+replicates <- list(which(merged_sample$QC == "QC"))
+batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
 # Evaluate batch correction
 rep_orig <- perform_repeatability(merged_sample, group = "Group")
-mean(rep_orig$Repeatability)
+mean(rep_orig$Repeatability, na.rm = TRUE)
 rep_corr <- perform_repeatability(batch_corrected, group = "Group")
-mean(rep_corr$Repeatability)
-}
+mean(rep_corr$Repeatability, na.rm = TRUE)
+
 }
