@@ -114,6 +114,8 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
 #' @param features data frame with feature information, fData(object)
 #' @param name_col character, name of the column in features that contains feature names
 #'
+#' @inherit find_connections return examples
+#'
 #' @return a data frame similar to features, with cluster ID added
 #'
 #' @export
@@ -186,6 +188,8 @@ compress_clusters <- function(object) {
 #' @param features data frame holding the feature information
 #' @param name_col name_col character, name of the column in features that contains feature names
 #'
+#' @inherit find_connections return examples
+#'
 #' @return a list of two items:
 #' \itemize{
 #' \item cdata: a new data frame with the combined LC-MS data
@@ -230,6 +234,23 @@ pull_clusters <- function(data, features, name_col) {
 #' @param name_col character, name of the column in features that contains feature names
 #' @param mz_col character, name of the column in features that contains mass-to-charge ratios
 #' @param rt_col character, name of the column in features that contains retention times
+#'
+#' @examples 
+#' \dontshow{.old_wd <- setwd(tempdir())}
+#' data <- combined_data(example_set)
+#' features <- fData(example_set)
+#' features$MPA <- sapply(data[, features[, "Feature_ID"]], finite_median)
+#' conn <- find_connections(data = data, features = features,
+#'   corr_thresh = 0.4, rt_window = 2,
+#'   name_col = "Feature_ID", mz_col = "Mass", rt_col = "RetentionTime")
+#' clusters <- find_clusters(connections = conn, d_thresh = 0.6)
+#' features_clustered <- assign_cluster_id(data, clusters, features,
+#'   name_col = "Feature_ID")
+#' visualize_clusters(data, features, clusters, min_size = 3,
+#'   rt_window = 2, name_col = "Feature_ID", mz_col = "Mass",
+#'   rt_col = "RetentionTime", file_path = "./clusters")
+#' pulled <- pull_clusters(data, features_clustered, name_col = "Feature_ID")
+#' \dontshow{setwd(.old_wd)}
 #'
 #' @return a data frame of pairs of signals that are linked together
 #' \itemize{
@@ -283,6 +304,8 @@ find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 
 #' output of find_connections
 #' @param d_thresh numeric, the minimum degree required for each signal in a cluster
 #' expressed as a percentage of the maximum degree in the cluster
+#'
+#' @inherit find_connections return examples
 #'
 #' @return a list of clusters, each a list of:
 #' \itemize{
@@ -494,6 +517,8 @@ plot_heatmaps <- function(data, features, cluster, name_col, mz_col, rt_col) {
 #' @param mz_col character, name of the column in features that contains mass-to-charge ratios
 #' @param rt_col character, name of the column in features that contains retention times
 #' @param file_path the prefix to the files to be plotted
+#'
+#' @inherit find_connections return examples
 #'
 #' @export
 visualize_clusters <- function(data, features, clusters, min_size, rt_window, name_col, mz_col, rt_col, file_path) {

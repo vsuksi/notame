@@ -461,7 +461,13 @@ setMethod("scale", "MetaboSet", function(x, center = TRUE, scale = TRUE) {
 #' @param object a MetaboSet object
 #' @param base base of the exponential
 #'
+#'
 #' @return a MetaboSet object with altered feature abundances
+#'
+#' @examples 
+#' example_set <- mark_nas(example_set, value = 0)
+#' log_data <- log(example_set)
+#' orig_data <- exponential(log_data)
 #'
 #' @export
 setGeneric("exponential",

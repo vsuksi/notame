@@ -12,3 +12,8 @@ prop_na(x)
 \description{
 Proportion of NA values in a vector
 }
+\examples{
+example_set <- mark_nas(example_set)
+prop_na(exprs(example_set))
+
+}

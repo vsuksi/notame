@@ -12,3 +12,8 @@ assess_quality(object)
 \description{
 Assess quality information of features
 }
+\examples{
+ex_set <- assess_quality(merged_sample)
+fData(ex_set)
+
+}

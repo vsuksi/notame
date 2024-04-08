@@ -12,3 +12,8 @@ quality(object)
 \description{
 Extract quality information of features
 }
+\examples{
+example_set <- assess_quality(example_set)
+quality(example_set)
+
+}

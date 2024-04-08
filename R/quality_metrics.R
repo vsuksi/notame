@@ -3,6 +3,10 @@
 #' Extract quality information of features
 #'
 #' @param object a MetaboSet object
+#' 
+#' @examples 
+#' example_set <- assess_quality(example_set)
+#' quality(example_set)
 #'
 #' @export
 quality <- function(object) {
@@ -27,6 +31,10 @@ erase_quality <- function(object) {
 #' Assess quality information of features
 #'
 #' @param object a MetaboSet object
+#'
+#' @examples
+#' ex_set <- assess_quality(merged_sample)
+#' fData(ex_set)
 #'
 #' @export
 assess_quality <- function(object) {

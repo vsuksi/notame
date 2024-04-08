@@ -39,6 +39,17 @@ Construct MetaboSet objects from input read by read_from_excel.
 Returns a list of MetaboSet objects, one per mode. The modes are separated by the "Split" column
 in feature_data.
 }
+\examples{
+data <- read_from_excel(
+  file = system.file("extdata", "sample_data_whole.xlsx", 
+  package = "notame"), sheet = 1, corner_row = 4, corner_column = "X",
+  split_by = c("Column", "Ion mode"))
+
+modes <- construct_metabosets(exprs = data$exprs, 
+  pheno_data = data$pheno_data, feature_data = data$feature_data,
+  group_col = "Group")
+
+}
 \seealso{
 \code{\link{read_from_excel}}
 }

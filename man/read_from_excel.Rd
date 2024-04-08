@@ -76,3 +76,14 @@ or to be specified in \code{id_column}, and the values need to be unique, with a
 if there are any "QC" identifiers, they will be replaced with "QC_1", "QC_2" and so on.
 If a "Sample_ID" row is not found, it will be created using the \code{id_prefix} and injection order.
 }
+\examples{
+data <- read_from_excel(
+  file = system.file("extdata", "sample_data_whole.xlsx", 
+  package = "notame"), sheet = 1, corner_row = 4, corner_column = "X",
+  split_by = c("Column", "Ion mode"))
+
+modes <- construct_metabosets(exprs = data$exprs, 
+  pheno_data = data$pheno_data, feature_data = data$feature_data,
+  group_col = "Group")
+
+}

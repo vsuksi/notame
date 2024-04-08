@@ -49,6 +49,9 @@ log_text <- function(text) {
 #'
 #' Logs the current date and time and session info, and switches logging off.
 #'
+#' @examples
+#' finish_log()
+#'
 #' @seealso \code{\link{init_log}}, \code{\link{log_text}}
 #'
 #' @importFrom utils sessionInfo

@@ -17,3 +17,9 @@ subject_col(object) <- value
 \description{
 These generic functions access and set the special column for subject identifiers
 }
+\examples{
+# Get name of subject variable
+subject_col(example_set)
+# Set subject variable
+subject_col(example_set) <- "Subject_ID"
+}

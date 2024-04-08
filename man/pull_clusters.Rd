@@ -24,3 +24,21 @@ a list of two items:
 For each cluster, the LC-MS data of the feature with largest median peak area is retained,
 all the features inside every cluster are recorded
 }
+\examples{
+\dontshow{.old_wd <- setwd(tempdir())}
+data <- combined_data(example_set)
+features <- fData(example_set)
+features$MPA <- sapply(data[, features[, "Feature_ID"]], finite_median)
+conn <- find_connections(data = data, features = features,
+  corr_thresh = 0.4, rt_window = 2,
+  name_col = "Feature_ID", mz_col = "Mass", rt_col = "RetentionTime")
+clusters <- find_clusters(connections = conn, d_thresh = 0.6)
+features_clustered <- assign_cluster_id(data, clusters, features,
+  name_col = "Feature_ID")
+visualize_clusters(data, features, clusters, min_size = 3,
+  rt_window = 2, name_col = "Feature_ID", mz_col = "Mass",
+  rt_col = "RetentionTime", file_path = "./clusters")
+pulled <- pull_clusters(data, features_clustered, name_col = "Feature_ID")
+\dontshow{setwd(.old_wd)}
+
+}

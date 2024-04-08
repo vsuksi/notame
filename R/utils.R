@@ -96,6 +96,11 @@ finite_mean <- function(x) {
   mean(x[is.finite(x)], na.rm = TRUE)
 }
 
+#' @examples
+#' data <- combined_data(example_set)
+#' features <- fData(example_set)
+#' features$MPA <- sapply(data[, features[, "Feature_ID"]], finite_median)
+#'
 #' @importFrom stats median
 #' @export
 #' @rdname finite_helpers
@@ -151,6 +156,10 @@ finite_quantile <- function(x, ...) {
 #'
 #' @param x a numeric vector
 #'
+#' @examples
+#' example_set <- mark_nas(example_set)
+#' prop_na(exprs(example_set))
+#' 
 #' @export
 prop_na <- function(x) {
   sum(is.na(x)) / length(x)
@@ -159,6 +168,10 @@ prop_na <- function(x) {
 #' Proportion of non-missing values in a vector
 #'
 #' @param x a numeric vector
+#' 
+#' @examples
+#' example_set <- mark_nas(example_set)
+#' prop_found(exprs(example_set))
 #'
 #' @export
 prop_found <- function(x) {

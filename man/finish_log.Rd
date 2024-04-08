@@ -9,6 +9,10 @@ finish_log()
 \description{
 Logs the current date and time and session info, and switches logging off.
 }
+\examples{
+finish_log()
+
+}
 \seealso{
 \code{\link{init_log}}, \code{\link{log_text}}
 }

@@ -24,3 +24,9 @@ if combine = TRUE, a ggplot object. Otherwise a list of ggplot objects
 \description{
 Draws histograms of p-values with expected uniform distribution represented by a dashed red line
 }
+\examples{
+lm_sample <- perform_lm(object[, object$QC != "QC"], "Feature ~ Injection_order")
+p_values <- list("Biological samples" = lm_sample$Injection_order_P)
+plot_p_histogram(p_values)
+
+}

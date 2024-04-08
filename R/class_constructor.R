@@ -200,6 +200,8 @@ check_feature_data <- function(
 #' just want to read the data in as is and fix errors later. NOTE: Sample_ID and QC columns will not be constructed.
 #' The data integrity checks need to be passed when contstructing MetaboSet objects.
 #'
+#' @inherit construct_metabosets return examples
+#'
 #' @return list of three data frames:
 #' \itemize{
 #'   \item exprs: the actual abundances, size features x samples
@@ -495,6 +497,16 @@ setValidity(
 #' If TRUE (the default), will return a list of MetaboSet objects, one per analytical mode.
 #' If FALSE, will return a single MetaboSet object.
 #'
+#' @examples
+#' data <- read_from_excel(
+#'   file = system.file("extdata", "sample_data_whole.xlsx", 
+#'   package = "notame"), sheet = 1, corner_row = 4, corner_column = "X",
+#'   split_by = c("Column", "Ion mode"))
+#' 
+#' modes <- construct_metabosets(exprs = data$exprs, 
+#'   pheno_data = data$pheno_data, feature_data = data$feature_data,
+#'   group_col = "Group")
+#'
 #' @return list of MetaboSet objects or a single MetaboSet object
 #'
 #' @seealso \code{\link{read_from_excel}}
@@ -559,6 +571,11 @@ construct_metabosets <- function(exprs, pheno_data, feature_data,
 #' @param object a MetaboSet object
 #' @param file path to the file to write
 #' @param ... Additional parameters passed to \code{openxlsx::write.xlsx}
+#'
+#' @examples
+#' \dontshow{.old_wd <- setwd(tempdir())}
+#' write_to_excel(example_set, file = "example_set.xlsx")
+#' \dontshow{setwd(.old_wd)}
 #'
 #' @export
 write_to_excel <- function(object, file, ...) {
@@ -704,6 +721,11 @@ setMethod(
 
 #' These generic functions access and set the special column for group labels
 #' @param object a MetaboSet object
+#' 
+#' @examples
+#' # Get name of grouping variable
+#' group_col(example_set)
+#'
 #' @export
 setGeneric("group_col",
   signature = "object",
@@ -720,6 +742,11 @@ setMethod(
 #' @rdname group_col
 #' @param object a MetaboSet object
 #' @param value string, name of column to be designated for holding group labels
+#' 
+#' @examples
+#' # Set grouping variable
+#' group_col(example_set) <- "Group"
+#'
 #' @export
 setGeneric("group_col<-",
   signature = "object",
@@ -741,6 +768,11 @@ setMethod(
 
 #' These generic functions access and set the special column for time point
 #' @param object a MetaboSet object
+#'
+#' @examples
+#' # Get name of time variable
+#' time_col(example_set)
+#'
 #' @export
 setGeneric("time_col",
   signature = "object",
@@ -757,6 +789,11 @@ setMethod(
 #' @rdname time_col
 #' @param object a MetaboSet object
 #' @param value string, name of column to be designated for holding time point
+#'
+#' @examples
+#' # Set time variable
+#' time_col(example_set) <- "Time"
+#'
 #' @export
 setGeneric("time_col<-",
   signature = "object",
@@ -777,6 +814,10 @@ setMethod(
 
 #' These generic functions access and set the special column for subject identifiers
 #' @param object a MetaboSet object
+#'
+#' @examples
+#' # Get name of subject variable
+#' subject_col(example_set)
 #' @export
 setGeneric("subject_col",
   signature = "object",
@@ -793,6 +834,10 @@ setMethod(
 #' @rdname subject_col
 #' @param object a MetaboSet object
 #' @param value string, name of column to be designated for holding subject identifiers
+#'
+#' @examples
+#' # Set subject variable
+#' subject_col(example_set) <- "Subject_ID"
 #' @export
 setGeneric("subject_col<-",
   signature = "object",
@@ -814,6 +859,11 @@ setMethod(
 
 #' These generic functions access and set the values in the flag column
 #' @param object a MetaboSet object
+#' 
+#' @examples
+#' # Get values in flag column of fData
+#' flag(example_set)
+#'
 #' @export
 setGeneric("flag",
   signature = "object",
@@ -830,6 +880,10 @@ setMethod(
 #' @rdname flag
 #' @param object a MetaboSet object
 #' @param value character vector, values for flag column
+#'
+#' @examples
+#' # Flag a suspicious feature manually
+#' flag(example_set)[1] <- "Contaminant, known from experience"
 #' @export
 setGeneric("flag<-",
   signature = "object",

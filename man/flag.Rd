@@ -17,3 +17,10 @@ flag(object) <- value
 \description{
 These generic functions access and set the values in the flag column
 }
+\examples{
+# Get values in flag column of fData
+flag(example_set)
+
+# Flag a suspicious feature manually
+flag(example_set)[1] <- "Contaminant, known from experience"
+}

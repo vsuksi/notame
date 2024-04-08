@@ -118,6 +118,11 @@ plot_injection_lm <- function(object, all_features = FALSE) {
 #' you want to add other plots to the list before plotting
 #' @param x_label the x-axis label
 #'
+#' @examples 
+#' lm_sample <- perform_lm(object[, object$QC != "QC"], "Feature ~ Injection_order")
+#' p_values <- list("Biological samples" = lm_sample$Injection_order_P)
+#' plot_p_histogram(p_values)
+#'
 #' @return if combine = TRUE, a ggplot object. Otherwise a list of ggplot objects
 #'
 #' @export

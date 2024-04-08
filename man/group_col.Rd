@@ -17,3 +17,11 @@ group_col(object) <- value
 \description{
 These generic functions access and set the special column for group labels
 }
+\examples{
+# Get name of grouping variable
+group_col(example_set)
+
+# Set grouping variable
+group_col(example_set) <- "Group"
+
+}

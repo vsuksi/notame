@@ -1,18 +1,3 @@
-#' Batch correction
-#'
-#' DEPRECATED
-#'
-#' @param object a MetaboSet object
-#' @param batch the column name for batch labels
-#' @param ref the column name for reference sample labels
-#' @param ref_label the label for reference samples
-#' @param ... other parameters pased to doBC
-#'
-#' @export
-dobc <- function(object, batch, ref, ref_label, ...) {
-  stop("This function is deprecated.")
-}
-
 #' Remove Unwanted Variation
 #'
 #' An interface for the RUVs method in RUVSeq package.

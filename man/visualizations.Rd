@@ -76,6 +76,12 @@ in both QCs and biological samples \code{\link{plot_p_histogram}}}
 }
 }
 }
+\examples{
+\dontshow{.old_wd <- setwd(tempdir())}
+visualizations(example_set, prefix="figures/example_set", perplexity=5)
+\dontshow{setwd(.old_wd)}
+
+}
 \seealso{
 \code{\link[notame]{save_plot}}
 }

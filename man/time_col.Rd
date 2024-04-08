@@ -17,3 +17,11 @@ time_col(object) <- value
 \description{
 These generic functions access and set the special column for time point
 }
+\examples{
+# Get name of time variable
+time_col(example_set)
+
+# Set time variable
+time_col(example_set) <- "Time"
+
+}

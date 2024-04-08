@@ -34,3 +34,9 @@ finite_quantile(x, ...)
 These functions first remove non-finite and missing values, then compute the summary statistic in question.
 They are helper functions used for computing quality measurements.
 }
+\examples{
+data <- combined_data(example_set)
+features <- fData(example_set)
+features$MPA <- sapply(data[, features[, "Feature_ID"]], finite_median)
+
+}

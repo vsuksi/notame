@@ -12,3 +12,8 @@ prop_found(x)
 \description{
 Proportion of non-missing values in a vector
 }
+\examples{
+example_set <- mark_nas(example_set)
+prop_found(exprs(example_set))
+
+}

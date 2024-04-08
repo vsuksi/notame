@@ -21,3 +21,9 @@ choose any cell with a number, press Ctrl + A, then go to the dropdown menu
 in upper left corner and choose "Convert to Number". This will fix the file,
 but can take quite a while.
 }
+\examples{
+\dontshow{.old_wd <- setwd(tempdir())}
+write_to_excel(example_set, file = "example_set.xlsx")
+\dontshow{setwd(.old_wd)}
+
+}
