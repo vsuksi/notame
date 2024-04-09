@@ -369,7 +369,7 @@ mixomics_plsda <- function(object, y, ncomp, plot_scores = TRUE, all_features = 
   predictors <- get_x(object, covariates)
   outcome <- pData(object)[, y]
   # outcome needs to be a factor, this ensures the levels are right
-  if (class(outcome) != "factor") {
+  if (!is(outcome, "factor")) {
     outcome <- as.factor(outcome)
     warning(paste(
       y, "is not encoded as a factor, converted to factor with levels:",
@@ -437,7 +437,7 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
   predictors <- get_x(object, covariates)
   outcome <- pData(object)[, y]
   # outcome needs to be a factor, this ensures the levels are right
-  if (class(outcome) != "factor") {
+  if (!is(outcome, "factor")) {
     outcome <- as.factor(outcome)
     warning(paste(
       y, "is not encoded as a factor, converted to factor with levels:",

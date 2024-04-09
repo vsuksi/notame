@@ -182,7 +182,7 @@ save_subject_line_plots <- function(object,
     if (!is.null(facet)) {
       p <- p + facet_wrap(facets = facet)
     }
-    if (class(data[, x]) == "factor") {
+    if (is(data[, x], "factor")) {
       p <- p +
         scale_x_discrete(expand = c(0.05, 0.05))
     }

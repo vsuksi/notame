@@ -42,7 +42,7 @@ summary_statistics <- function(object, grouping_cols = NA) {
       # Single grouping column
       if (length(grouping_cols) == 1) {
         groups <- data[, grouping_cols]
-        if (class(groups) == "factor") {
+        if (is(groups, "factor")) {
           group_names <- levels(groups)
         } else {
           group_names <- unique(groups)
@@ -1037,9 +1037,6 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
   ci_method <- match.arg(ci_method)
 
   lmer_fun <- function(feature, formula, data) {
-    # Set seed, needed for some of the CI methods
-    set.seed(38)
-
     # Try to fit the linear model
     fit <- NULL
     # If fitting causes an error, a NULL row is returned
@@ -1405,7 +1402,7 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
   features <- featureNames(object)
   groups <- data[, group]
   pair <- levels(groups)[1:2]
-  if (class(groups) != "factor") groups <- as.factor(groups)
+  if (!is(groups, "factor")) groups <- as.factor(groups)
   if (length(levels(groups)) > 2) {
     warning(paste("More than two groups detected, only using the first two.",
       "For multiple comparisons, please see perform_pairwise_t_test()",

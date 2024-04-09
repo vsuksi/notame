@@ -184,9 +184,7 @@ visualizations <- function(object,
   save_name(plot_sample_boxplots, "boxplots_injection",
     order_by = "Injection_order", fill_by = "QC", width = 15
   )
-  set.seed(38)
   save_name(plot_pca, "PCA_injection", color = "Injection_order")
-  set.seed(38)
   save_name(plot_tsne, "tSNE_injection",
     perplexity = perplexity,
     color = "Injection_order"
@@ -197,9 +195,7 @@ visualizations <- function(object,
 
   # For large sets, plot hexbin plots
   if (ncol(object) > 60) {
-    set.seed(38)
     save_name(plot_pca_hexbin, "PCA_hexbin")
-    set.seed(38)
     save_name(plot_tsne_hexbin, "tSNE_hexbin", perplexity = perplexity)
   }
 
@@ -207,17 +203,12 @@ visualizations <- function(object,
   if (is.na(group_col(object))) {
     group_col(object) <- "QC"
   }
-  set.seed(38)
   save_name(plot_pca, "PCA_group")
-
-  set.seed(38)
   save_name(plot_tsne, "tSNE_group", perplexity = perplexity)
   # Time point
   if (!is.na(time_col(object))) {
-    set.seed(38)
     save_name(plot_pca, "PCA_time", color = time_col(object))
 
-    set.seed(38)
     save_name(plot_tsne, "tSNE_time",
       color = time_col(object),
       perplexity = perplexity
@@ -233,13 +224,11 @@ visualizations <- function(object,
   }
   # Time point AND group
   if (!is.na(group_col(object)) && !is.na(time_col(object))) {
-    set.seed(38)
     save_name(plot_pca, "PCA_group_time",
       color = time_col(object),
       shape = group_col(object)
     )
 
-    set.seed(38)
     save_name(plot_tsne, "tSNE_group_time",
       color = time_col(object),
       shape = group_col(object),
@@ -250,10 +239,7 @@ visualizations <- function(object,
   if (!is.na(time_col(object)) &&
     !is.na(subject_col(object)) &&
     sum(object$QC == "QC") == 0) {
-    set.seed(38)
     save_name(plot_pca_arrows, "PCA_arrows")
-
-    set.seed(38)
     save_name(plot_tsne_arrows, "tSNE_arrows", perplexity = perplexity)
   }
 

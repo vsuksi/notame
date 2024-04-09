@@ -180,7 +180,7 @@ prop_found <- function(x) {
 
 best_class <- function(x) {
   x <- type.convert(as.character(x), as.is = TRUE)
-  if (class(x) == "numeric") {
+  if (is(x, "numeric")) {
     x <- x
   } else if (length(unique(x)) < length(x) / 4) {
     x <- as.factor(x)

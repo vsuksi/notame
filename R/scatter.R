@@ -203,7 +203,7 @@ scatter_plot <- function(data, x, y, color, shape, label = NULL, density = FALSE
   if (fixed) {
     p <- p + coord_fixed() + theme(aspect.ratio = 1)
   }
-  if (class(data[, shape]) == "character") {
+  if (is(data[, shape], "character")) {
     data[shape] <- as.factor(data[, shape])
     warning(
       paste(
@@ -213,7 +213,7 @@ scatter_plot <- function(data, x, y, color, shape, label = NULL, density = FALSE
       call. = FALSE
     )
   }
-  if (class(data[, shape]) == "factor") {
+  if (is(data[, shape], "factor")) {
     if (length(levels(data[, shape])) <= 8) {
       p <- p +
         geom_point(aes(shape = .data[[shape]]), size = point_size) +

@@ -145,7 +145,7 @@ to_list <- function(...) {
   objects <- list(...)
   # If a list is given in the first place, it should move to top level
   if (length(objects) == 1) {
-    if (class(objects[[1]]) == "list") {
+    if (is(objects[[1]], "list")) {
       objects <- objects[[1]]
     }
   }
