@@ -29,6 +29,9 @@ and column used for coloring and shaping points (by default batch and QC)}
 
 \item{color_scale, shape_scale}{scales for color and scale as returned by ggplot functions.}
 }
+\value{
+None, the function is invoked for its plot-saving side effect.
+}
 \description{
 Saves plots of each feature showing the effect of batch correction.
 Plots show QC samples and regular samples inside each batch, plus the

@@ -59,6 +59,9 @@ Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{...}{other arguments to graphic device functions, like width and height}
 }
+\value{
+By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}.
+}
 \description{
 Draws a boxplot of feature abundances in each group.
 A separate plot is drawn and saved for each feature.

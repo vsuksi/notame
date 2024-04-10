@@ -6,6 +6,9 @@
 \usage{
 citations()
 }
+\value{
+None, the function is invoked for its side effect.
+}
 \description{
 This function lists citations for all the major packages used by the notame functions that
 have been called during the session. All notame functions update the list automatically.
@@ -18,9 +21,7 @@ The output is written to the current log file, if specified.
 \examples{
 
 citations()
-
 plot_tsne(merged_sample)
-
 # Rtsne added to citations
 citations()
 

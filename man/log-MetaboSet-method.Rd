@@ -17,6 +17,9 @@
 
 \item{base}{the base of the logarithm}
 }
+\value{
+An object with the assay transformed.
+}
 \description{
 Log-transforms the exprs part of a MetaboSet object. Shortcust log2 and log10 also implemented.
 For more information, see \code{\link{log}}

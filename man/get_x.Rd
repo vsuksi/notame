@@ -12,6 +12,9 @@ get_x(object, covariates)
 \item{covariates}{character, column names of pData to use as covariates in the model, in addition to
 molecular features}
 }
+\value{
+A data frame with predictors, including covariates.
+}
 \description{
 A helper function for extracting predictor matrix with covariates
 }

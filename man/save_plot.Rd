@@ -13,6 +13,9 @@ save_plot(p, file, ...)
 
 \item{...}{other arguments to plot function, like width and height}
 }
+\value{
+None, the function is invoked for its plot-saving side effect.
+}
 \description{
 Saves the given plot to a file. Supports pdf, svg, emf, png and tiff formats.
 If an error occurs with the plot, an empty file is created.

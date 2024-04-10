@@ -14,6 +14,11 @@ group_col(object) <- value
 
 \item{value}{string, name of column to be designated for holding group labels}
 }
+\value{
+Character, the name of the grouping variable.
+
+For the endomorphism, an object with the grouping variable set to the specified variable.
+}
 \description{
 These generic functions access and set the special column for group labels
 }

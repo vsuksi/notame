@@ -9,6 +9,9 @@ init_log(log_file)
 \arguments{
 \item{log_file}{Path to the log file}
 }
+\value{
+None, the function is invoked for its side effect.
+}
 \description{
 Initialize a log file with the current data and time.
 All major operations run after this will be logged to the specified file.

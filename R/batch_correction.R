@@ -300,6 +300,8 @@ normalize_batches <- function(object, batch, group, ref_label, population = "all
 #' and column used for coloring and shaping points (by default batch and QC)
 #' @param color_scale,shape_scale scales for color and scale as returned by ggplot functions.
 #'
+#' @return None, the function is invoked for its plot-saving side effect.
+#'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' # Batch correction

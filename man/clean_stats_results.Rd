@@ -26,6 +26,9 @@ clean_stats_results(
 
 \item{fdr}{logical, should summary be done with fdr-fixed values}
 }
+\value{
+a data frame with removed and/or renamed columns.
+}
 \description{
 Uses regexp to remove unnecessary columns from statistics results data frame.
 Can also rename columns effectively.

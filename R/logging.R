@@ -5,6 +5,8 @@
 #'
 #' @param log_file Path to the log file
 #'
+#' @return None, the function is invoked for its side effect.
+#'
 #' @examples
 #' file_name <- "~/log.txt"
 #' init_log(file_name)
@@ -31,6 +33,8 @@ init_log <- function(log_file) {
 #'
 #' @param text The text to be logged
 #'
+#' @return None, the function is invoked for its side effect.
+#'
 #' @examples
 #' file_name <- "~/log.txt"
 #' init_log(file_name)
@@ -48,6 +52,8 @@ log_text <- function(text) {
 #' Finish a log
 #'
 #' Logs the current date and time and session info, and switches logging off.
+#'
+#' @return None, the function is invoked for its side effect.
 #'
 #' @examples
 #' finish_log()

@@ -90,3 +90,8 @@ defaults.
 \item{\code{subject_col}}{character, name of the column holding subject identifiers}
 }}
 
+\section{Constructor}{
+
+See \code{\link{construct_metabosets}} for constructor function.
+}
+

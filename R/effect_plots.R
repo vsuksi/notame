@@ -12,6 +12,7 @@
 #' feature id
 #' Should return a ggplot object for plotting
 #' @param ... other arguments to plotting function
+#' @noRd
 save_feature_plots <- function(object, file_path, format,
                                title, subtitle, text_base_size,
                                plot_fun, ...) {
@@ -108,6 +109,8 @@ create_feature_plot_list <- function(object, plot_fun) {
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
+#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
+
 #' @seealso
 #' \code{\link[notame]{save_plot}}
 #'
@@ -234,6 +237,8 @@ save_subject_line_plots <- function(object,
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
+#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
+#'
 #' @seealso
 #' \code{\link[notame]{save_plot}}
 #'
@@ -335,6 +340,8 @@ save_group_boxplots <- function(object,
 #' @param title_line_length integer, maximum length of the title line in characters, passed to stringr::str_wrap
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
+#'
+#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
 #'
 #' @seealso
 #' \code{\link[notame]{save_plot}}
@@ -439,6 +446,8 @@ save_beeswarm_plots <- function(object,
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
+#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
+#'
 #' @seealso
 #' \code{\link[notame]{save_plot}}
 #'
@@ -537,6 +546,8 @@ save_scatter_plots <- function(object,
 #' @param title_line_length integer, maximum length of the title line in characters, passed to stringr::str_wrap
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
+#'
+#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
 #'
 #' @seealso
 #' \code{\link[notame]{save_plot}},

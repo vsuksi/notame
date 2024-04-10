@@ -77,6 +77,7 @@ importance_rf <- function(rf) {
 #' @param object a MetaboSet object
 #' @param covariates character, column names of pData to use as covariates in the model, in addition to
 #' molecular features
+#' @return A data frame with predictors, including covariates.
 get_x <- function(object, covariates) {
   # Convert covariates to numeric
   if (any(!sapply(pData(object)[, covariates], looks_numeric))) {
@@ -97,6 +98,7 @@ get_x <- function(object, covariates) {
 #' @param Y the Y matrix
 #' @param y the name of the y variable
 #' @param title plot title
+#' @noRd
 plot_pls <- function(model, Y, y, title) { # nolint: object_name_linter.
   # Extract scores and add y variable
   scores <- data.frame(model$variates$X[, 1:2])

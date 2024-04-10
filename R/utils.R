@@ -11,6 +11,7 @@ utils::globalVariables(c('i', '.'))
 #' @param libname,pkgname default parameters
 #' @rawNamespace import(ggplot2, except = Position)
 #' @importFrom grDevices rgb
+#' @noRd
 .onLoad <- function(libname, pkgname) {
   op <- options()
   op_notame <- list(
@@ -52,12 +53,12 @@ add_citation <- function(name, ref) {
 #' supplied correct citation information for their package.
 #' The output is written to the current log file, if specified.
 #'
+#' @return None, the function is invoked for its side effect.
+#'
 #' @examples
 #'
 #' citations()
-#'
 #' plot_tsne(merged_sample)
-#'
 #' # Rtsne added to citations
 #' citations()
 #'
@@ -75,9 +76,11 @@ citations <- function() {
 #'
 #' These functions first remove non-finite and missing values, then compute the summary statistic in question.
 #' They are helper functions used for computing quality measurements.
-#'
+#' 
 #' @param x a numeric vector.
 #' @param ... other parameters passed to underlying function
+#' @return a named, numeric vector with the summary statistic in question.
+#'
 #' @name finite_helpers
 NULL
 
@@ -156,6 +159,8 @@ finite_quantile <- function(x, ...) {
 #'
 #' @param x a numeric vector
 #'
+#' @return A numeric, the proportion of non-missing values in a vector.
+#'
 #' @examples
 #' example_set <- mark_nas(example_set)
 #' prop_na(exprs(example_set))
@@ -169,8 +174,10 @@ prop_na <- function(x) {
 #'
 #' @param x a numeric vector
 #' 
+#' @return A numeric, the proportion of non-missing values in vector.
+#'
 #' @examples
-#' example_set <- mark_nas(example_set)
+#' example_set <- mark_nas(example_set, value = 0)
 #' prop_found(exprs(example_set))
 #'
 #' @export

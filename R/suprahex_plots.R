@@ -14,6 +14,8 @@
 #' @param colormap colormap for the hexagons
 #' @param ... other parameters for supraHex::sPipeline
 #'
+#' @return None, the function is invoked for its plotting side effect.
+#'
 #' @examples
 #' plot_sample_suprahex(merged_sample[, 1:20],
 #'   xdim = 5, title.xy = c(0.35, 1),

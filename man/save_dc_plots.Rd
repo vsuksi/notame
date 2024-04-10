@@ -39,6 +39,9 @@ save_dc_plots(
 
 \item{shape_scale}{the shape scale as returned by a ggplot function}
 }
+\value{
+None, the function is invoked for its plot-saving side effect.
+}
 \description{
 Plots the data before and after drift correction, with the regression line drawn with
 the original data. If the drift correction was done on log-transformed data, then

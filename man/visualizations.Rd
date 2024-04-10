@@ -27,6 +27,9 @@ visualizations(
 \item{remove_singles}{logical, whether to remove single plot files after merging.
 Only used if \code{merge = TRUE}}
 }
+\value{
+None, the function is invoked for its plot-saving side effect.
+}
 \description{
 A wrapper around all the major visualization functions, used for visualizing data between
 major steps of data preprocessing. Saves all visualizations as PDFs with a set prefix on filenames.

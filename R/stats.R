@@ -114,6 +114,8 @@ summary_statistics <- function(object, grouping_cols = NA) {
 #' @param p_limit numeric, limit for p-values to be counted
 #' @param fdr logical, should summary be done with fdr-fixed values
 #'
+#' @return a data frame with removed and/or renamed columns.
+#'
 #' @examples
 #' # Simple manipulation to linear model results
 #' lm_results <- perform_lm(drop_qcs(example_set), formula_char = "Feature ~ Group + Time")

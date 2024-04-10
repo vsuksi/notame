@@ -13,6 +13,9 @@ write_to_excel(object, file, ...)
 
 \item{...}{Additional parameters passed to \code{openxlsx::write.xlsx}}
 }
+\value{
+None, the function is invoked for its side effect.
+}
 \description{
 Writes all the data in a MetaboSet object to an Excel spreadsheet.
 The format is similar to the one used to read data in, except for the fact that

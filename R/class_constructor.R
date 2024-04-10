@@ -441,6 +441,9 @@ name_features <- function(feature_data) {
 #'
 #' @param object a MetaboSet object
 #'
+#' @section Constructor:
+#' See \code{\link{construct_metabosets}} for constructor function.
+#'
 #' @import BiocGenerics
 #' @import methods
 #' @importClassesFrom Biobase ExpressionSet
@@ -572,6 +575,8 @@ construct_metabosets <- function(exprs, pheno_data, feature_data,
 #' @param file path to the file to write
 #' @param ... Additional parameters passed to \code{openxlsx::write.xlsx}
 #'
+#' @return None, the function is invoked for its side effect.
+#'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' write_to_excel(example_set, file = "example_set.xlsx")
@@ -694,10 +699,9 @@ setMethod(
 
 #' Retrieve both sample information and features
 #'
-#' Returns a data frame with sample information plus all features as columns.
-#' The data frame thus has one row per sample.
-#'
 #' @param object a MetaboSet object
+#'
+#' @return a data frame with sample information plus all features as columns, one row per sample.
 #'
 #' @examples
 #' combined_data(example_set)
@@ -722,6 +726,8 @@ setMethod(
 #' These generic functions access and set the special column for group labels
 #' @param object a MetaboSet object
 #' 
+#' @return Character, the name of the grouping variable.
+#'
 #' @examples
 #' # Get name of grouping variable
 #' group_col(example_set)
@@ -743,6 +749,8 @@ setMethod(
 #' @param object a MetaboSet object
 #' @param value string, name of column to be designated for holding group labels
 #' 
+#' @return For the endomorphism, an object with the grouping variable set to the specified variable.
+#'
 #' @examples
 #' # Set grouping variable
 #' group_col(example_set) <- "Group"
@@ -769,6 +777,9 @@ setMethod(
 #' These generic functions access and set the special column for time point
 #' @param object a MetaboSet object
 #'
+#' @return Character, name of time variable.
+
+#'
 #' @examples
 #' # Get name of time variable
 #' time_col(example_set)
@@ -789,6 +800,8 @@ setMethod(
 #' @rdname time_col
 #' @param object a MetaboSet object
 #' @param value string, name of column to be designated for holding time point
+#'
+#' @return For the endomorphism, an object with the time variable set to the specified variable.
 #'
 #' @examples
 #' # Set time variable
@@ -815,6 +828,8 @@ setMethod(
 #' These generic functions access and set the special column for subject identifiers
 #' @param object a MetaboSet object
 #'
+#' @return Character, the name of the subject variable.
+#'
 #' @examples
 #' # Get name of subject variable
 #' subject_col(example_set)
@@ -834,6 +849,8 @@ setMethod(
 #' @rdname subject_col
 #' @param object a MetaboSet object
 #' @param value string, name of column to be designated for holding subject identifiers
+#'
+#' @return For the endomorphism, an object with the subject variable set to the specified variable.
 #'
 #' @examples
 #' # Set subject variable
@@ -860,6 +877,8 @@ setMethod(
 #' These generic functions access and set the values in the flag column
 #' @param object a MetaboSet object
 #' 
+#' @return Character vector of feature flags.
+#'
 #' @examples
 #' # Get values in flag column of fData
 #' flag(example_set)
@@ -880,6 +899,8 @@ setMethod(
 #' @rdname flag
 #' @param object a MetaboSet object
 #' @param value character vector, values for flag column
+#'
+#' @return For the endomorphism, an object with a modified flag column.
 #'
 #' @examples
 #' # Flag a suspicious feature manually

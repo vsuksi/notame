@@ -9,6 +9,9 @@ prop_na(x)
 \arguments{
 \item{x}{a numeric vector}
 }
+\value{
+A numeric, the proportion of non-missing values in a vector.
+}
 \description{
 Proportion of NA values in a vector
 }

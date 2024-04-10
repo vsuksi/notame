@@ -14,6 +14,11 @@ subject_col(object) <- value
 
 \item{value}{string, name of column to be designated for holding subject identifiers}
 }
+\value{
+Character, the name of the subject variable.
+
+For the endomorphism, an object with the subject variable set to the specified variable.
+}
 \description{
 These generic functions access and set the special column for subject identifiers
 }

@@ -11,6 +11,9 @@ drop_flagged(object, all_features = FALSE)
 
 \item{all_features}{logical, should all features be retained? Mainly used by internal functions}
 }
+\value{
+a MetaboSet object without the previously flagged features.
+}
 \description{
 Removes all features that have been flagged by quality control functions.
 Only features that do not have a flag (Flag == NA) are retained.

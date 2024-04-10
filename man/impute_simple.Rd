@@ -15,6 +15,9 @@ see above}
 \item{na_limit}{only impute features with the proportion of NAs over this limit. For example, if
 \code{na_limit = 0.5}, only features with at least half of the values missing are imputed.}
 }
+\value{
+An object with an imputed assay.
+}
 \description{
 Impute missing values using a simple imputation strategy. All missing values
 of a feature are imputed with the same value. It is possible

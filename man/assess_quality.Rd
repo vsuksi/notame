@@ -9,6 +9,9 @@ assess_quality(object)
 \arguments{
 \item{object}{a MetaboSet object}
 }
+\value{
+a MetaboSet object with quality metrics in fData.
+}
 \description{
 Assess quality information of features
 }

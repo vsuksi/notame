@@ -11,6 +11,9 @@
 
 \item{center, scale}{as in base scale function}
 }
+\value{
+A Metaboset object with modified assay.
+}
 \description{
 Applies the base R function scale to transposed exprs matrix. See ?scale for details
 }

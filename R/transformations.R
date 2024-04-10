@@ -157,6 +157,8 @@ drop_qcs <- function(object) {
 #'
 #' @param object a MetaboSet object
 #' @param all_features logical, should all features be retained? Mainly used by internal functions
+#' 
+#' @return a MetaboSet object without the previously flagged features.
 #'
 #' @examples
 #' dim(merged_sample)
@@ -297,6 +299,8 @@ impute_rf <- function(object, all_features = FALSE, ...) {
 #' @param na_limit only impute features with the proportion of NAs over this limit. For example, if
 #' \code{na_limit = 0.5}, only features with at least half of the values missing are imputed.
 #'
+#' @return An object with an imputed assay.
+#'
 #' @examples
 #' missing <- mark_nas(merged_sample, 0)
 #' imputed <- impute_simple(missing, value = "min")
@@ -418,6 +422,8 @@ flag_report <- function(object) {
 #' @param x a MetaboSet object
 #' @param base the base of the logarithm
 #'
+#' @return An object with the assay transformed.
+#'
 #' @export
 setMethod("log", "MetaboSet", function(x, base = exp(1)) {
   exprs(x) <- log(exprs(x), base = base)
@@ -447,6 +453,8 @@ setGeneric("scale")
 #'
 #' @param x a MetaboSet object
 #' @param center,scale as in base scale function
+#' 
+#' @return A Metaboset object with modified assay.
 #'
 #' @export
 setMethod("scale", "MetaboSet", function(x, center = TRUE, scale = TRUE) {

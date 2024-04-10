@@ -9,11 +9,14 @@ prop_found(x)
 \arguments{
 \item{x}{a numeric vector}
 }
+\value{
+A numeric, the proportion of non-missing values in vector.
+}
 \description{
 Proportion of non-missing values in a vector
 }
 \examples{
-example_set <- mark_nas(example_set)
+example_set <- mark_nas(example_set, value = 0)
 prop_found(exprs(example_set))
 
 }

@@ -6,6 +6,9 @@
 \usage{
 finish_log()
 }
+\value{
+None, the function is invoked for its side effect.
+}
 \description{
 Logs the current date and time and session info, and switches logging off.
 }

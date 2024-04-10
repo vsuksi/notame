@@ -25,6 +25,9 @@ If the median of blanks > flag_thresh * median of biological samples, the featur
 \item{flag_label}{character, the label used when flagging contaminants. Can be changed if
 sample processing contaminants and carryover contaminants are flagged separately.}
 }
+\value{
+MetaboSet object with contaminant features flagged.
+}
 \description{
 Flags contaminant features by comparing the median values of blanks and biological samples.
 Biological sampels are defined as samples that are not marked as blanks and are not QCs.

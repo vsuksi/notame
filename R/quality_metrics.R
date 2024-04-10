@@ -4,6 +4,8 @@
 #'
 #' @param object a MetaboSet object
 #' 
+#' @return a data frame with quality metrics for each feature.
+#'
 #' @examples 
 #' example_set <- assess_quality(example_set)
 #' quality(example_set)
@@ -32,6 +34,8 @@ erase_quality <- function(object) {
 #'
 #' @param object a MetaboSet object
 #'
+#' @return a MetaboSet object with quality metrics in fData.
+#' 
 #' @examples
 #' ex_set <- assess_quality(merged_sample)
 #' fData(ex_set)
@@ -214,6 +218,8 @@ flag_detection <- function(object, qc_limit = 0.7, group_limit = 0.5, group = gr
 #' If the median of blanks > flag_thresh * median of biological samples, the feature gets flagged.
 #' @param flag_label character, the label used when flagging contaminants. Can be changed if
 #' sample processing contaminants and carryover contaminants are flagged separately.
+#'
+#' @return MetaboSet object with contaminant features flagged.
 #'
 #' @export
 flag_contaminants <- function(object, blank_col, blank_label, flag_thresh = 0.05,

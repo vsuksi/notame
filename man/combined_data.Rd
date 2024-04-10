@@ -9,9 +9,11 @@ combined_data(object)
 \arguments{
 \item{object}{a MetaboSet object}
 }
+\value{
+a data frame with sample information plus all features as columns, one row per sample.
+}
 \description{
-Returns a data frame with sample information plus all features as columns.
-The data frame thus has one row per sample.
+Retrieve both sample information and features
 }
 \examples{
 combined_data(example_set)

@@ -238,6 +238,8 @@ inspect_dc <- function(orig, dc, check_quality, condition = "RSD_r < 0 & D_ratio
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param shape_scale the shape scale as returned by a ggplot function
 #'
+#' @return None, the function is invoked for its plot-saving side effect.
+#'
 #' @details If \code{shape} is set to \code{NULL} (the default), the column used for color
 #' is also used for shape
 #'

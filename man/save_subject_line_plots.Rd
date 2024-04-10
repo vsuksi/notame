@@ -62,6 +62,9 @@ Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{...}{other arguments to graphic device functions, like width and height}
 }
+\value{
+By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}.
+}
 \description{
 Plots the change in the feature abundances as a function of e.g. time.
 A line is drawn for each subject and a mean line is added.

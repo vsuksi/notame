@@ -14,6 +14,11 @@ flag(object) <- value
 
 \item{value}{character vector, values for flag column}
 }
+\value{
+Character vector of feature flags.
+
+For the endomorphism, an object with a modified flag column.
+}
 \description{
 These generic functions access and set the values in the flag column
 }

@@ -7,6 +7,8 @@
 #' @param file the file path
 #' @param ... other arguments to plot function, like width and height
 #'
+#' @return None, the function is invoked for its plot-saving side effect.
+#'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' lm_results <- perform_lm(drop_qcs(merged_sample), 
@@ -88,6 +90,8 @@ save_plot <- function(p, file, ...) {
 #' @param merge logical, whether the files should be merged to a single PDF, see Details
 #' @param remove_singles logical, whether to remove single plot files after merging.
 #' Only used if \code{merge = TRUE}
+#'
+#' @return None, the function is invoked for its plot-saving side effect.
 #'
 #' @details If \code{merge} is \code{TRUE} and \code{format} id \code{pdf},
 #' then a file containing all the visualizations named \code{prefix.pdf} will be created.

@@ -39,6 +39,9 @@ plot_sample_suprahex(
 
 \item{...}{other parameters for supraHex::sPipeline}
 }
+\value{
+None, the function is invoked for its plotting side effect.
+}
 \description{
 Plots supraHex plots of each sample using functions from the supraHex package.
 See the supraHex paper and package vignette for more information.
