@@ -79,7 +79,7 @@ fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum", # nolint: ob
 
     # Leave n most intense fragment peaks or all peaks if number of peaks < n
     ifelse(nrow(spectrum3) > peak_num, num <- peak_num, num <- nrow(spectrum3))
-    spectrum4 <- spectrum3[c(1:num), ]
+    spectrum4 <- spectrum3[c(seq_len(num)), ]
 
     # Round the m/z of fragments to n decimals and calculate the relative intensity (%)
     spectrum4$V1 <- round(spectrum4$V1, digits = deci_num)

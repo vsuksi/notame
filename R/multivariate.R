@@ -80,7 +80,7 @@ importance_rf <- function(rf) {
 #' @return A data frame with predictors, including covariates.
 get_x <- function(object, covariates) {
   # Convert covariates to numeric
-  if (any(!sapply(pData(object)[, covariates], looks_numeric))) {
+  if (any(!vapply(pData(object)[, covariates], looks_numeric, logical(1)))) {
     stop("All covariates should be convertable to numeric")
   }
   pData(object)[covariates] <- lapply(pData(object)[covariates], as.numeric)
@@ -101,11 +101,11 @@ get_x <- function(object, covariates) {
 #' @noRd
 plot_pls <- function(model, Y, y, title) { # nolint: object_name_linter.
   # Extract scores and add y variable
-  scores <- data.frame(model$variates$X[, 1:2])
+  scores <- data.frame(model$variates$X[, seq_len(2)])
   colnames(scores) <- c("X1", "X2")
   scores[, y[1]] <- Y[, 1]
   # Explained variance as percentage
-  var_exp <- 100 * model$prop_expl_var$X[1:2] %>% round(digits = 3)
+  var_exp <- 100 * model$prop_expl_var$X[seq_len(2)] %>% round(digits = 3)
   p <- ggplot(scores, aes(x = .data[["X1"]], y = .data[["X2"]], color = .data[[y]])) +
     geom_point() +
     getOption("notame.color_scale_con") +
@@ -256,7 +256,7 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
 #' @importFrom graphics title
 #' @export
 mixomics_spls_optimize <- function(object, y, ncomp,
-                                   n_features = c(1:10, seq(20, 300, 10)), folds = 5, nrepeat = 50,
+                                   n_features = c(seq_len(10), seq(20, 300, 10)), folds = 5, nrepeat = 50,
                                    plot_scores = TRUE, all_features = FALSE, covariates = NULL, ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
     stop("Package \"mixOmics\" needed for this function to work. Please install it.",
@@ -282,7 +282,7 @@ mixomics_spls_optimize <- function(object, y, ncomp,
   print(plot(tuned_spls) + ggtitle("Performance of sPLS models"))
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_spls$choice.ncomp$ncomp
-  keep_x <- tuned_spls$choice.keepX[1:ncomp_opt]
+  keep_x <- tuned_spls$choice.keepX[seq_len(ncomp_opt)]
   log_text(paste(
     "Final model has", ncomp_opt, "components with the numbers of features:",
     paste(keep_x, collapse = ", ")
@@ -300,11 +300,11 @@ mixomics_spls_optimize <- function(object, y, ncomp,
 plot_plsda <- function(model, y, title, dist = "max.dist") {
   background <- mixOmics::background.predict(model, comp.predicted = 2, dist = dist)
   mixOmics::plotIndiv(model,
-    comp = 1:2, group = y, ind.names = FALSE,
+    comp = seq_len(2), group = y, ind.names = FALSE,
     title = paste(title), legend = TRUE, ellipse = TRUE
   )
   mixOmics::plotIndiv(model,
-    comp = 1:2, group = y, ind.names = FALSE,
+    comp = seq_len(2), group = y, ind.names = FALSE,
     title = paste(title, "prediction areas"), legend = TRUE, background = background
   )
 }
@@ -406,7 +406,7 @@ mixomics_plsda_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, p
   log_text("Evaluating PLS-DA performance")
   perf_plsda <- mixOmics::perf(plsda_res, validation = "Mfold", folds = 5, auc = TRUE, nrepeat = 50)
 
-  plot(perf_plsda, col = mixOmics::color.mixo(1:3), sd = TRUE, legend.position = "horizontal")
+  plot(perf_plsda, col = mixOmics::color.mixo(seq_len(3)), sd = TRUE, legend.position = "horizontal")
   title("Performance of PLS-DA models")
   # Find the distance metric with minimum BER
   ber <- perf_plsda$error.rate$BER
@@ -423,7 +423,7 @@ mixomics_plsda_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, p
 #' @rdname pls_da
 #' @export
 mixomics_splsda_optimize <- function(object, y, ncomp, dist,
-                                     n_features = c(1:10, seq(20, 300, 10)),
+                                     n_features = c(seq_len(10), seq(20, 300, 10)),
                                      folds = 5, nrepeat = 50,
                                      plot_scores = TRUE,
                                      all_features = FALSE,
@@ -460,7 +460,7 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
   
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_splsda$choice.ncomp$ncomp
-  keep_x <- tuned_splsda$choice.keepX[1:ncomp_opt]
+  keep_x <- tuned_splsda$choice.keepX[seq_len(ncomp_opt)]
   log_text(paste(
     "Final model has", ncomp_opt, "components with the numbers of features:",
     paste(keep_x, collapse = ", ")
@@ -533,7 +533,7 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE, mult
   add_citation("MUVR package was used to fit multivariate models with variable selection:", citation("MUVR"))
 
   # MUVR can only use numeric input
-  classes <- sapply(pData(object)[, c(covariates, static_covariates)], class)
+  classes <- vapply(pData(object)[, c(covariates, static_covariates)], class, character(1))
   if (length(classes) && any(classes != "numeric")) {
     stop("MUVR can only deal with numeric inputs, please transform all covariates to numeric",
       call. = FALSE
@@ -542,7 +542,7 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE, mult
 
   object <- drop_flagged(object, all_features = all_features)
 
-  if (any(!sapply(pData(object)[, covariates], looks_numeric))) {
+  if (any(!vapply(pData(object)[, covariates], looks_numeric, logical(1)))) {
     stop("All covariates should be convertable to numeric")
   }
   pData(object)[covariates] <- lapply(pData(object)[covariates], as.numeric)

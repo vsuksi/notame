@@ -74,9 +74,9 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
 
   # Form clusters
   clusters <- find_clusters(conn, d_thresh)
-  lens <- sapply(clusters, function(x) {
+  lens <- vapply(clusters, function(x) {
     length(x$features)
-  })
+  }, integer(1))
   log_text(paste(
     "Found", sum(lens > 1),
     "clusters of 2 or more features, clustering finished at", Sys.time()
@@ -121,7 +121,7 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
 #' @export
 assign_cluster_id <- function(data, clusters, features, name_col) {
   if (!"MPA" %in% colnames(features)) {
-    features$MPA <- sapply(data[, features[, name_col]], finite_median)
+    features$MPA <- vapply(data[, features[, name_col]], finite_median, numeric(1))
   }
 
   features$Cluster_ID <- features[, name_col]
@@ -323,7 +323,7 @@ find_clusters <- function(connections, d_thresh = 0.8) {
   add_citation("igraph package was used to construct networks of features for feature clustering:", citation("igraph"))
 
   # Construct graph from the given edges
-  g <- igraph::graph_from_edgelist(as.matrix(connections[1:2]), directed = FALSE)
+  g <- igraph::graph_from_edgelist(as.matrix(connections[seq_len(2)]), directed = FALSE)
   g <- igraph::set.edge.attribute(graph = g, name = "weight", value = connections$cor)
 
   # Initialize list of clusters

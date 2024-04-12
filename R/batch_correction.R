@@ -32,7 +32,7 @@ ruvs_qc <- function(object, batch, replicates, k = 3, ...) {
   exprs(object) <- round(exprs(object))
 
   # Pad each replicate vector with -1 and transform to matrix
-  max_len <- max(sapply(replicates, length))
+  max_len <- max(vapply(replicates, length, integer(1)))
   scIdx <- matrix(-1, nrow = length(replicates), ncol = max_len) # nolint: object_name_linter.
   for (i in seq_along(replicates)) {
     scIdx[i, seq_along(replicates[[i]])] <- replicates[[i]] # nolint: object_name_linter.
@@ -104,8 +104,8 @@ pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE, center =
   }
 
   # Compute means and covariance matrices for Bhattacharyya distance
-  muarray <- sapply(batches, colMeans)
-  sigmaarray <- array(sapply(batches, cov), dim = c(nPcs, nPcs, length(batches)))
+  muarray <- vapply(batches, colMeans, double(nPcs))
+  sigmaarray <- array(vapply(batches, cov, double(nPcs * nPcs)), dim = c(nPcs, nPcs, length(batches)))
 
   fpc::bhattacharyya.matrix(muarray, sigmaarray, ipairs = "all", misclassification.bound = FALSE)
 }
@@ -117,9 +117,9 @@ pooled_variance <- function(x, group) {
   x <- x[!is.na(x)]
   # Split to groups
   group_list <- split(x, group)
-  n_1 <- sapply(group_list, length) - 1 # n - 1
+  n_1 <- vapply(group_list, length, integer(1)) - 1 # n - 1
   # Pooled variance
-  sum(n_1 * sapply(group_list, var)) / sum(n_1)
+  sum(n_1 * vapply(group_list, var, numeric(1))) / sum(n_1)
 }
 
 between_variance <- function(x, group) {
@@ -128,8 +128,8 @@ between_variance <- function(x, group) {
   x <- x[!is.na(x)]
   # Split to groups
   group_list <- split(x, group)
-  n <- sapply(group_list, length)
-  means <- sapply(group_list, mean)
+  n <- vapply(group_list, length, integer(1))
+  means <- vapply(group_list, mean, numeric(1))
   k_1 <- length(unique(group)) - 1
   # Between group variance formula
   sum(n * (means - mean(x))^2) / k_1

@@ -1380,7 +1380,7 @@ perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
         colnames(result_row)[2:3] <- paste0(pair, "_Mean")
         prefix <- paste0(pair[1], "_vs_", pair[2], "_")
         colnames(result_row)[4] <- paste0(prefix, "Estimate")
-        colnames(result_row)[-(1:4)] <- paste0(prefix, colnames(result_row)[-(1:4)])
+        colnames(result_row)[-(seq_len(4))] <- paste0(prefix, colnames(result_row)[-(seq_len(4))])
       },
       error = function(e) {
         cat(paste0(feature, ": ", e$message, "\n"))
@@ -1403,7 +1403,7 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
   data <- combined_data(object)
   features <- featureNames(object)
   groups <- data[, group]
-  pair <- levels(groups)[1:2]
+  pair <- levels(groups)[seq_len(2)]
   if (!is(groups, "factor")) groups <- as.factor(groups)
   if (length(levels(groups)) > 2) {
     warning(paste("More than two groups detected, only using the first two.",

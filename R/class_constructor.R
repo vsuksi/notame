@@ -66,9 +66,9 @@ check_pheno_data <- function(x, id_prefix, id_column = NULL, log_messages = FALS
       log_text_if(
         "Missing values found in Sample_ID after filling IDs of QCs, trying to detect 'Blank samples'", log_messages
       )
-      blank_found <- which(sapply(x, function(y) {
+      blank_found <<- which(vapply(x, function(y) {
         any(y == "Blank")
-      }))
+      }, logical(1)))
       if (length(blank_found)) {
         x$Sample_ID[is.na(x$Sample_ID) & x[[blank_found[1]]] == "Blank"] <- "Blank"
         x$Sample_ID[x$Sample_ID == "Blank"] <- paste0("Blank_", seq_len(sum(x$Sample_ID == "Blank")))
@@ -269,9 +269,9 @@ read_from_excel <- function(file, sheet = 1, id_column = NULL, corner_row = NULL
     "\nExtracting sample information from rows 1 to ", cr, " and columns ",
     excel_columns[cc + 1], " to ", excel_columns[ncol(dada)]
   ))
-  pheno_data <- as.data.frame(t(dada[1:cr, (cc + 1):ncol(dada)]), stringsAsFactors = FALSE)
+  pheno_data <- as.data.frame(t(dada[seq_len(cr), (cc + 1):ncol(dada)]), stringsAsFactors = FALSE)
   log_text("Replacing spaces in sample information column names with underscores (_)")
-  colnames(pheno_data) <- gsub(" ", "_", c(dada[1:(cr - 1), cc], "Datafile"))
+  colnames(pheno_data) <- gsub(" ", "_", c(dada[seq_len(cr - 1), cc], "Datafile"))
 
   # If a single mode is given, datafile will indicate the mode
   if (!is.null(name)) {
@@ -286,8 +286,8 @@ read_from_excel <- function(file, sheet = 1, id_column = NULL, corner_row = NULL
     "\nExtracting feature information from rows ", cr + 1, " to ", nrow(dada),
     " and columns ", excel_columns[1], " to ", excel_columns[cc]
   ))
-  feature_data <- dada[(cr + 1):nrow(dada), 1:cc]
-  colnames(feature_data) <- dada[cr, 1:cc]
+  feature_data <- dada[(cr + 1):nrow(dada), seq_len(cc)]
+  colnames(feature_data) <- dada[cr, seq_len(cc)]
 
   # If the file only contains one mode, add the mode name as Split column
   if (!is.null(name)) {
@@ -641,10 +641,10 @@ print_levels <- function(v) {
   } else {
     groups <- unique(v)
   }
-  output <- sapply(groups, function(y) {
+  output <- vapply(groups, function(y) {
     obs <- t_groups[y]
     paste0(y, ": ", obs)
-  })
+  }, character(1))
   output <- paste(output, collapse = ", ")
   cat(paste("  ", output, "\n"))
 }

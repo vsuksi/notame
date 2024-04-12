@@ -33,7 +33,7 @@ mixomics_spls_optimize(
   object,
   y,
   ncomp,
-  n_features = c(1:10, seq(20, 300, 10)),
+  n_features = c(seq_len(10), seq(20, 300, 10)),
   folds = 5,
   nrepeat = 50,
   plot_scores = TRUE,

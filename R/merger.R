@@ -186,7 +186,7 @@ merge_metabosets <- function(..., merge = c("features", "samples")) {
   # Combine the objects to a list
   objects <- to_list(...)
   # Class check
-  if (!all(sapply(objects, class) == "MetaboSet")) {
+  if (!all(vapply(objects, class, character(1)) == "MetaboSet")) {
     stop("The arguments should only contain MetaboSet objects")
   }
   # Choose merging function
