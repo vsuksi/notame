@@ -910,7 +910,7 @@ perform_lm_anova <- function(object, formula_char, all_features = FALSE,
 #' # A simple example without QC samples
 #' # Time predicted by features
 #' logistic_results <- perform_logistic(drop_qcs(example_set),
-#'   formula_char = "Time ~ Feature + Group "
+#'   formula_char = "Time ~ Feature + Group"
 #' )
 #'
 #' @seealso \code{\link[stats]{glm}}
@@ -935,7 +935,10 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
     } else {
       # Gather coefficients and CIs to one data frame row
       coefs <- summary(fit)$coefficients
-      suppressMessages(confints <- confint(fit, level = 0.95))
+      confints <- withCallingHandlers(
+        expr = confint(fit, level = 0.95, trace = FALSE),
+        message = function(m) tryInvokeRestart("muffleMessage")
+        )
       coefs <- data.frame(Variable = rownames(coefs), coefs, stringsAsFactors = FALSE)
       confints <- data.frame(Variable = rownames(confints), confints, stringsAsFactors = FALSE)
 
@@ -1078,7 +1081,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
       result_row$Conditional_R2 <- NA
       tryCatch(
         {
-          r2s <- suppressWarnings(MuMIn::r.squaredGLMM(fit))
+          r2s <- MuMIn::r.squaredGLMM(fit)
           result_row$Marginal_R2 <- r2s[1]
           result_row$Conditional_R2 <- r2s[2]
         },

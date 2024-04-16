@@ -146,13 +146,13 @@ finite_quantile <- function(x, ...) {
 
 # Defaults for NULL values
 `%||%` <- function(a, b) {
-  suppressWarnings(if (is.null(a)) {
+  if (is.null(a)) {
     b
   } else if (is.na(a)) {
     b
   } else {
     a
-  })
+  }
 }
 
 #' Proportion of NA values in a vector

@@ -114,10 +114,14 @@ check_position <- function(x, cc, cr) {
 
 # Check if a vector can be safely converted to numeric
 looks_numeric <- function(x) {
-  stopifnot(is.atomic(x) || is.list(x)) # check if x is a vector
-  num_nas <- sum(is.na(x))
-  num_nas_new <- suppressWarnings(sum(is.na(as.numeric(x))))
-  return(num_nas_new == num_nas)
+  stopifnot(is.atomic(x) || is.list(x))
+  tryCatch(
+    {
+      as.numeric(x)
+      TRUE
+    },
+    warning = function(w) FALSE
+  )
 }
 
 # Check that all abundances look OK
@@ -149,13 +153,19 @@ check_feature_data <- function(
   if (any(is.na(fid))) {
     stop("Missing values in Feature IDs")
   }
-  fid_num <- suppressWarnings(as.numeric(fid))
+  fid_num <- withCallingHandlers(
+    expr = as.numeric(fid), 
+    warning = function(w) tryInvokeRestart("muffleWarning")
+  )
   if (any(!is.na(fid_num))) {
-    stop("Numbers are not allowed as feature IDs")
+    stop("Numbers are not allowed as feature IDs", call. = FALSE)
   }
-  fid_chr <- suppressWarnings(as.character(fid))
+  fid_chr <- withCallingHandlers(
+    expr = as.character(fid),
+    warning = function(w) tryInvokeRestart("muffleWarning")
+    )
   if (any(grepl("^[[:digit:]]", fid_chr))) {
-    stop("Feature IDs can not start with numbers")
+    stop("Feature IDs can not start with numbers", call. = FALSE)
   }
   if (check_limits) {
     log_text_if("Checking that m/z and retention time values are reasonable", log_messages)

@@ -406,7 +406,7 @@ flag_report <- function(object) {
     }
     report_row$Total <- nrow(tmp)
     report_row$Flagged <- report_row$Total - report_row$Kept
-    report <- suppressWarnings(dplyr::bind_rows(report, report_row))
+    report <- dplyr::bind_rows(report, report_row)
   }
   report
 }
