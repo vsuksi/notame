@@ -63,7 +63,7 @@ save_plot <- function(p, file, ...) {
     "tiff" = {
       tiff(file, ...)
     },
-    stop(paste0("File format '", format, "' is not valid, saving failed"))
+    stop("File format '", format, "' is not valid, saving failed")
   )
   tryCatch(
     {
@@ -161,7 +161,7 @@ visualizations <- function(object,
         p <- fun(object, ...)
       },
       error = function(e) {
-        cat(paste0("Error with plot named ", name, ":\n", e$message, "\n"))
+        message("Problem with plot named ", name, ":\n", e$message)
       }
     )
 

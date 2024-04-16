@@ -36,7 +36,7 @@ save_feature_plots <- function(object, file_path, format,
 
   for (i in seq_len(nrow(object))) {
     if (i %% 500 == 0) {
-      cat(paste0("Iteration ", i, "/", nrow(object), "\n"))
+      message("Iteration ", i, "/", nrow(object))
     }
     fname <- featureNames(object)[i]
     name <- fData(object)[i, title]
@@ -52,7 +52,7 @@ save_feature_plots <- function(object, file_path, format,
 
       save_plot(p, file, ...)
     } else {
-      print(p)
+      p
     }
   }
 
@@ -73,7 +73,7 @@ create_feature_plot_list <- function(object, plot_fun) {
   plot_list <- vector("list", nrow(object))
   for (i in seq_len(nrow(object))) {
     if (i %% 500 == 0) {
-      cat(paste0("Iteration ", i, "/", nrow(object), "\n"))
+      message("Iteration ", i, "/", nrow(object))
     }
     fname <- featureNames(object)[i]
     p <- plot_fun(object, fname)

@@ -115,7 +115,7 @@ plot_pls <- function(model, Y, y, title) { # nolint: object_name_linter.
       y = paste("X2:", var_exp[2], "%"),
       title = title
     )
-  print(p)
+  plot(p)
 }
 
 
@@ -229,12 +229,12 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
     getOption("notame.color_scale_dis") +
     scale_x_continuous(breaks = seq_len(ncomp)) +
     theme(panel.grid.minor.x = element_blank())
-
-  if (requireNamespace("cowplot", quietly = TRUE)) {
-    print(cowplot::plot_grid(p1, p2, nrow = 1))
+  
+  if (requireNamespace("cowplots", quietly = TRUE)) {
+    plot(cowplot::plot_grid(p1, p2, nrow = 1))
   } else {
-    print(p1)
-    print(p2)
+    plot(p1)
+    plot(p2)
   }
 
 
@@ -244,7 +244,7 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
     "Choosing a PLS model with ", ncomp_opt, " component(s) based on the minimal MSE\n",
     "Take a look at the plot and make sure this is the correct number of components"
   ))
-
+  
   mixomics_pls(
     object = object, y = y, ncomp = ncomp_opt, plot_scores = plot_scores,
     covariates = covariates, ...
@@ -279,7 +279,7 @@ mixomics_spls_optimize <- function(object, y, ncomp,
     measure = "MAE"
   )
   # Plot error for each component with different number of features
-  print(plot(tuned_spls) + ggtitle("Performance of sPLS models"))
+  plot(plot(tuned_spls) + ggtitle("Performance of sPLS models"))
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_spls$choice.ncomp$ncomp
   keep_x <- tuned_spls$choice.keepX[seq_len(ncomp_opt)]
@@ -289,7 +289,7 @@ mixomics_spls_optimize <- function(object, y, ncomp,
   ))
   # Fit the final model
   spls_final <- mixOmics::spls(predictors, outcome, ncomp = ncomp_opt, keepX = keep_x, ...)
-  # SCatter plot of points in PLS space
+  # Scatter plot of points in PLS space
   if (ncomp_opt > 1) {
     plot_pls(spls_final, outcome, y, title = "Final sPLS model: first 2 components and the outcome variable")
   }
@@ -456,7 +456,7 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
     test.keepX = n_features
   )
   # Plot error rate of different components as a function of number of features
-  print(plot(tuned_splsda) + ggtitle("Performance of sPLS-DA models"))
+  plot(plot(tuned_splsda) + ggtitle("Performance of sPLS-DA models"))
   
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_splsda$choice.ncomp$ncomp
@@ -578,10 +578,9 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE, mult
     if (length(levels(ml_var)) != 2) {
       stop("The multilevel variable should have exactly 2 unique values")
     } else {
-      cat(paste(
-        "Computing effect matrix according to", multi_level_var, ":",
-        levels(ml_var)[2], "-", levels(ml_var)[1]
-      ))
+      message(
+        "Computing effect matrix according to ", multi_level_var, " : ", levels(ml_var)[2], " - ", levels(ml_var)[1]
+      )
     }
 
     # Compute effect matrix with covariates

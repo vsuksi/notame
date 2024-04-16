@@ -66,7 +66,7 @@ check_pheno_data <- function(x, id_prefix, id_column = NULL, log_messages = FALS
       log_text_if(
         "Missing values found in Sample_ID after filling IDs of QCs, trying to detect 'Blank samples'", log_messages
       )
-      blank_found <<- which(vapply(x, function(y) {
+      blank_found <- which(vapply(x, function(y) {
         any(y == "Blank")
       }, logical(1)))
       if (length(blank_found)) {
@@ -119,7 +119,6 @@ looks_numeric <- function(x) {
   num_nas_new <- suppressWarnings(sum(is.na(as.numeric(x))))
   return(num_nas_new == num_nas)
 }
-
 
 # Check that all abundances look OK
 check_exprs <- function(exprs_, log_messages = FALSE) {
@@ -416,10 +415,10 @@ name_features <- function(feature_data) {
     duplicates <- paste0(feature_data$Feature_ID[duplicated(feature_data$Feature_ID)],
       collapse = ", "
     )
-    stop(paste0(
+    stop(
       "Could not create unique feature names from m/z and retention time columns. Duplicated values: ",
       duplicates
-    ))
+    )
   }
 
   feature_data
@@ -520,7 +519,7 @@ construct_metabosets <- function(exprs, pheno_data, feature_data,
                                  subject_col = NA_character_,
                                  split_data = TRUE) {
   if (!"Flag" %in% colnames(feature_data)) {
-    cat("Initializing the object(s) with unflagged features\n")
+    message("Initializing the object(s) with unflagged features")
     feature_data$Flag <- NA
   }
   feature_data <- check_feature_data(feature_data, check_limits = FALSE, log_messages = TRUE)

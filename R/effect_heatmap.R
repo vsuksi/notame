@@ -11,7 +11,7 @@ coalesce <- function(...) {
     } else if (length(x[[i]]) == 1) {
       x[[1]][m] <- x[[i]]
     } else {
-      stop(paste("length mismatch in argument", i, " - found:", length(x[[i]]), "expected:", length(x[[1]])))
+      stop("length mismatch in argument ", i, " - found:", length(x[[i]]), " expected:", length(x[[1]]))
     }
     m <- is.na(x[[1]])
     i <- i + 1

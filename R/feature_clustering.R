@@ -272,7 +272,7 @@ find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 
   n <- nrow(features)
   connections <- foreach::foreach(i = seq_len(n - 1), .combine = rbind) %dopar% {
     if (i %% 100 == 0) {
-      print(i)
+      message(i)
     }
     connections_tmp <- data.frame()
     for (j in (i + 1):n) {
@@ -335,12 +335,12 @@ find_clusters <- function(connections, d_thresh = 0.8) {
     # Connected components of the remaining graph
     comp <- igraph::decompose(g)
     n_comp <- length(comp)
-    cat(paste(n_comp, "components found\n\n"))
+    message(n_comp, " components found")
 
     # Only keep the densely connected part of each component (subgraph)
     clusters_tmp <- foreach::foreach(i = seq_len(n_comp), .combine = c) %dopar% {
       if (i %% 100 == 0) {
-        cat(paste("Component", i, "/", n_comp, "\n"))
+        message("Component ", i, " / ", n_comp)
       }
       subg <- comp[[i]]
 
@@ -524,7 +524,7 @@ plot_heatmaps <- function(data, features, cluster, name_col, mz_col, rt_col) {
 visualize_clusters <- function(data, features, clusters, min_size, rt_window, name_col, mz_col, rt_col, file_path) {
   for (i in seq_along(clusters)) {
     if (i %% 100 == 0) {
-      print(paste(i, "/", length(clusters)))
+      message(i, " / ", length(clusters))
     }
     cluster <- clusters[[i]]
     if (length(cluster$features) >= min_size) {

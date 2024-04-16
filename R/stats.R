@@ -257,10 +257,10 @@ cohens_d <- function(object, group = group_col(object),
       next
     }
     if (!is.factor(pData(object)[, column])) {
-      stop(paste0("Column ", column, " should be a factor!"))
+      stop("Column ", column, " should be a factor!")
     }
     if (length(levels(pData(object)[, column])) < 2) {
-      stop(paste("Column", column, "should have at least two levels!"))
+      stop("Column ", column, " should have at least two levels!")
     }
   }
   group_combos <- combn(levels(pData(object)[, group]), 2)
@@ -305,31 +305,31 @@ cohens_d <- function(object, group = group_col(object),
           "_", time_combos[2, j], "_minus_", time_combos[1, j]
         )
         if (any(apply(group_table, 2, count_obs_geq_than, 2) < 2)) {
-          warning(paste0(
+          warning(
             "In ", column,
             ": Groups don't have two observations of at least two subjects, skipping!"
-          ))
+          )
           next
         }
         if (any(apply(time_table, 1, count_obs_geq_than, 2) != 0)) {
-          warning(paste0(
+          warning(
             "In ", column,
             ": Same subject recorded more than once at same time, skipping!"
-          ))
+          )
           next
         }
         if (any(apply(group_table, 1, count_obs_geq_than, 1) != 1)) {
-          warning(paste0(
+          warning(
             "In ", column,
             ": Same subject recorded in two groups, skipping!"
-          ))
+          )
           next
         }
         if (!all(apply(time_table, 1, count_obs_geq_than, 1) != 1)) {
-          warning(paste(
-            "One or more subject(s) missing time points,",
-            column, "will be counted using common subjects in time points!"
-          ))
+          warning(
+            "One or more subject(s) missing time points, ",
+            column, " will be counted using common subjects in time points!"
+          )
         }
 
         if (is.null(res)) {
@@ -537,7 +537,7 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NUL
     tryCatch(
       {
         if (is.null(id)) {
-          cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp], ...)
+          cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp])
         } else {
           id_tmp <- data1[, id]
           cor_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp], y_var = data2[, y_tmp]) %>%
@@ -550,7 +550,7 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NUL
           cor_tmp <- list(estimate = cor_tmp$r, p.value = cor_tmp$p)
         }
       },
-      error = function(e) cat(paste0(x_tmp, " vs ", y_tmp, ": ", e$message, "\n"))
+      error = function(e) message(x_tmp, " vs", y_tmp, ": ", e$message)
     )
     if (is.null(cor_tmp)) {
       cor_tmp <- list(
@@ -723,7 +723,7 @@ perform_test <- function(object, formula_char, result_fun, all_features, fdr = T
   # Check that results actually contain something
   # If the tests are run on parallel, the error messages from failing tests are not visible
   if (nrow(results_df) == 0) {
-    stop("All the test failed, to see the individual error messages run the tests withot parallelization.",
+    stop("All the tests failed, to see the problems, run the tests without parallelization.",
       call. = FALSE
     )
   }
@@ -779,7 +779,7 @@ perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
       {
         fit <- lm(formula, data = data, ...)
       },
-      error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
+      error = function(e) message(feature, ": ", e$message)
     )
     if (is.null(fit) || sum(!is.na(data[, feature])) < 2) {
       result_row <- NULL
@@ -861,7 +861,7 @@ perform_lm_anova <- function(object, formula_char, all_features = FALSE,
         fit <- do.call(lm, c(list(formula = formula, data = data), lm_args))
         anova_res <- do.call(anova, c(list(object = fit), anova_args))
       },
-      error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
+      error = function(e) message(feature, ": ", e$message)
     )
     if (is.null(anova_res) || sum(!is.na(data[, feature])) < 2) {
       result_row <- NULL
@@ -928,7 +928,7 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
       {
         fit <- glm(formula, data = data, family = binomial(), ...)
       },
-      error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
+      error = function(e) message(feature, ": ", e$message)
     )
     if (is.null(fit) || sum(!is.na(data[, feature])) < 2) {
       result_row <- NULL
@@ -1047,7 +1047,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
       {
         fit <- lmerTest::lmer(formula, data = data, ...)
       },
-      error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
+      error = function(e) message(feature, ": ", e$message)
     )
     if (!is.null(fit)) {
       # Extract model coefficients
@@ -1061,7 +1061,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
           confints <- confint(fit, nsim = 1000, method = ci_method, oldNames = FALSE)
           confints <- data.frame(Variable = rownames(confints), confints, stringsAsFactors = FALSE)
         },
-        error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
+        error = function(e) message(feature, ": ", e$message)
       )
 
       # Gather coefficients and CIs to one data frame row
@@ -1082,7 +1082,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
           result_row$Marginal_R2 <- r2s[1]
           result_row$Conditional_R2 <- r2s[2]
         },
-        error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
+        error = function(e) message(feature, ": ", e$message)
       )
       # Add Feature ID
       result_row$Feature_ID <- feature
@@ -1110,7 +1110,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
             tidyr::spread("Column", "Value")
           result_row <- cbind(result_row, r_result_row)
         },
-        error = function(e) cat(paste0(feature, ": ", e$message, "\n"))
+        error = function(e) message(feature, ": ", e$message)
       )
     }
 
@@ -1192,7 +1192,7 @@ perform_homoscedasticity_tests <- function(object, formula_char, all_features = 
         )
       },
       error = function(e) {
-        cat(paste0(feature, ": ", e$message, "\n"))
+        message(feature, ": ", e$message)
       }
     )
 
@@ -1246,7 +1246,7 @@ perform_kruskal_wallis <- function(object, formula_char, all_features = FALSE) {
         )
       },
       error = function(e) {
-        cat(paste0(feature, ": ", e$message, "\n"))
+        message(feature, ": ", e$message)
       }
     )
 
@@ -1304,7 +1304,7 @@ perform_oneway_anova <- function(object, formula_char, all_features = FALSE, ...
         )
       },
       error = function(e) {
-        cat(paste0(feature, ": ", e$message, "\n"))
+        message(feature, ": ", e$message)
       }
     )
 
@@ -1344,16 +1344,16 @@ perform_oneway_anova <- function(object, formula_char, all_features = FALSE, ...
 #' @importFrom stats t.test
 #' @export
 perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
-  message(paste0(
+  message(
     "Remember that t.test returns difference between group means",
     " in different order than lm.\n",
     "This function mimics this behavior, so the effect size is",
     " mean of reference level minus mean of second level."
-  ))
+  )
   exp_var <- unlist(strsplit(formula_char, " ~ "))[2]
   pair <- levels(pData(object)[, exp_var])
   if (length(pair) != 2) {
-    stop("'", paste0(exp_var, "' in formula should contain exactly two levels"))
+    stop("'",exp_var, "' in formula should contain exactly two levels")
   }
 
   log_text(paste0("Starting t-tests for ", paste0(pair, collapse = " & ")))
@@ -1383,7 +1383,7 @@ perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
         colnames(result_row)[-(seq_len(4))] <- paste0(prefix, colnames(result_row)[-(seq_len(4))])
       },
       error = function(e) {
-        cat(paste0(feature, ": ", e$message, "\n"))
+        message(feature, ": ", e$message)
       }
     )
 
@@ -1406,10 +1406,9 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
   pair <- levels(groups)[seq_len(2)]
   if (!is(groups, "factor")) groups <- as.factor(groups)
   if (length(levels(groups)) > 2) {
-    warning(paste("More than two groups detected, only using the first two.",
-      "For multiple comparisons, please see perform_pairwise_t_test()",
-      sep = "\n"
-    ), call. = FALSE)
+    warning("More than two groups detected, only using the first two.", "\n", 
+      "For multiple comparisons, please see perform_pairwise_t_test()", 
+      call. = FALSE)
   }
 
   # Split to groups
@@ -1464,7 +1463,7 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
         )
       },
       error = function(e) {
-        cat(paste0(feature, ": ", e$message, "\n"))
+        message(feature, ": ", e$message)
       }
     )
 
@@ -1474,7 +1473,7 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
   # Check that results actually contain something
   # If the tests are run on parallel, the error messages from failing tests are not visible
   if (nrow(results_df) == 0) {
-    stop("All the test failed, to see the individual error messages run the tests withot parallelization.",
+    stop("All the tests failed, to see the problems, run the tests without parallelization.",
       call. = FALSE
     )
   }
@@ -1514,12 +1513,12 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
 #'
 #' @export
 perform_paired_t_test <- function(object, group, id, all_features = FALSE, ...) {
-  message(paste0(
+  message(
     "Remember that t.test returns difference between group means",
     " in different order than lm.\n",
     "This function mimics this behavior, so the effect size is",
     " mean of reference level minus mean of second level."
-  ))
+  )
 
   perform_paired_test(object, group, id,
     test = "t_test",
@@ -1664,7 +1663,7 @@ perform_mann_whitney <- function(object, formula_char, all_features = FALSE, ...
         colnames(result_row)[-1] <- paste0(prefix, colnames(result_row)[-1])
       },
       error = function(e) {
-        cat(paste0(feature, ": ", e$message, "\n"))
+        message(feature, ": ", e$message)
       }
     )
 

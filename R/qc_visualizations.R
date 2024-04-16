@@ -204,7 +204,7 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
   object <- drop_flagged(object, all_features = all_features)
 
   if (is.null(quality(object))) {
-    cat("\nQuality metrics not found, computing them now\n")
+    message("\n", "Quality metrics not found, computing them now")
     object <- assess_quality(object)
   }
 

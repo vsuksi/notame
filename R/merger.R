@@ -11,12 +11,12 @@ check_column_match <- function(x, y, fun, name) {
     check <- is.na(fun(x)) & is.na(fun(y))
   }
   if (!check) {
-    stop(paste(name, "returns different column names"))
+    stop(name, " returns different column names")
   }
   common <- intersect(sampleNames(x), sampleNames(y))
   if (!is.na(fun(x))) {
     if (!identical(pData(x)[common, fun(x)], pData(y)[common, fun(y)])) {
-      stop(paste(name, "columns contain different elements for common samples"))
+      stop(name, " columns contain different elements for common samples")
     }
   }
 }
@@ -67,7 +67,7 @@ check_match <- function(x, y) {
   if (length(overlap_cols)) {
     for (overlap_col in overlap_cols) {
       if (!identical(pData(x)[common, overlap_col], pData(y)[common, overlap_col])) {
-        stop(paste("Columns named", overlap_col, "in pheno data have different content"))
+        stop("Columns named ", overlap_col, " in pheno data have different content")
       }
     }
   }
