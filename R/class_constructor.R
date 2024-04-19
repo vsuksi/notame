@@ -4,40 +4,7 @@ log_text_if <- function(text, logif) {
   }
 }
 
-# Helper function for checking integrity of pheno data
-check_pheno_data <- function(x, id_prefix, id_column = NULL, log_messages = FALSE) {
-  log_text_if("\nChecking sample information", log_messages)
-
-  # Check that Injection order is included
-  if (!"Injection_order" %in% colnames(x)) {
-    stop('"Injection_order" not found for the samples')
-  }
-  # Check that injection order can be numeric
-  if (!is.numeric(x$Injection_order) && !looks_numeric(x$Injection_order)) {
-    stop('"Injection_order" is not numeric and cannot be converted to numeric')
-  }
-
-  # No NAs allowed in Injection order
-  if (any(is.na(x$Injection_order))) {
-    stop("Missing values in Injection_order")
-  }
-  # Injection order should be unique
-  if (length(unique(x$Injection_order)) != nrow(x)) {
-    stop("Injection_order is not unique")
-  }
-
-  # If QC column is not provided explicitly, attempt to create it
-  if (!"QC" %in% colnames(x)) {
-    qc_found <- apply(x, 1, function(y) {
-      any(grepl("QC", y))
-    })
-    if (any(qc_found)) {
-      x$QC <- ifelse(qc_found, "QC", "Sample")
-      log_text_if(paste("QC column generated from rows containing 'QC'"), log_messages)
-    } else {
-      warning("QC not found and column can not be generated. Please create one before constructing a MetaboSet object.")
-    }
-  }
+create_sample_col <- function(x, id_prefix, id_column, log_messages) {
   # If id_column is provided, try to change name of the column to "Sample_ID"
   if (!is.null(id_column)) {
     log_text_if("Checking provided sample ID column", log_messages)
@@ -72,6 +39,7 @@ check_pheno_data <- function(x, id_prefix, id_column = NULL, log_messages = FALS
       if (length(blank_found)) {
         x$Sample_ID[is.na(x$Sample_ID) & x[[blank_found[1]]] == "Blank"] <- "Blank"
         x$Sample_ID[x$Sample_ID == "Blank"] <- paste0("Blank_", seq_len(sum(x$Sample_ID == "Blank")))
+        
       }
       if (any(is.na(x$Sample_ID))) {
         stop("Missing values in Sample_ID after attempting filling IDs of QCs and Blanks")
@@ -87,12 +55,51 @@ check_pheno_data <- function(x, id_prefix, id_column = NULL, log_messages = FALS
       log_text_if("Adding running index to 'Blank' sample IDs", log_messages)
       x$Sample_ID[x$Sample_ID == "Blank"] <- paste0("Blank_", seq_len(sum(x$Sample_ID == "Blank")))
     }
-
+    
     # After this, the Sample IDs should be unique
     if (any(duplicated(x$Sample_ID))) {
       stop("Sample_ID is not unique")
     }
   }
+  x
+}
+
+# Helper function for checking integrity of pheno data
+check_pheno_data <- function(x, id_prefix, id_column = NULL, log_messages = FALSE) {
+  log_text_if("\nChecking sample information", log_messages)
+
+  # Check that Injection order is included
+  if (!"Injection_order" %in% colnames(x)) {
+    stop('"Injection_order" not found for the samples')
+  }
+  # Check that injection order can be numeric
+  if (!is.numeric(x$Injection_order) && !looks_numeric(x$Injection_order)) {
+    stop('"Injection_order" is not numeric and cannot be converted to numeric')
+  }
+
+  # No NAs allowed in Injection order
+  if (any(is.na(x$Injection_order))) {
+    stop("Missing values in Injection_order")
+  }
+  # Injection order should be unique
+  if (length(unique(x$Injection_order)) != nrow(x)) {
+    stop("Injection_order is not unique")
+  }
+
+  # If QC column is not provided explicitly, attempt to create it
+  if (!"QC" %in% colnames(x)) {
+    qc_found <- apply(x, 1, function(y) {
+      any(grepl("QC", y))
+    })
+    if (any(qc_found)) {
+      x$QC <- ifelse(qc_found, "QC", "Sample")
+      log_text_if(paste("QC column generated from rows containing 'QC'"), log_messages)
+    } else {
+      warning("QC not found and column can not be generated. Please create one before constructing a MetaboSet object.")
+    }
+  }
+  
+  x <- create_sample_col(x, id_prefix, id_column, log_messages)
 
   x <- best_classes(x)
   rownames(x) <- x$Sample_ID
@@ -180,6 +187,108 @@ check_feature_data <- function(
   feature_data
 }
 
+extract_information <- function(file, sheet, corner_row, corner_column, name) {
+  dada <- openxlsx::read.xlsx(file, sheet, colNames = FALSE)
+  
+  # Define excel column order A-Z, AA - ZZ, AAA - ZZZ
+  grid2 <- expand.grid(LETTERS, LETTERS)
+  combinations2 <- paste0(grid2$Var2, grid2$Var1)
+  grid3 <- expand.grid(LETTERS, combinations2)
+  combinations3 <- paste0(grid3$Var2, grid3$Var1)
+  excel_columns <- c(LETTERS, combinations2, combinations3)
+  
+  # If corner coordinates are omitted, try to find them automatically
+  if (is.null(corner_row) || is.null(corner_column)) {
+    log_text("Detecting corner position")
+  }
+  corner_row <- corner_row %||% which(!is.na(dada[, 1]))[1]
+  corner_column <- corner_column %||% which(!is.na(dada[1, ]))[1]
+  # Column can be given as a character
+  cc <- ifelse(is.character(corner_column),
+    which(excel_columns == corner_column),
+    corner_column
+  )
+  cr <- corner_row
+  # Check that corner is in the right spot
+  check_position(dada, cc, cr)
+  log_text(paste0("Corner detected correctly at row ", cr, ", column ", excel_columns[cc]))
+  
+  # Extract sample information
+  log_text(paste0(
+    "\nExtracting sample information from rows 1 to ", cr, " and columns ",
+    excel_columns[cc + 1], " to ", excel_columns[ncol(dada)]
+  ))
+  pheno_data <- as.data.frame(t(dada[seq_len(cr), (cc + 1):ncol(dada)]), stringsAsFactors = FALSE)
+  log_text("Replacing spaces in sample information column names with underscores (_)")
+  colnames(pheno_data) <- gsub(" ", "_", c(dada[seq_len(cr - 1), cc], "Datafile"))
+  
+  # If a single mode is given, datafile will indicate the mode
+  if (!is.null(name)) {
+    colnames(pheno_data)[ncol(pheno_data)] <- paste0(name, "_Datafile")
+    log_text(paste0('Naming the last column of sample information "', name, '_Datafile"'))
+  } else {
+    log_text('Naming the last column of sample information "Datafile"')
+  }
+  
+  # Extract feature information
+  log_text(paste0(
+    "\nExtracting feature information from rows ", cr + 1, " to ", nrow(dada),
+    " and columns ", excel_columns[1], " to ", excel_columns[cc]
+  ))
+  feature_data <- dada[(cr + 1):nrow(dada), seq_len(cc)]
+  colnames(feature_data) <- dada[cr, seq_len(cc)]
+  # Extract LC-MS measurements as matrix
+  log_text(paste0(
+    "\nExtracting feature abundances from rows ", cr + 1, " to ", nrow(dada),
+    " and columns ", excel_columns[cc + 1], " to ", excel_columns[ncol(dada)]))
+  exprs_ <- dada[(cr + 1):nrow(dada), (cc + 1):ncol(dada)]
+  list("pheno_data" = pheno_data, "feature_data" = feature_data, "exprs_" = exprs_ )
+}
+  
+prepare_feature_data <- function(name, split_by, feature_data) {
+  # If the file only contains one mode, add the mode name as Split column
+  if (!is.null(name)) {
+    log_text(paste0(
+      "Assigning ", name,
+      " as the value of the Split column for each feature"
+    ))
+    feature_data$Split <- name
+    split_by <- "Split"
+  } else { # Multiple modes in the file, create Split column to separate modes
+    if (!all(split_by %in% colnames(feature_data))) {
+      stop(paste0(
+        "Couldn't find column(s): ",
+        paste(split_by[!(split_by %in% colnames(feature_data))],
+          collapse = ", "
+        )
+      ))
+    }
+    log_text(paste0(
+      "Creating Split column from ",
+      paste0(split_by, collapse = ", ")
+    ))
+    feature_data <- feature_data %>%
+      tidyr::unite("Split", split_by, remove = FALSE)
+  }
+
+  # Create feature ID if necessary
+  if (!"Feature_ID" %in% colnames(feature_data)) {
+    log_text("Feature_ID column not found, creating feature IDs")
+    feature_data <- name_features(feature_data = feature_data)
+  }
+  # Reorganise columns and change classes
+  feature_data <- feature_data %>%
+    dplyr::select("Feature_ID", "Split", dplyr::everything()) %>%
+    best_classes() %>%
+    dplyr::mutate_if(is.factor, as.character)
+  rownames(feature_data) <- feature_data$Feature_ID
+  log_text("Replacing dots (.) in feature information column names with underscores (_)")
+  colnames(feature_data) <- gsub("[.]", "_", colnames(feature_data)) %>%
+    # remove duplicate underscores
+    gsub("_{2,}", "_", .)
+  feature_data
+}
+
 #' Read formatted Excel files
 #'
 #'
@@ -233,119 +342,23 @@ check_feature_data <- function(
 #' @importFrom magrittr "%>%"
 #'
 #' @export
-read_from_excel <- function(file, sheet = 1, id_column = NULL, corner_row = NULL, corner_column = NULL,
+read_from_excel <- function(file, sheet = 1, id_column = NULL, 
+                            corner_row = NULL, corner_column = NULL,
                             id_prefix = "ID_", split_by = NULL, name = NULL,
                             mz_limits = c(10, 2000), rt_limits = c(0, 20), skip_checks = FALSE) {
   if (!requireNamespace("openxlsx", quietly = TRUE)) {
     stop("Package \"openxlsx\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+      call. = FALSE)
   }
-
   if (is.null(split_by) && is.null(name)) {
     stop("Either name or split_by needs to be defined, see documentation")
   } else if ((!is.null(split_by)) && (!is.null(name))) {
     stop("Only define split_by OR name, see documentation")
   }
-
-  dada <- openxlsx::read.xlsx(file, sheet, colNames = FALSE)
-
-  # Define excel column order A-Z, AA - ZZ, AAA - ZZZ
-  grid2 <- expand.grid(LETTERS, LETTERS)
-  combinations2 <- paste0(grid2$Var2, grid2$Var1)
-  grid3 <- expand.grid(LETTERS, combinations2)
-  combinations3 <- paste0(grid3$Var2, grid3$Var1)
-  excel_columns <- c(LETTERS, combinations2, combinations3)
-
-  # If corner coordinates are omitted, try to find them automatically
-  if (is.null(corner_row) || is.null(corner_column)) {
-    log_text("Detecting corner position")
-  }
-  corner_row <- corner_row %||% which(!is.na(dada[, 1]))[1]
-  corner_column <- corner_column %||% which(!is.na(dada[1, ]))[1]
-  # Column can be given as a character
-  cc <- ifelse(is.character(corner_column),
-    which(excel_columns == corner_column),
-    corner_column
-  )
-  cr <- corner_row
-  # Check that corner is in the right spot
-  check_position(dada, cc, cr)
-  log_text(paste0("Corner detected correctly at row ", cr, ", column ", excel_columns[cc]))
-
-  # Extract sample information
-  log_text(paste0(
-    "\nExtracting sample information from rows 1 to ", cr, " and columns ",
-    excel_columns[cc + 1], " to ", excel_columns[ncol(dada)]
-  ))
-  pheno_data <- as.data.frame(t(dada[seq_len(cr), (cc + 1):ncol(dada)]), stringsAsFactors = FALSE)
-  log_text("Replacing spaces in sample information column names with underscores (_)")
-  colnames(pheno_data) <- gsub(" ", "_", c(dada[seq_len(cr - 1), cc], "Datafile"))
-
-  # If a single mode is given, datafile will indicate the mode
-  if (!is.null(name)) {
-    colnames(pheno_data)[ncol(pheno_data)] <- paste0(name, "_Datafile")
-    log_text(paste0('Naming the last column of sample information "', name, '_Datafile"'))
-  } else {
-    log_text('Naming the last column of sample information "Datafile"')
-  }
-
-  # Extract feature information
-  log_text(paste0(
-    "\nExtracting feature information from rows ", cr + 1, " to ", nrow(dada),
-    " and columns ", excel_columns[1], " to ", excel_columns[cc]
-  ))
-  feature_data <- dada[(cr + 1):nrow(dada), seq_len(cc)]
-  colnames(feature_data) <- dada[cr, seq_len(cc)]
-
-  # If the file only contains one mode, add the mode name as Split column
-  if (!is.null(name)) {
-    log_text(paste0(
-      "Assigning ", name,
-      " as the value of the Split column for each feature"
-    ))
-    feature_data$Split <- name
-    split_by <- "Split"
-  } else { # Multiple modes in the file, create Split column to separate modes
-    if (!all(split_by %in% colnames(feature_data))) {
-      stop(paste0(
-        "Couldn't find column(s): ",
-        paste(split_by[!(split_by %in% colnames(feature_data))],
-          collapse = ", "
-        )
-      ))
-    }
-    log_text(paste0(
-      "Creating Split column from ",
-      paste0(split_by, collapse = ", ")
-    ))
-    feature_data <- feature_data %>%
-      tidyr::unite("Split", split_by, remove = FALSE)
-  }
-
-  # Create feature ID if necessary
-  if (!"Feature_ID" %in% colnames(feature_data)) {
-    log_text("Feature_ID column not found, creating feature IDs")
-    feature_data <- name_features(feature_data = feature_data)
-  }
-  # Reorganise columns and change classes
-  feature_data <- feature_data %>%
-    dplyr::select("Feature_ID", "Split", dplyr::everything()) %>%
-    best_classes() %>%
-    dplyr::mutate_if(is.factor, as.character)
-  rownames(feature_data) <- feature_data$Feature_ID
-  log_text("Replacing dots (.) in feature information column names with underscores (_)")
-  colnames(feature_data) <- gsub("[.]", "_", colnames(feature_data)) %>%
-    # remove duplicate underscores
-    gsub("_{2,}", "_", .)
-
-  # Extract LC-MS measurements as matrix
-  log_text(paste0(
-    "\nExtracting feature abundances from rows ", cr + 1, " to ", nrow(dada),
-    " and columns ", excel_columns[cc + 1], " to ", excel_columns[ncol(dada)]
-  ))
-  exprs_ <- dada[(cr + 1):nrow(dada), (cc + 1):ncol(dada)]
-
+  extracted <- extract_information(file, sheet, corner_row, corner_column, name)
+  pheno_data <- extracted$pheno_data
+  feature_data <- prepare_feature_data(name, split_by, extracted$feature_data)
+  exprs_ <- extracted$exprs_
   # Skip checks
   if (!skip_checks) {
     pheno_data <- check_pheno_data(
@@ -655,57 +668,43 @@ print_levels <- function(v) {
     paste0(y, ": ", obs)
   }, character(1))
   output <- paste(output, collapse = ", ")
-  cat(paste("  ", output, "\n"))
+  message("  ", output)
 }
 
-metaboset_printer <- function(x) {
-  cat(paste("MetaboSet object with", nrow(x), "features and", ncol(x), "samples.\n"))
-  cat(paste(sum(x$QC == "QC"), "QC samples included\n"))
-  cat(paste(
-    sum(is.na(flag(x))), "non-flagged features,",
-    sum(!is.na(flag(x))), "flagged features.\n\n"
-  ))
-  if (!is.na(group_col(x))) {
-    cat(paste0(group_col(x), ":\n"))
-    print_levels(pData(x)[, group_col(x)])
-  }
-  if (!is.na(time_col(x))) {
-    cat(paste0(time_col(x)), ":\n")
-    print_levels(pData(x)[, time_col(x)])
-  }
-  if (!is.na(subject_col(x))) {
-    cat(paste0(subject_col(x)), ":\n")
-    subject <- as.character(pData(x)[, subject_col(x)])
-    subject <- subject[!grepl("QC", subject)]
-    cat(paste0(
-      "  ", length(unique(subject)), " distinct subjects\n  min:",
-      min(table(subject)), ", max:", max(table(subject)),
-      " observations per subject.\n"
+setMethod("show", c(object = "MetaboSet"), function(object) {
+    cat(paste("MetaboSet object with", nrow(object), "features and", ncol(object), "samples.\n"))
+    cat(paste(sum(object$QC == "QC"), "QC samples included\n"))
+    cat(paste(
+      sum(is.na(flag(object))), "non-flagged features,",
+      sum(!is.na(flag(object))), "flagged features.\n\n"
     ))
+    if (!is.na(group_col(object))) {
+      cat(paste0(group_col(object), ":\n"))
+      print_levels(pData(object)[, group_col(object)])
+    }
+    if (!is.na(time_col(object))) {
+      cat(paste0(time_col(object)), ":\n")
+      print_levels(pData(object)[, time_col(object)])
+    }
+    if (!is.na(subject_col(object))) {
+      cat(paste0(subject_col(object)), ":\n")
+      subject <- as.character(pData(object)[, subject_col(object)])
+      subject <- subject[!grepl("QC", subject)]
+      cat(paste0(
+        "  ", length(unique(subject)), " distinct subjects\n  min:",
+        min(table(subject)), ", max:", max(table(subject)),
+        " observations per subject.\n"
+      ))
+    }
+
+    cat("\nThe object has the following parts (splits):\n")
+    splits <- unique(fData(object)$Split)
+    t_splits <- table(fData(object)$Split)
+    for (split in splits) {
+      cat(paste0("  ", split, ": ", t_splits[split], " features\n"))
+    }
   }
-
-  cat("\nThe object has the following parts (splits):\n")
-  splits <- unique(fData(x)$Split)
-  t_splits <- table(fData(x)$Split)
-  for (split in splits) {
-    cat(paste0("  ", split, ": ", t_splits[split], " features\n"))
-  }
-}
-
-metaboset_shower <- function(object) {
-  metaboset_printer(object)
-}
-
-setMethod(
-  "print", c(x = "MetaboSet"),
-  metaboset_printer
 )
-
-setMethod(
-  "show", c(object = "MetaboSet"),
-  metaboset_shower
-)
-
 #' Retrieve both sample information and features
 #'
 #' @param object a MetaboSet object

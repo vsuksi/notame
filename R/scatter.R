@@ -168,10 +168,56 @@ plot_tsne <- function(object, all_features = FALSE, center = TRUE, scale = "uv",
   )
 }
 
-scatter_plot <- function(data, x, y, color, shape, label = NULL, density = FALSE, fixed = TRUE, color_scale = NA,
+mod_scatter <- function(p, data, x, y, color, label, density,
+                        fill_scale, label_text_size) {
+  # Add point labels
+  if (!is.null(label)) {
+    if (!requireNamespace("ggrepel", quietly = TRUE)) {
+      stop("Package \"ggrepel\" needed for this function to label the points. Please install it.", call. = FALSE)
+    }
+    p <- p +
+      ggrepel::geom_text_repel(
+        mapping = aes(
+          label = .data[[label]]),
+        size = label_text_size) +
+      guides(color = guide_legend(override.aes = aes(label = ""))) # Removes "a" from the legend (ggrepel adds it by default)
+  }
+
+  # Add density plots to top and right
+  if (density) {
+    if (!requireNamespace("cowplot", quietly = TRUE)) {
+      stop("Package \"cowplot\" needed for this function to add density curves. Please install it.",
+        call. = FALSE
+      )
+    }
+    xdens <- cowplot::axis_canvas(p, axis = "x") +
+      geom_density(
+        data = data, aes(x = .data[[x]], fill = .data[[color]]),
+        alpha = 0.7, size = 0.2) +
+      fill_scale
+
+    ydens <- cowplot::axis_canvas(p, axis = "y", coord_flip = TRUE) +
+      geom_density(
+        data = data, aes(x = .data[[y]], fill = .data[[color]]),
+        alpha = 0.7, size = 0.2) +
+      coord_flip() +
+      fill_scale
+
+    p <- cowplot::insert_xaxis_grob(p, xdens, grid::unit(.2, "null"), position = "top")
+    p <- cowplot::insert_yaxis_grob(p, ydens, grid::unit(.2, "null"), position = "right")
+    p <- cowplot::ggdraw(p)
+  }
+  p
+}
+
+scatter_plot <- function(data, x, y, color, shape, label = NULL, 
+                         density = FALSE, fixed = TRUE, color_scale = NA,
                          shape_scale = NULL, fill_scale = NA, title = NULL, subtitle = NULL, xlab = x, ylab = y,
-                         color_lab = color, shape_lab = shape, apply_theme_bw = TRUE,
-                         text_base_size = text_base_size, point_size = point_size, label_text_size = label_text_size) {
+                         color_lab = color, shape_lab = shape, 
+                         apply_theme_bw = TRUE, 
+                         text_base_size = text_base_size, 
+                         point_size = point_size, 
+                         label_text_size = label_text_size) {
   # Set right color scale
   if (!is.null(color_scale)) {
     if (!is.ggproto(color_scale)) {
@@ -209,8 +255,7 @@ scatter_plot <- function(data, x, y, color, shape, label = NULL, density = FALSE
       paste(
         "Shape variable not given as a factor, converted to factor with levels",
         paste(levels(data[, shape]), collapse = ", ")
-      ),
-      call. = FALSE
+      ), call. = FALSE
     )
   }
   if (is(data[, shape], "factor")) {
@@ -229,50 +274,8 @@ scatter_plot <- function(data, x, y, color, shape, label = NULL, density = FALSE
       geom_point(size = point_size)
   }
 
-  # Add point labels
-  if (!is.null(label)) {
-    if (!requireNamespace("ggrepel", quietly = TRUE)) {
-      stop("Package \"ggrepel\" needed for this function to label the points. Please install it.",
-        call. = FALSE
-      )
-    }
-    p <- p +
-      ggrepel::geom_text_repel(
-        mapping = aes(
-          label = .data[[label]]
-        ),
-        size = label_text_size
-      ) +
-      guides(color = guide_legend(override.aes = aes(label = ""))) # Removes "a" from the legend (ggrepel adds it by default)
-  }
-
-  # Add density plots to top and right
-  if (density) {
-    if (!requireNamespace("cowplot", quietly = TRUE)) {
-      stop("Package \"cowplot\" needed for this function to add density curves. Please install it.",
-        call. = FALSE
-      )
-    }
-    xdens <- cowplot::axis_canvas(p, axis = "x") +
-      geom_density(
-        data = data, aes(x = .data[[x]], fill = .data[[color]]),
-        alpha = 0.7, size = 0.2
-      ) +
-      fill_scale
-
-    ydens <- cowplot::axis_canvas(p, axis = "y", coord_flip = TRUE) +
-      geom_density(
-        data = data, aes(x = .data[[y]], fill = .data[[color]]),
-        alpha = 0.7, size = 0.2
-      ) +
-      coord_flip() +
-      fill_scale
-
-    p <- cowplot::insert_xaxis_grob(p, xdens, grid::unit(.2, "null"), position = "top")
-    p <- cowplot::insert_yaxis_grob(p, ydens, grid::unit(.2, "null"), position = "right")
-    p <- cowplot::ggdraw(p)
-  }
-
+  p <- mod_scatter(p, data, x, y, color, label, density,
+                   fill_scale, label_text_size)
   p
 }
 
@@ -714,7 +717,7 @@ setMethod(
 )
 
 
-volcano_plotter <- function(data, x, p, p_fdr, color, p_breaks, fdr_limit,
+volcano_plotter <- function(data, x, p, p_fdr, color, p_breaks, fdr_limit, 
                             log2_x, center_x_axis, x_lim, label, label_limit,
                             color_scale, title, subtitle,
                             text_base_size, label_text_size, ...) {

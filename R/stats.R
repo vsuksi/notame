@@ -227,6 +227,63 @@ cohens_d_fun <- function(object, group, id, time) {
 }
 
 
+cohens_d_time_fun <- function(object, id, group, time,
+                              res, group_combos) {
+  count_obs_geq_than <- function(x, n) {
+    sum(x >= n)
+  }
+  if (is.null(id)) {
+    stop("Please specify id column.", call. = FALSE)
+  }
+  time_combos <- combn(levels(pData(object)[, time]), 2)
+  for (i in seq_len(ncol(group_combos))) {
+    for (j in seq_len(ncol(time_combos))) {
+      object_split <- object[, which(
+        pData(object)[, group] %in% group_combos[, i] &
+          pData(object)[, time] %in% time_combos[, j])]
+      pData(object_split) <- droplevels(pData(object_split))
+      # Check data is valid for Cohen's D
+      group_table <- table(pData(object_split)[, c(id, group)])
+      time_table <- table(pData(object_split)[, c(id, time)])
+      column <- paste0(
+        "Cohen_d_", group_combos[1, i], "_", group_combos[2, i],
+        "_", time_combos[2, j], "_minus_", time_combos[1, j])
+      if (any(apply(group_table, 2, count_obs_geq_than, 2) < 2)) {
+        warning(
+          "In ", column,
+          ": Groups don't have two observations of at least two subjects, skipping!")
+        next
+      }
+      if (any(apply(time_table, 1, count_obs_geq_than, 2) != 0)) {
+        warning(
+          "In ", column,
+          ": Same subject recorded more than once at same time, skipping!")
+        next
+      }
+      if (any(apply(group_table, 1, count_obs_geq_than, 1) != 1)) {
+        warning(
+          "In ", column,
+          ": Same subject recorded in two groups, skipping!")
+        next
+      }
+      if (!all(apply(time_table, 1, count_obs_geq_than, 1) != 1)) {
+        warning(
+          "One or more subject(s) missing time points, ",
+          column, " will be counted using common subjects in time points!")
+      }
+      if (is.null(res)) {
+        res <- cohens_d_fun(object_split, group, id, time)
+      } else {
+        res <- dplyr::full_join(res,
+          cohens_d_fun(object_split, group, id, time),
+          by = "Feature_ID")
+      }  
+    }
+  }
+  res
+}
+
+
 #' Cohen's D
 #'
 #' Computes Cohen's D for each feature. If time and ID are supplied,
@@ -265,10 +322,6 @@ cohens_d <- function(object, group = group_col(object),
   }
   group_combos <- combn(levels(pData(object)[, group]), 2)
 
-  count_obs_geq_than <- function(x, n) {
-    sum(x >= n)
-  }
-
   if (is.null(time)) {
     for (i in seq_len(ncol(group_combos))) {
       object_split <- object[, which(
@@ -286,62 +339,7 @@ cohens_d <- function(object, group = group_col(object),
       }
     }
   } else {
-    if (is.null(id)) {
-      stop("Please specify id column.", call. = FALSE)
-    }
-    time_combos <- combn(levels(pData(object)[, time]), 2)
-    for (i in seq_len(ncol(group_combos))) {
-      for (j in seq_len(ncol(time_combos))) {
-        object_split <- object[, which(
-          pData(object)[, group] %in% group_combos[, i] &
-            pData(object)[, time] %in% time_combos[, j]
-        )]
-        pData(object_split) <- droplevels(pData(object_split))
-        # Check data is valid for Cohen's D
-        group_table <- table(pData(object_split)[, c(id, group)])
-        time_table <- table(pData(object_split)[, c(id, time)])
-        column <- paste0(
-          "Cohen_d_", group_combos[1, i], "_", group_combos[2, i],
-          "_", time_combos[2, j], "_minus_", time_combos[1, j]
-        )
-        if (any(apply(group_table, 2, count_obs_geq_than, 2) < 2)) {
-          warning(
-            "In ", column,
-            ": Groups don't have two observations of at least two subjects, skipping!"
-          )
-          next
-        }
-        if (any(apply(time_table, 1, count_obs_geq_than, 2) != 0)) {
-          warning(
-            "In ", column,
-            ": Same subject recorded more than once at same time, skipping!"
-          )
-          next
-        }
-        if (any(apply(group_table, 1, count_obs_geq_than, 1) != 1)) {
-          warning(
-            "In ", column,
-            ": Same subject recorded in two groups, skipping!"
-          )
-          next
-        }
-        if (!all(apply(time_table, 1, count_obs_geq_than, 1) != 1)) {
-          warning(
-            "One or more subject(s) missing time points, ",
-            column, " will be counted using common subjects in time points!"
-          )
-        }
-
-        if (is.null(res)) {
-          res <- cohens_d_fun(object_split, group, id, time)
-        } else {
-          res <- dplyr::full_join(res,
-            cohens_d_fun(object_split, group, id, time),
-            by = "Feature_ID"
-          )
-        }
-      }
-    }
+    res <- cohens_d_time_fun(object, id, group, time, res, group_combos)
   }
   rownames(res) <- res$Feature_ID
   res
@@ -406,7 +404,62 @@ fold_change <- function(object, group = group_col(object)) {
 }
 
 
+compute_correlations <- function(id, fdr, duplicates,
+                                 var_pairs, data1, data2, ...) {
+  cor_results <- foreach::foreach(i = seq_len(nrow(var_pairs)), .combine = rbind) %dopar% {
+    x_tmp <- var_pairs$x[i]
+    y_tmp <- var_pairs$y[i]
+    cor_tmp <- NULL
+    tryCatch(
+      {
+        if (is.null(id)) {
+          cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp], ...)
+        } else {
+          id_tmp <- data1[, id]
+          cor_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp], y_var = data2[, y_tmp]) %>%
+          rmcorr::rmcorr(
+            participant = .$id_var,
+            measure1 = .$x_var,
+            measure2 = .$y_var,
+            dataset = .
+          )
+          cor_tmp <- list(estimate = cor_tmp$r, p.value = cor_tmp$p)
+        }
+      },
+      error = function(e) message(x_tmp, " vs", y_tmp, ": ", e$message)
+    )
+    if (is.null(cor_tmp)) {
+      cor_tmp <- list(
+        estimate = NA,
+        p.value = NA
+      )
+    }
+    data.frame(
+      X = x_tmp, Y = y_tmp,
+      Correlation_coefficient = cor_tmp$estimate,
+      Correlation_P = cor_tmp$p.value,
+      stringsAsFactors = FALSE
+    )
+  }
 
+  if (duplicates) {
+    cor_results_dup <- cor_results
+    cor_results_dup$X <- cor_results$Y
+    cor_results_dup$Y <- cor_results$X
+    # Remove possible duplicated correlations of a variable with itself
+    cor_results_dup <- dplyr::filter(cor_results_dup, "X" != "Y")
+    cor_results <- rbind(cor_results, cor_results_dup)
+  }
+
+  # FDR correction
+  if (fdr) {
+    flags <- rep(NA_character_, nrow(cor_results))
+    cor_results <- adjust_p_values(cor_results, flags)
+  }
+
+  rownames(cor_results) <- seq_len(nrow(cor_results))
+  cor_results
+}
 #' Perform correlation tests
 #'
 #' Performs a correlation test between two sets of variables. All the variables must be either
@@ -489,8 +542,7 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NUL
     }
     if (!identical(data1[, id], data2[, id])) {
       stop("ids do not match between the two objects: make sure the subjects are in the same order!",
-        call. = FALSE
-      )
+        call. = FALSE)
     }
     add_citation("rmcorr package was used to compute correlations with repeated measuremtns:", citation("rmcorr"))
   }
@@ -528,61 +580,7 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NUL
     var_pairs <- data.frame(x = x, y = y, stringsAsFactors = FALSE)
   }
 
-
-  # Compute correlations
-  cor_results <- foreach::foreach(i = seq_len(nrow(var_pairs)), .combine = rbind) %dopar% {
-    x_tmp <- var_pairs$x[i]
-    y_tmp <- var_pairs$y[i]
-    cor_tmp <- NULL
-    tryCatch(
-      {
-        if (is.null(id)) {
-          cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp])
-        } else {
-          id_tmp <- data1[, id]
-          cor_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp], y_var = data2[, y_tmp]) %>%
-          rmcorr::rmcorr(
-            participant = .$id_var,
-            measure1 = .$x_var,
-            measure2 = .$y_var,
-            dataset = .
-          )
-          cor_tmp <- list(estimate = cor_tmp$r, p.value = cor_tmp$p)
-        }
-      },
-      error = function(e) message(x_tmp, " vs", y_tmp, ": ", e$message)
-    )
-    if (is.null(cor_tmp)) {
-      cor_tmp <- list(
-        estimate = NA,
-        p.value = NA
-      )
-    }
-    data.frame(
-      X = x_tmp, Y = y_tmp,
-      Correlation_coefficient = cor_tmp$estimate,
-      Correlation_P = cor_tmp$p.value,
-      stringsAsFactors = FALSE
-    )
-  }
-
-  if (duplicates) {
-    cor_results_dup <- cor_results
-    cor_results_dup$X <- cor_results$Y
-    cor_results_dup$Y <- cor_results$X
-    # Remove possible duplicated correlations of a variable with itself
-    cor_results_dup <- dplyr::filter(cor_results_dup, "X" != "Y")
-    cor_results <- rbind(cor_results, cor_results_dup)
-  }
-
-  # FDR correction
-  if (fdr) {
-    flags <- rep(NA_character_, nrow(cor_results))
-    cor_results <- adjust_p_values(cor_results, flags)
-  }
-
-  rownames(cor_results) <- seq_len(nrow(cor_results))
-
+  cor_results <- compute_correlations(id, fdr, duplicates, var_pairs, data1, data2, ...)
   log_text("Correlation tests performed.")
 
   cor_results
@@ -701,7 +699,7 @@ fill_results <- function(results_df, features) {
 
 # Helper function for running a variety of simple statistical tests
 #' @importFrom stats as.formula
-perform_test <- function(object, formula_char, result_fun, all_features, fdr = TRUE, packages = NULL) {
+perform_test <- function(object, formula_char, result_fun, all_features, fdr = TRUE, packages = NULL, ...) {
   data <- combined_data(object)
   features <- Biobase::featureNames(object)
 
@@ -713,7 +711,7 @@ perform_test <- function(object, formula_char, result_fun, all_features, fdr = T
     # Replace "Feature" with the current feature name
     tmp_formula <- gsub("Feature", feature, formula_char)
     # Run test
-    result_row <- result_fun(feature = feature, formula = as.formula(tmp_formula), data = data)
+    result_row <- result_fun(feature = feature, formula = as.formula(tmp_formula), data = data, ...)
     # In case Feature is used as predictor, make the column names match
     if (!is.null(result_row)) {
       colnames(result_row) <- gsub(feature, "Feature", colnames(result_row))
@@ -983,6 +981,84 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
   results_df
 }
 
+lmer_fun <- function(feature, formula, data, ci_method, test_random, ...) {
+  # Try to fit the linear model
+  fit <- NULL
+  # If fitting causes an error, a NULL row is returned
+  result_row <- NULL
+  tryCatch(
+    {
+      fit <- lmerTest::lmer(formula, data = data, ...)
+    },
+    error = function(e) message(feature, ": ", e$message)
+  )
+  if (!is.null(fit)) {
+    # Extract model coefficients
+    coefs <- summary(fit)$coefficients
+    coefs <- data.frame(Variable = rownames(coefs), coefs, stringsAsFactors = FALSE)
+    # Try to compute confidence intervals
+    # If the computation fails, all CIs are NA
+    confints <- data.frame(Variable = rownames(coefs), "X2.5.." = NA, "X97.5.." = NA)
+    tryCatch(
+      {
+        confints <- confint(fit, nsim = 1000, method = ci_method, oldNames = FALSE)
+        confints <- data.frame(Variable = rownames(confints), confints, stringsAsFactors = FALSE)
+      },
+      error = function(e) message(feature, ": ", e$message)
+    )
+
+    # Gather coefficients and CIs to one data frame row
+    result_row <- dplyr::left_join(coefs, confints, by = "Variable") %>%
+      dplyr::rename(
+        "Std_Error" = "Std..Error", "t_value" = "t.value",
+        "P" = "Pr...t..", "LCI95" = "X2.5..", "UCI95" = "X97.5.."
+      ) %>%
+      tidyr::gather("Metric", "Value", -"Variable") %>%
+      tidyr::unite("Column", "Variable", "Metric", sep = "_") %>%
+      tidyr::spread("Column", "Value")
+    # Add R2 statistics
+    result_row$Marginal_R2 <- NA
+    result_row$Conditional_R2 <- NA
+    tryCatch(
+      {
+        r2s <- MuMIn::r.squaredGLMM(fit)
+        result_row$Marginal_R2 <- r2s[1]
+        result_row$Conditional_R2 <- r2s[2]
+      },
+      error = function(e) message(feature, ": ", e$message)
+    )
+    # Add Feature ID
+    result_row$Feature_ID <- feature
+  }
+
+  #Add optional test results for the random effects
+  if (test_random) {
+    tryCatch(
+      {
+        r_tests <- as.data.frame(lmerTest::ranova(fit))[-1, c(4, 6)]
+        r_tests$Variable <- rownames(r_tests) %>%
+          gsub("[(]1 [|] ", "", .) %>%
+          gsub("[)]", "", .)
+        # Get confidence intervals for the standard deviations of the random effects
+        confints$Variable <- confints$Variable %>%
+          gsub("sd_[(]Intercept[)][|]", "", .)
+        # Get standard deviations of the random effects
+        r_variances <- as.data.frame(summary(fit)$varcor)[c("grp", "sdcor")]
+        # Join all the information together
+        r_result_row <- dplyr::inner_join(r_variances, confints, by = c("grp" = "Variable")) %>%
+          dplyr::left_join(r_tests, by = c("grp" = "Variable")) %>%
+          dplyr::rename(SD = "sdcor", "LCI95" = "X2.5..", "UCI95" = "X97.5..", "P" = "Pr(>Chisq)") %>%
+          tidyr::gather("Metric", "Value", "-grp") %>%
+          tidyr::unite("Column", "grp", "Metric", sep = "_") %>%
+          tidyr::spread("Column", "Value")
+        result_row <- cbind(result_row, r_result_row)
+      },
+      error = function(e) message(feature, ": ", e$message)
+    )
+  }
+
+  result_row
+}
 
 #' Linear mixed models
 #'
@@ -1041,86 +1117,7 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
   # Check that ci_method is one of the accepted choices
   ci_method <- match.arg(ci_method)
 
-  lmer_fun <- function(feature, formula, data) {
-    # Try to fit the linear model
-    fit <- NULL
-    # If fitting causes an error, a NULL row is returned
-    result_row <- NULL
-    tryCatch(
-      {
-        fit <- lmerTest::lmer(formula, data = data, ...)
-      },
-      error = function(e) message(feature, ": ", e$message)
-    )
-    if (!is.null(fit)) {
-      # Extract model coefficients
-      coefs <- summary(fit)$coefficients
-      coefs <- data.frame(Variable = rownames(coefs), coefs, stringsAsFactors = FALSE)
-      # Try to compute confidence intervals
-      # If the computation fails, all CIs are NA
-      confints <- data.frame(Variable = rownames(coefs), "X2.5.." = NA, "X97.5.." = NA)
-      tryCatch(
-        {
-          confints <- confint(fit, nsim = 1000, method = ci_method, oldNames = FALSE)
-          confints <- data.frame(Variable = rownames(confints), confints, stringsAsFactors = FALSE)
-        },
-        error = function(e) message(feature, ": ", e$message)
-      )
-
-      # Gather coefficients and CIs to one data frame row
-      result_row <- dplyr::left_join(coefs, confints, by = "Variable") %>%
-        dplyr::rename(
-          "Std_Error" = "Std..Error", "t_value" = "t.value",
-          "P" = "Pr...t..", "LCI95" = "X2.5..", "UCI95" = "X97.5.."
-        ) %>%
-        tidyr::gather("Metric", "Value", -"Variable") %>%
-        tidyr::unite("Column", "Variable", "Metric", sep = "_") %>%
-        tidyr::spread("Column", "Value")
-      # Add R2 statistics
-      result_row$Marginal_R2 <- NA
-      result_row$Conditional_R2 <- NA
-      tryCatch(
-        {
-          r2s <- MuMIn::r.squaredGLMM(fit)
-          result_row$Marginal_R2 <- r2s[1]
-          result_row$Conditional_R2 <- r2s[2]
-        },
-        error = function(e) message(feature, ": ", e$message)
-      )
-      # Add Feature ID
-      result_row$Feature_ID <- feature
-    }
-
-    # Add optional test results for the random effects
-    if (test_random) {
-      tryCatch(
-        {
-          r_tests <- as.data.frame(lmerTest::ranova(fit))[-1, c(4, 6)]
-          r_tests$Variable <- rownames(r_tests) %>%
-            gsub("[(]1 [|] ", "", .) %>%
-            gsub("[)]", "", .)
-          # Get confidence intervals for the standard deviations of the random effects
-          confints$Variable <- confints$Variable %>%
-            gsub("sd_[(]Intercept[)][|]", "", .)
-          # Get standard deviations of the random effects
-          r_variances <- as.data.frame(summary(fit)$varcor)[c("grp", "sdcor")]
-          # Join all the information together
-          r_result_row <- dplyr::inner_join(r_variances, confints, by = c("grp" = "Variable")) %>%
-            dplyr::left_join(r_tests, by = c("grp" = "Variable")) %>%
-            dplyr::rename(SD = "sdcor", "LCI95" = "X2.5..", "UCI95" = "X97.5..", "P" = "Pr(>Chisq)") %>%
-            tidyr::gather("Metric", "Value", "-grp") %>%
-            tidyr::unite("Column", "grp", "Metric", sep = "_") %>%
-            tidyr::spread("Column", "Value")
-          result_row <- cbind(result_row, r_result_row)
-        },
-        error = function(e) message(feature, ": ", e$message)
-      )
-    }
-
-    result_row
-  }
-
-  results_df <- perform_test(object, formula_char, lmer_fun, all_features, packages = "lmerTest")
+  results_df <- perform_test(object, formula_char, lmer_fun, all_features, packages = "lmerTest", ci_method = ci_method, test_random = test_random)
 
   # Set a good column order
   fixed_effects <- gsub("_Estimate$", "", colnames(results_df)[grep("Estimate$", colnames(results_df))])
@@ -1401,33 +1398,7 @@ perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
   results_df
 }
 
-perform_paired_test <- function(object, group, id, test, all_features = FALSE, ...) {
-  results_df <- NULL
-  data <- combined_data(object)
-  features <- featureNames(object)
-  groups <- data[, group]
-  pair <- levels(groups)[seq_len(2)]
-  if (!is(groups, "factor")) groups <- as.factor(groups)
-  if (length(levels(groups)) > 2) {
-    warning("More than two groups detected, only using the first two.", "\n", 
-      "For multiple comparisons, please see perform_pairwise_t_test()", 
-      call. = FALSE)
-  }
-
-  # Split to groups
-  group1 <- data[which(groups == pair[1]), ]
-  group2 <- data[which(groups == pair[2]), ]
-  # Keep only complete pairs, order by id
-  common_ids <- intersect(group1[, id], group2[, id])
-  group1 <- group1[group1[, id] %in% common_ids, ][order(common_ids), ]
-  group2 <- group2[group2[, id] %in% common_ids, ][order(common_ids), ]
-
-  log_text(paste0("Starting paired tests for ", paste0(pair, collapse = " & ")))
-  log_text(paste("Found", length(common_ids), "complete pairs"))
-  if (length(common_ids) == 0) {
-    warning(paste0("Skipped ", paste0(pair, collapse = " & "), ": no common IDs"))
-    return(data.frame("Feature_ID" = features))
-  }
+paired_fun <- function(test, features, group1, group2, pair, ...) {
   results_df <- foreach::foreach(
     i = seq_along(features),
     .combine = dplyr::bind_rows
@@ -1469,9 +1440,39 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
         message(feature, ": ", e$message)
       }
     )
-
     result_row
   }
+}
+
+
+perform_paired_test <- function(object, group, id, test, all_features = FALSE, ...) {
+  results_df <- NULL
+  data <- combined_data(object)
+  features <- featureNames(object)
+  groups <- data[, group]
+  pair <- levels(groups)[seq_len(2)]
+  if (!is(groups, "factor")) groups <- as.factor(groups)
+  if (length(levels(groups)) > 2) {
+    warning("More than two groups detected, only using the first two.", "\n", 
+      "For multiple comparisons, please see perform_pairwise_t_test()", 
+      call. = FALSE)
+  }
+
+  # Split to groups
+  group1 <- data[which(groups == pair[1]), ]
+  group2 <- data[which(groups == pair[2]), ]
+  # Keep only complete pairs, order by id
+  common_ids <- intersect(group1[, id], group2[, id])
+  group1 <- group1[group1[, id] %in% common_ids, ][order(common_ids), ]
+  group2 <- group2[group2[, id] %in% common_ids, ][order(common_ids), ]
+
+  log_text(paste0("Starting paired tests for ", paste0(pair, collapse = " & ")))
+  log_text(paste("Found", length(common_ids), "complete pairs"))
+  if (length(common_ids) == 0) {
+    warning(paste0("Skipped ", paste0(pair, collapse = " & "), ": no common IDs"))
+    return(data.frame("Feature_ID" = features))
+  }
+  results_df <- paired_fun(test, features, group1, group2, pair, ...)
 
   # Check that results actually contain something
   # If the tests are run on parallel, the error messages from failing tests are not visible

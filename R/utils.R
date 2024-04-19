@@ -187,7 +187,7 @@ prop_found <- function(x) {
 
 best_class <- function(x) {
   x <- type.convert(as.character(x), as.is = TRUE)
-  if (is(x, "numeric")) {
+  if (inherits(x, "numeric")) {
     x <- x
   } else if (length(unique(x)) < length(x) / 4) {
     x <- as.factor(x)
@@ -198,7 +198,6 @@ best_class <- function(x) {
   }
   x
 }
-
 
 best_classes <- function(x) {
   as.data.frame(lapply(x, best_class), stringsAsFactors = FALSE)

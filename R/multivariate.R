@@ -230,7 +230,7 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
     scale_x_continuous(breaks = seq_len(ncomp)) +
     theme(panel.grid.minor.x = element_blank())
   
-  if (requireNamespace("cowplots", quietly = TRUE)) {
+  if (requireNamespace("cowplot", quietly = TRUE)) {
     plot(cowplot::plot_grid(p1, p2, nrow = 1))
   } else {
     plot(p1)
