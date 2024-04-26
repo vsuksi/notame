@@ -568,15 +568,11 @@ save_scatter_plots <- function(object,
 #' \dontshow{setwd(.old_wd)}
 #'
 #' @export
-save_group_lineplots <- function(object,
-                                 all_features = FALSE,
-                                 save = TRUE,
-                                 file_path = NULL,
-                                 format = "emf",
-                                 x = time_col(object),
-                                 group = group_col(object),
-                                 title = "Feature_ID",
-                                 subtitle = NULL,
+save_group_lineplots <- function(object, all_features = FALSE, save = TRUE,
+                                 file_path = NULL, format = "emf",
+                                 x = time_col(object), 
+                                 group = group_col(object), 
+                                 title = "Feature_ID", subtitle = NULL,
                                  fun.data = "mean_cl_boot", # nolint: object_name_linter.
                                  fun = NULL,
                                  fun.min = NULL, # nolint: object_name_linter.

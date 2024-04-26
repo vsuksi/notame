@@ -1,19 +1,20 @@
 Package: notame
 Type: Package
 Title: Workflow for non-targeted LC-MS metabolic profiling
-Version: 0.3.1
+Version: 0.99.0
 Authors@R: c(
-    person("Anton", "Klåvus", email = "anton.klavus@iki.fi", role = c("aut", "cre")),
-    person("Jussi", "Paananen", role = "aut"),
-    person("Oskari", "Timonen", role = "aut"),
-    person("Atte", "Lihtamo", role = "aut"))
-Description: Automates common preprocessing steps in a LC-MS metabolomics workflow such as drift correction, quality control and common visualizations.
+    person("Anton", "Klåvus", role = c("aut", "cph")),
+    person("Jussi", "Paananen", role = c("aut", "cph")),
+    person("Oskari", "Timonen", role = c("aut", "cph")),
+    person("Atte", "Lihtamo", role = "aut"),
+    person("Vilhelm", "Suksi", email = "vksuks@utu.fi", role = c("aut", "cre"), comment = c(ORCID = "0009-0005-1108-518X")))
+Description: Provides functionality for untargeted LC-MS metabolomics research as specified in the associated publication in the "Metabolomics Data Processing and Data Analysis—Current Best Practices" special issue of the Metabolites journal (2020). This includes drift correction, quality control, statistical analyses and common visualizations. Raw data preprocessing and functionality related to biological context, such as pathway analysis, is not included.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 biocViews: BiomedicalInformatics, Metabolomics, DataImport, MassSpectrometry, BatchEffect, MultipleComparison, Normalization, QualityControl, Visualization
 Depends:
-    R (>= 3.5),
+    R (>= 4.4.0),
     Biobase,
     ggplot2,
     futile.logger,
@@ -22,11 +23,14 @@ Depends:
 Imports:
     dplyr,
     foreach,
+    graphics,
     grDevices,
     methods,
     openxlsx,
+    stats, 
     tibble,
-    tidyr
+    tidyr,
+    utils
 Suggests:
     BiocManager,
     BiocStyle,
@@ -61,5 +65,7 @@ Suggests:
     stringr,
     supraHex,
     testthat
+URL: https://github.com/vsuksi/notame
+BugReports: https://github.com/vsuksi/notame/issues
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr

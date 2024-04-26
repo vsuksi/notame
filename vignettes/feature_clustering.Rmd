@@ -94,6 +94,7 @@ To get visualizations of the clusters, set ```plotting = TRUE``` and specify a `
 
 
 ```{r}
+data("example_set", package = "notame")
 clustered <- cluster_features(example_set, rt_window = 2, corr_thresh = 0.4, d_thresh = 0.6)
 ```
 
