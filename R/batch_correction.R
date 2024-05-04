@@ -168,16 +168,14 @@ repeatability <- function(x, group) {
 #' @export
 perform_repeatability <- function(object, group) {
   group <- pData(object)[, group]
-  repeatabilities <- foreach::foreach(
-    i = featureNames(object),
-    .combine = rbind
-  ) %dopar% { # nolint: object_usage_linter.
-    result_row <- data.frame( # nolint: object_usage_linter.
-      Feature_ID = i, # nolint: object_usage_linter.
-      Repeatability = repeatability(exprs(object)[i, ], group)
-    )
-  }
-  repeatabilities
+  features <- featureNames(object)
+  repeatability <- BiocParallel::bplapply(X = features, 
+    FUN = function(feature) {
+      result_row <- data.frame( # nolint: object_usage_linter.
+        Feature_ID = feature, # nolint: object_usage_linter.
+        Repeatability = repeatability(exprs(object)[feature, ], group))
+      })
+  do.call(rbind, repeatability)
 }
 
 #' Align features between batches

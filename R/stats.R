@@ -1,3 +1,17 @@
+## Helper function for calculating summary statistics
+summary_fun <- function(f_levels, grouping_cols, groups, group_names, funs, result_row_template) {
+  result_row <- result_row_template
+  for (fname in names(funs)) {
+    tmp <- tapply(f_levels, groups, funs[[fname]])
+    if (is.na(grouping_cols[1])) {
+      result_row[fname] <- tmp[1]
+    } else {
+      result_row[paste(group_names, fname, sep = "_")] <- tmp
+    }
+  }
+  return(result_row)
+}
+
 #' Summary statistics
 #'
 #' Computes summary statistics for each feature, possibly grouped by a factor.
@@ -23,83 +37,58 @@
 summary_statistics <- function(object, grouping_cols = NA) {
   data <- combined_data(object)
   features <- Biobase::featureNames(object)
-  # Possible grouping
-
-  statistics <- foreach::foreach(
-    i = seq_along(features), .combine = rbind,
-    .export = c(
-      "finite_sd", "finite_mad", "finite_mean",
-      "finite_max", "finite_min",
-      "finite_median", "finite_quantile"
-    )
-  ) %dopar% {
-    feature <- features[i]
-    f_levels <- data[, feature]
-    if (is.na(grouping_cols)[1]) {
-      groups <- rep(1, nrow(data))
-      group_names <- ""
-    } else {
-      # Single grouping column
-      if (length(grouping_cols) == 1) {
-        groups <- data[, grouping_cols]
-        if (is(groups, "factor")) {
-          group_names <- levels(groups)
-        } else {
-          group_names <- unique(groups)
-        }
-      } else {
-        groups <- rep("", nrow(data))
-        for (grouping_col in grouping_cols) {
-          tmp_group <- paste(grouping_col, data[, grouping_col], sep = "_")
-          groups <- paste(groups, tmp_group, sep = "_")
-        }
-        groups <- as.factor(gsub("^_", "", groups))
+  # Get sample grouping and group names for saving results accordingly
+  if (is.na(grouping_cols)[1]) {
+    groups <- rep(1, nrow(data))
+    group_names <- ""
+  } else {
+    # Single grouping column
+    if (length(grouping_cols) == 1) {
+      groups <- data[, grouping_cols]
+      if (is(groups, "factor")) {
         group_names <- levels(groups)
-      }
-    }
-
-    # Define functions to use
-    funs <- list(
-      mean = finite_mean,
-      sd = finite_sd,
-      median = finite_median,
-      mad = finite_mad,
-      min = finite_min,
-      Q25 = function(x) {
-        finite_quantile(x, probs = 0.25)
-      },
-      Q75 = function(x) {
-        finite_quantile(x, probs = 0.75)
-      },
-      max = finite_max
-    )
-    # Initialize named vector for the results
-    result_row <- rep(0, times = length(group_names) * length(funs))
-    if (!is.na(grouping_cols[1])) {
-      var_names <- expand.grid(names(funs), group_names)
-      names(result_row) <- paste(var_names$Var2, var_names$Var1, sep = "_")
-    } else {
-      names(result_row) <- names(funs)
-    }
-    # Compute statistics
-    for (fname in names(funs)) {
-      tmp <- tapply(f_levels, groups, funs[[fname]])
-      if (is.na(grouping_cols[1])) {
-        result_row[fname] <- tmp[1]
       } else {
-        result_row[paste(group_names, fname, sep = "_")] <- tmp
+        group_names <- unique(groups)
       }
+    } else {
+      groups <- rep("", nrow(data))
+      for (grouping_col in grouping_cols) {
+        tmp_group <- paste(grouping_col, data[, grouping_col], sep = "_")
+        groups <- paste(groups, tmp_group, sep = "_")
+      }
+      groups <- as.factor(gsub("^_", "", groups))
+      group_names <- levels(groups)
     }
-    # Combine as data frame
-    result_row <- data.frame(
-      Feature_ID = feature, as.list(result_row),
-      stringsAsFactors = FALSE
-    )
-
-    result_row
   }
-
-  statistics
+  # Define functions to use
+  funs <- list(
+    mean = finite_mean,
+    sd = finite_sd,
+    median = finite_median,
+    mad = finite_mad,
+    min = finite_min,
+    Q25 = function(x) {
+      finite_quantile(x, probs = 0.25)
+    },
+    Q75 = function(x) {
+      finite_quantile(x, probs = 0.75)
+    },
+    max = finite_max
+  )
+  # Initialize named vector for the results
+  result_row_template <- rep(0, times = length(group_names) * length(funs))
+  if (!is.na(grouping_cols[1])) {
+    var_names <- expand.grid(names(funs), group_names)
+    names(result_row_template) <- paste(var_names$Var2, var_names$Var1, sep = "_")
+  } else {
+    names(result_row_template) <- names(funs)
+  }
+  # Calculate statistics
+  statistics <- t(data.frame(BiocParallel::bplapply(
+    X = data[, features], FUN = summary_fun, grouping_cols = grouping_cols, groups = groups, group_names = group_names, funs = funs, result_row_template = result_row_template), 
+    stringsAsFactors = FALSE))
+  # Convert to data frame
+  data.frame(Feature_ID = rownames(statistics), statistics, row.names = NULL)
 }
 
 #' Statistics cleaning
@@ -157,6 +146,16 @@ clean_stats_results <- function(
   df
 }
 
+.cohens_d_calc <- function(feature, group1, group2) {
+  f1 <- group1[, feature]
+  f2 <- group2[, feature]
+  d <- data.frame(
+    Feature_ID = feature,
+    Cohen_d = (finite_mean(f2) - finite_mean(f1)) /
+      sqrt((finite_sd(f1)^2 + finite_sd(f2)^2) / 2),
+    stringsAsFactors = FALSE)
+}
+
 cohens_d_fun <- function(object, group, id, time) {
   data <- combined_data(object)
   features <- Biobase::featureNames(object)
@@ -198,19 +197,10 @@ cohens_d_fun <- function(object, group, id, time) {
       paste(rev(time_levels), collapse = " - ")
     ))
   }
-  ds <- foreach::foreach(i = seq_along(features), .combine = rbind) %dopar% {
-    feature <- features[i]
-    f1 <- group1[, feature]
-    f2 <- group2[, feature]
-    d <- data.frame(
-      Feature_ID = feature,
-      Cohen_d = (finite_mean(f2) - finite_mean(f1)) /
-        sqrt((finite_sd(f1)^2 + finite_sd(f2)^2) / 2),
-      stringsAsFactors = FALSE
-    )
-  }
-
-  rownames(ds) <- ds$Feature_ID
+  
+  ds <- dplyr::bind_rows(BiocParallel::bplapply(
+    X = features, FUN = .cohens_d_calc,
+    group1 = group1, group2 = group2))
 
   if (is.null(time_levels)) {
     colnames(ds)[2] <- paste0(group_levels[2], "_vs_", group_levels[1], "_Cohen_d")
@@ -345,6 +335,19 @@ cohens_d <- function(object, group = group_col(object),
   res
 }
 
+fold_change_calc <- function(feature, group, data, groups) {
+  result_row <- rep(NA_real_, ncol(groups))
+  # Calculate fold changes
+  tryCatch({
+    for (i in seq_len(ncol(groups))) {
+      group1 <- data[data[, group] == groups[1, i], feature]
+      group2 <- data[data[, group] == groups[2, i], feature]
+      result_row[i] <- finite_mean(group2) / finite_mean(group1)
+    }
+  })
+  result_row
+}
+
 #' Fold change
 #'
 #' Computes fold change between each group for each feature.
@@ -366,27 +369,11 @@ fold_change <- function(object, group = group_col(object)) {
 
   data <- combined_data(object)
   groups <- combn(levels(data[, group]), 2)
-
   features <- Biobase::featureNames(object)
-
-  results_df <- foreach::foreach(
-    i = seq_along(features), .combine = rbind,
-    .export = "finite_mean"
-  ) %dopar% {
-    feature <- features[i]
-    result_row <- rep(NA_real_, ncol(groups))
-    # Calculate fold changes
-    tryCatch({
-      for (i in seq_len(ncol(groups))) {
-        group1 <- data[data[, group] == groups[1, i], feature]
-        group2 <- data[data[, group] == groups[2, i], feature]
-        result_row[i] <- finite_mean(group2) / finite_mean(group1)
-      }
-    })
-
-    result_row
-  }
-
+  # Calculate fold changes between groupings
+  results_df <- BiocParallel::bplapply(
+    X = features, FUN = fold_change_calc, group, data, groups)
+  results_df <- do.call(rbind, results_df)
   # Create comparison labels for result column names
   comp_labels <- groups %>%
     t() %>%
@@ -404,44 +391,53 @@ fold_change <- function(object, group = group_col(object)) {
 }
 
 
-compute_correlations <- function(id, fdr, duplicates,
-                                 var_pairs, data1, data2, ...) {
-  cor_results <- foreach::foreach(i = seq_len(nrow(var_pairs)), .combine = rbind) %dopar% {
-    x_tmp <- var_pairs$x[i]
-    y_tmp <- var_pairs$y[i]
-    cor_tmp <- NULL
-    tryCatch(
-      {
-        if (is.null(id)) {
-          cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp], ...)
-        } else {
-          id_tmp <- data1[, id]
-          cor_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp], y_var = data2[, y_tmp]) %>%
-          rmcorr::rmcorr(
-            participant = .$id_var,
-            measure1 = .$x_var,
-            measure2 = .$y_var,
-            dataset = .
-          )
-          cor_tmp <- list(estimate = cor_tmp$r, p.value = cor_tmp$p)
-        }
-      },
-      error = function(e) message(x_tmp, " vs", y_tmp, ": ", e$message)
-    )
-    if (is.null(cor_tmp)) {
-      cor_tmp <- list(
-        estimate = NA,
-        p.value = NA
-      )
-    }
-    data.frame(
-      X = x_tmp, Y = y_tmp,
-      Correlation_coefficient = cor_tmp$estimate,
-      Correlation_P = cor_tmp$p.value,
-      stringsAsFactors = FALSE
+.calc_correlation <- function(var_pair, id, data1, data2, ...) {
+  x_tmp <- var_pair["x", ]
+  y_tmp <- var_pair["y", ]
+  cor_tmp <- NULL
+  
+  tryCatch(
+    {
+      if (is.null(id)) {
+        cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp], ...)
+      } else {
+        id_tmp <- data1[, id]
+        cor_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp], y_var = data2[, y_tmp]) %>%
+        rmcorr::rmcorr(
+          participant = .$id_var,
+          measure1 = .$x_var,
+          measure2 = .$y_var,
+          dataset = .
+        )
+        cor_tmp <- list(estimate = cor_tmp$r, p.value = cor_tmp$p)
+      }
+    },
+    error = function(e) message(x_tmp, " vs", y_tmp, ": ", e$message)
+  )
+  if (is.null(cor_tmp)) {
+    cor_tmp <- list(
+      estimate = NA,
+      p.value = NA
     )
   }
+  data.frame(
+    X = x_tmp, Y = y_tmp,
+    Correlation_coefficient = cor_tmp$estimate,
+    Correlation_P = cor_tmp$p.value,
+    stringsAsFactors = FALSE
+  )
+}
 
+
+compute_correlations <- function(id, fdr, duplicates,
+                                 var_pairs, data1, data2, ...) {
+  # Prepare pairs for bplapply iteration
+  var_pairs <- apply(var_pairs, 1, data.frame)
+  # Calculate correlations for each pair
+  cor_results <- BiocParallel::bplapply(
+    X = var_pairs, FUN = .calc_correlation, id, data1, data2, ...)
+  cor_results <- do.call(rbind, cor_results)
+  
   if (duplicates) {
     cor_results_dup <- cor_results
     cor_results_dup$X <- cor_results$Y
@@ -460,6 +456,7 @@ compute_correlations <- function(id, fdr, duplicates,
   rownames(cor_results) <- seq_len(nrow(cor_results))
   cor_results
 }
+
 #' Perform correlation tests
 #'
 #' Performs a correlation test between two sets of variables. All the variables must be either
@@ -512,7 +509,6 @@ compute_correlations <- function(id, fdr, duplicates,
 #' )
 #' @seealso \code{\link{cor.test}}, \code{\link[rmcorr]{rmcorr}}
 #'
-#' @importFrom foreach %do%
 #' @importFrom stats cor.test
 #' @export
 perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NULL, fdr = TRUE,
@@ -582,8 +578,24 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL, object2 = NUL
 
   cor_results <- compute_correlations(id, fdr, duplicates, var_pairs, data1, data2, ...)
   log_text("Correlation tests performed.")
-
   cor_results
+}
+
+
+.calc_auc <- function(feature, time, subject, group, pheno_data, data) {
+  result_row <- rep(NA_real_, nrow(pheno_data))
+  # Compute AUC for each subject in each group
+  tryCatch({
+    for (j in seq_len(nrow(pheno_data))) {
+      subset_idx <- data[, subject] == pheno_data[j, subject] & data[, group] == pheno_data[j, group]
+      result_row[j] <- PK::auc(
+        time = as.numeric(data[subset_idx, time]),
+        conc = data[subset_idx, feature], design = "complete"
+      )$est[1]
+    }
+  })
+
+  matrix(result_row, nrow = 1, dimnames = list(feature, pheno_data$Sample_ID))
 }
 
 #' Area under curve
@@ -630,24 +642,9 @@ perform_auc <- function(object, time = time_col(object), subject = subject_col(o
   pheno_data$Injection_order <- seq_len(nrow(pheno_data))
   rownames(pheno_data) <- pheno_data$Sample_ID
 
-  # AUCs
   features <- featureNames(object)
-  aucs <- foreach::foreach(i = seq_along(features), .combine = rbind) %dopar% {
-    feature <- features[i]
-    result_row <- rep(NA_real_, nrow(pheno_data))
-    # Compute AUC for each subject in each group
-    tryCatch({
-      for (j in seq_len(nrow(pheno_data))) {
-        subset_idx <- data[, subject] == pheno_data[j, subject] & data[, group] == pheno_data[j, group]
-        result_row[j] <- PK::auc(
-          time = as.numeric(data[subset_idx, time]),
-          conc = data[subset_idx, feature], design = "complete"
-        )$est[1]
-      }
-    })
-
-    matrix(result_row, nrow = 1, dimnames = list(feature, pheno_data$Sample_ID))
-  }
+  aucs <- BiocParallel::bplapply(features, FUN = .calc_auc, time, subject, group, pheno_data, data)
+  aucs <- do.call(rbind, aucs)
 
   # Construct new MetaboSet object (with all modes together)
   new_object <- construct_metabosets(
@@ -697,29 +694,29 @@ fill_results <- function(results_df, features) {
   results_df
 }
 
+.help_perform_test <- function(feature, formula_char, result_fun, data, ...) {
+  # Replace "Feature" with the current feature name
+  tmp_formula <- gsub("Feature", feature, formula_char)
+  # Run test
+  result_row <- result_fun(feature = feature, formula = as.formula(tmp_formula), data = data, ...)
+  # In case Feature is used as predictor, make the column names match
+  if (!is.null(result_row)) {
+  colnames(result_row) <- gsub(feature, "Feature", colnames(result_row))
+  }
+  result_row
+}
+
+
 # Helper function for running a variety of simple statistical tests
 #' @importFrom stats as.formula
 perform_test <- function(object, formula_char, result_fun, all_features, fdr = TRUE, packages = NULL, ...) {
   data <- combined_data(object)
   features <- Biobase::featureNames(object)
 
-  results_df <- foreach::foreach(
-    i = seq_along(features), .combine = dplyr::bind_rows,
-    .packages = packages
-  ) %dopar% {
-    feature <- features[i]
-    # Replace "Feature" with the current feature name
-    tmp_formula <- gsub("Feature", feature, formula_char)
-    # Run test
-    result_row <- result_fun(feature = feature, formula = as.formula(tmp_formula), data = data, ...)
-    # In case Feature is used as predictor, make the column names match
-    if (!is.null(result_row)) {
-      colnames(result_row) <- gsub(feature, "Feature", colnames(result_row))
-    }
-    result_row
-  }
-  # Check that results actually contain something
-  # If the tests are run on parallel, the error messages from failing tests are not visible
+  results_df <- BiocParallel::bplapply(
+    features, .help_perform_test, formula_char, result_fun, data, ...)
+  results_df <- do.call(rbind, results_df)
+
   if (nrow(results_df) == 0) {
     stop("All the tests failed, to see the problems, run the tests without parallelization.",
       call. = FALSE
@@ -1398,52 +1395,40 @@ perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
   results_df
 }
 
-paired_fun <- function(test, features, group1, group2, pair, ...) {
-  results_df <- foreach::foreach(
-    i = seq_along(features),
-    .combine = dplyr::bind_rows
-  ) %dopar% {
-    feature <- features[i]
-    result_row <- NULL
-    tryCatch(
-      {
-        if (test == "t_test") {
-          res <- t.test(group1[, feature], group2[, feature], paired = TRUE, ...)
-        } else if (test == "Wilcox") {
-          res <- wilcox.test(group1[, feature], group2[, feature],
-            paired = TRUE,
-            conf.int = TRUE, ...
-          )
-        }
+paired_fun <- function(feature, test, group1, group2, pair, ...) {
+  result_row <- NULL
+  tryCatch({
+    if (test == "t_test") {
+      res <- t.test(group1[, feature], group2[, feature], paired = TRUE,...)
+    } else if (test == "Wilcox") {
+      res <- wilcox.test(group1[, feature], group2[, feature],
+        paired = TRUE,
+        conf.int = TRUE, ...)
+    }
 
-        conf_level <- attr(res$conf.int, "conf.level") * 100
+    conf_level <- attr(res$conf.int, "conf.level") * 100
 
-        result_row <- data.frame(
-          Feature_ID = feature,
-          Statistic = res$statistic,
-          Estimate = res$estimate[1],
-          LCI = res$conf.int[1],
-          UCI = res$conf.int[2],
-          P = res$p.value,
-          stringsAsFactors = FALSE
-        )
-        ci_idx <- grepl("CI", colnames(result_row))
-        colnames(result_row)[ci_idx] <- paste0(colnames(result_row)[ci_idx], conf_level)
-        colnames(result_row)[-1] <- paste0(
-          pair[1], "_vs_",
-          pair[2], "_",
-          test, "_",
-          colnames(result_row)[-1]
-        )
-      },
-      error = function(e) {
-        message(feature, ": ", e$message)
-      }
-    )
-    result_row
-  }
+    result_row <- data.frame(
+      Feature_ID = feature,
+      Statistic = res$statistic,
+      Estimate = res$estimate[1],
+      LCI = res$conf.int[1],
+      UCI = res$conf.int[2],
+      P = res$p.value,
+      stringsAsFactors = FALSE)
+    ci_idx <- grepl("CI", colnames(result_row))
+    colnames(result_row)[ci_idx] <- paste0(colnames(result_row)[ci_idx],conf_level)
+    colnames(result_row)[-1] <- paste0(
+      pair[1], "_vs_",
+      pair[2], "_",
+      test, "_",
+      colnames(result_row)[-1])
+  },
+  error = function(e) {
+    message(feature, ": ", e$message)
+  })
+  result_row
 }
-
 
 perform_paired_test <- function(object, group, id, test, all_features = FALSE, ...) {
   results_df <- NULL
@@ -1472,7 +1457,8 @@ perform_paired_test <- function(object, group, id, test, all_features = FALSE, .
     warning(paste0("Skipped ", paste0(pair, collapse = " & "), ": no common IDs"))
     return(data.frame("Feature_ID" = features))
   }
-  results_df <- paired_fun(test, features, group1, group2, pair, ...)
+  results_df <- BiocParallel::bplapply(X = features, FUN = paired_fun, test, group1, group2, pair, ...)
+  results_df <- do.call(rbind, results_df)
 
   # Check that results actually contain something
   # If the tests are run on parallel, the error messages from failing tests are not visible

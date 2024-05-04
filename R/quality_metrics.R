@@ -30,6 +30,7 @@ erase_quality <- function(object) {
 }
 
 
+
 #' Assess quality information of features
 #'
 #' @param object a MetaboSet object
@@ -49,27 +50,23 @@ assess_quality <- function(object) {
 
   qc_data <- exprs(object)[, object$QC == "QC"]
   sample_data <- exprs(object)[, object$QC != "QC"]
-
-  quality_metrics <- foreach::foreach(
-    i = seq_len(nrow(sample_data)), .combine = rbind,
-    .export = c("finite_sd", "finite_mad", "finite_mean", "finite_median")
-  ) %dopar% {
-    data.frame(
-      Feature_ID = rownames(sample_data)[i],
-      RSD = finite_sd(qc_data[i, ]) / abs(finite_mean(qc_data[i, ])),
-      RSD_r = finite_mad(qc_data[i, ]) / abs(finite_median(qc_data[i, ])),
-      D_ratio = finite_sd(qc_data[i, ]) / finite_sd(sample_data[i, ]),
-      D_ratio_r = finite_mad(qc_data[i, ]) / finite_mad(sample_data[i, ]),
-      row.names = rownames(sample_data)[i], stringsAsFactors = FALSE
-    )
-  }
-
+  features <- rownames(sample_data)
+  
+  quality_metrics <- BiocParallel::bplapply(
+    X = features, 
+    FUN = function(feature) {
+      data.frame(
+        Feature_ID = feature,
+        RSD = finite_sd(qc_data[feature, ]) / abs(finite_mean(qc_data[feature, ])),
+        RSD_r = finite_mad(qc_data[feature, ]) / abs(finite_median(qc_data[feature, ])),
+        D_ratio = finite_sd(qc_data[feature, ]) / finite_sd(sample_data[feature, ]),
+        D_ratio_r = finite_mad(qc_data[feature, ]) / finite_mad(sample_data[feature, ]),
+        row.names = feature, stringsAsFactors = FALSE)
+    })
+  quality_metrics <- do.call(rbind, quality_metrics)
   object <- join_fData(object, quality_metrics)
-
-  object
 }
-
-
+  
 #' Flag low-quality features
 #'
 #' Flags low-quality features using the quality metrics defined in (Broadhurst 2018). The metrics are described in

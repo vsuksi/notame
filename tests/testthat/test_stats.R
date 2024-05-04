@@ -3,8 +3,6 @@ context("Testing statistics")
 library(notame)
 # Summary statistics ----
 test_that("summary statistics work without grouping", {
-  # Force foreach to count sequentially
-  foreach::registerDoSEQ()
   smry <- summary_statistics(mark_nas(example_set, 0))
   ex <- exprs(mark_nas(example_set, 0))
 
@@ -17,8 +15,6 @@ test_that("summary statistics work without grouping", {
 
 
 test_that("summary statistics work with grouping", {
-  foreach::registerDoSEQ()
-
   smry <- summary_statistics(mark_nas(example_set, 0), grouping_cols = "Group")
   exa <- exprs(mark_nas(example_set[, example_set$Group == "A"], 0))
 
@@ -263,8 +259,8 @@ test_that("Cohens D values are counted right", {
   group1 <- data[which(data[, "Group"] == levels(data[, "Group"])[1]), ]
   group2 <- data[which(data[, "Group"] == levels(data[, "Group"])[2]), ]
   group3 <- data[which(data[, "Group"] == levels(data[, "Group"])[3]), ]
-  ds <- foreach::foreach(i = seq_along(features), .combine = rbind) %do% {
-    feature <- features[i]
+  
+  ds <- BiocParallel::bplapply(X = features, FUN = function(feature) {
     f1 <- group1[, feature]
     f2 <- group2[, feature]
     f3 <- group3[, feature]
@@ -278,9 +274,9 @@ test_that("Cohens D values are counted right", {
         sqrt((finite_sd(f3)^2 + finite_sd(f2)^2) / 2),
       stringsAsFactors = FALSE
     )
-  }
+  })
+  ds <- do.call(rbind, ds)
   rownames(ds) <- ds$Feature_ID
-  foreach::registerDoSEQ()
   cohd <- cohens_d(object)
   expect_identical(cohd, ds)
 })
@@ -339,8 +335,7 @@ test_that("Cohens D values between time points are counted right", {
   group7 <- new_data_32[which(time3[, "Group"] == levels(time3[, "Group"])[1]), ] # A 3-2
   group8 <- new_data_32[which(time3[, "Group"] == levels(time3[, "Group"])[2]), ] # B 3-2
   group9 <- new_data_32[which(time3[, "Group"] == levels(time3[, "Group"])[3]), ] # C 3-2
-  ds <- foreach::foreach(i = seq_along(features), .combine = rbind) %do% {
-    feature <- features[i]
+  ds <- BiocParallel::bplapply(X = features, FUN = function(feature){
     f1 <- group1[, feature] # A 2-1
     f2 <- group2[, feature] # B 2-1
     f3 <- group3[, feature] # C 2-1
@@ -370,11 +365,12 @@ test_that("Cohens D values between time points are counted right", {
         sqrt((finite_sd(f5)^2 + finite_sd(f6)^2) / 2),
       "C_vs_B_3_minus_2_Cohen_d" = (finite_mean(f9) - finite_mean(f8)) /
         sqrt((finite_sd(f8)^2 + finite_sd(f9)^2) / 2),
-      stringsAsFactors = FALSE
-    )
-  }
+      stringsAsFactors = FALSE)
+  })
+  
+  ds <- do.call(rbind, ds)
+  
   rownames(ds) <- ds$Feature_ID
-  foreach::registerDoSEQ()
   expect_identical(cohens_d(object, time = "Time", id = "Subject_ID"), ds)
 })
 

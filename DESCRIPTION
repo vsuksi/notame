@@ -21,8 +21,8 @@ Depends:
     BiocGenerics,
     magrittr
 Imports:
+    BiocParallel,
     dplyr,
-    foreach,
     graphics,
     grDevices,
     methods,
@@ -38,7 +38,6 @@ Suggests:
     cowplot,
     devEMF,
     devtools,
-    doParallel,
     fpc,
     ggbeeswarm,
     ggdendro,

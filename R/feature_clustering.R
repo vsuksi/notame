@@ -259,7 +259,6 @@ pull_clusters <- function(data, features, name_col) {
 #' \item mz_diff & rt_diff: mass and retention time difference
 #' }
 #'
-#' @importFrom foreach "%dopar%"
 #' @importFrom stats cor
 #'
 #' @export
@@ -270,7 +269,8 @@ find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 
     stop("Need at least 2 features to do any clustering!")
   }
   n <- nrow(features)
-  connections <- foreach::foreach(i = seq_len(n - 1), .combine = rbind) %dopar% {
+  
+  connections <- BiocParallel::bplapply(X = seq_len(n -1), FUN = function(i) {
     if (i %% 100 == 0) {
       message(i)
     }
@@ -283,16 +283,14 @@ find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 
           mz_diff <- features[j, mz_col] - features[i, mz_col]
           connections_tmp <- rbind(connections_tmp, data.frame(
             x = features[i, name_col], y = features[j, name_col],
-            cor = cor_coef, rt_diff = rt_diff, mz_diff = mz_diff
-          ))
+            cor = cor_coef, rt_diff = rt_diff, mz_diff = mz_diff))
         }
       }
     }
     connections_tmp
-  }
-  connections
+  })
+  connections <- do.call(rbind, connections)
 }
-
 
 #' Extract the densely connected clusters
 #'
@@ -338,18 +336,12 @@ find_clusters <- function(connections, d_thresh = 0.8) {
     message(n_comp, " components found")
 
     # Only keep the densely connected part of each component (subgraph)
-    clusters_tmp <- foreach::foreach(i = seq_len(n_comp), .combine = c) %dopar% {
-      if (i %% 100 == 0) {
-        message("Component ", i, " / ", n_comp)
-      }
-      subg <- comp[[i]]
-
+    clusters_tmp <- BiocParallel::bplapply(X = comp, FUN = function(subg) {
       n_nodes <- length(igraph::V(subg))
       d <- igraph::degree(subg)
       # The limit of the degree a node needs to be kept
       d_lim <- round(d_thresh * (n_nodes - 1))
-
-      #
+      
       if (n_nodes >= 3) {
         # Remove the node with the smallest degree until all nodes in the cluster have
         # a degree above the limit
@@ -369,9 +361,9 @@ find_clusters <- function(connections, d_thresh = 0.8) {
       # Record the final cluster and remove the nodes from the main graph
       list(list(
         features = names(igraph::V(subg)),
-        graph = subg
-      ))
-    }
+        graph = subg))
+    })
+    clusters_tmp <- do.call(c, clusters_tmp)
 
     for (j in seq_along(clusters_tmp)) {
       clusters[[k]] <- clusters_tmp[[j]]
@@ -380,7 +372,6 @@ find_clusters <- function(connections, d_thresh = 0.8) {
       g <- igraph::delete.vertices(g, v = names(igraph::V(subg)))
     }
   }
-
   clusters
 }
 

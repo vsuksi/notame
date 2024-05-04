@@ -10,7 +10,7 @@ pca_helper <- function(object, pcs, center, scale, ...) {
   add_citation("PCA was performed using pcaMethods package:", citation("pcaMethods"))
   res_pca <- pcaMethods::pca(object, nPcs = max(pcs), scale = scale, center = center, ...)
   pca_scores <- as.data.frame(pcaMethods::scores(res_pca))[, pcs]
-  r2 <- res_pca@R2[pcs]
+  r2 <- summary(res_pca)["R2", pcs]
   labels <- paste0(paste0("PC", pcs), " (", scales::percent(r2), ")")
 
   return(list(pca_scores = pca_scores, labels = labels))
@@ -306,6 +306,7 @@ scatter_plot <- function(data, x, y, color, shape, label = NULL,
 #'
 #' @seealso \code{\link[pcaMethods]{pca}}
 #'
+#' @importFrom stats loadings
 #' @export
 plot_pca_loadings <- function(object, pcs = c(1, 2), all_features = FALSE, center = TRUE, scale = "uv",
                               n_features = c(10, 10),
@@ -326,7 +327,7 @@ plot_pca_loadings <- function(object, pcs = c(1, 2), all_features = FALSE, cente
   object <- drop_flagged(object, all_features)
   pca_res <- pcaMethods::pca(object, nPcs = max(pcs), center = center, scale = scale, ...)
 
-  loads <- as.data.frame(pca_res@loadings)[, pcs]
+  loads <- as.data.frame(pcaMethods::loadings(pca_res))[, pcs]
   pc_names <- colnames(loads)
   loads$Feature_ID <- rownames(loads)
 
