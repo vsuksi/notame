@@ -94,7 +94,7 @@ save_name <- function(object, prefix, format, fun, name, width = 7, height = 7, 
   if (!is.null(p)) {
     file_name <- paste0(prefix, "_", name, ".", format)
     save_plot(p, file = file_name, width = width, height = height)
-    assign("file_names", paste(file_names, file_name), pos = "package:notame")
+    assign("file_names", paste(file_names, file_name))
   }
 }
 
