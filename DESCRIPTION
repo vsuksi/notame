@@ -66,5 +66,5 @@ Suggests:
     testthat
 URL: https://github.com/vsuksi/notame
 BugReports: https://github.com/vsuksi/notame/issues
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr

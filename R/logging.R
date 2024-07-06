@@ -8,17 +8,19 @@
 #' @return None, the function is invoked for its side effect.
 #'
 #' @examples
+#' \dontshow{.old_wd <- setwd(tempdir())}
 #' file_name <- "~/log.txt"
 #' init_log(file_name)
 #' # Print the contents of the file
 #' scan(file_name, sep = "\n", what = "character")
-#'
+#' \dontshow{setwd(.old_wd)}
 #' @seealso \code{\link{log_text}}, \code{\link{finish_log}}
 #'
 #' @import futile.logger
 #' @export
 init_log <- function(log_file) {
-  futile.logger::flog.appender(futile.logger::appender.tee(log_file), name = "notame")
+  futile.logger::flog.appender(futile.logger::appender.tee(log_file), 
+                               name = "notame")
   log_text("Starting logging")
   # Pass errors to log
   options(error = function() {
@@ -36,11 +38,13 @@ init_log <- function(log_file) {
 #' @return None, the function is invoked for its side effect.
 #'
 #' @examples
+#' \dontshow{.old_wd <- setwd(tempdir())}
 #' file_name <- "~/log.txt"
 #' init_log(file_name)
 #' log_text("Hello World!")
 #' # Print the contents of the file
 #' scan(file_name, sep = "\n", what = "character")
+#' \dontshow{setwd(.old_wd)}
 #'
 #' @seealso \code{\link{init_log}}, \code{\link{finish_log}}
 #'
@@ -66,7 +70,9 @@ finish_log <- function() {
   # Return default option for error
   options(error = NULL)
   # Log end of session info
-  futile.logger::flog.info(paste("Finished analysis. ", date(), "\nSession info:\n", sep = ""))
+  futile.logger::flog.info(paste("Finished analysis. ", date(), 
+                                 "\nSession info:\n", sep = ""))
   futile.logger::flog.info(capture.output(sessionInfo()))
-  invisible(futile.logger::flog.appender(futile.logger::appender.console(), name = "notame"))
+  invisible(futile.logger::flog.appender(futile.logger::appender.console(),
+                                         name = "notame"))
 }

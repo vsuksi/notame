@@ -23,27 +23,27 @@
 #'
 #' @importFrom stats as.dendrogram
 #' @export
-plot_dendrogram <- function(
-    object, all_features = FALSE, color = group_col(object),
-    dist_method = "euclidean", clust_method = "ward.D2",
-    center = TRUE, scale = "uv", title = "Dendrogram of hierarchical clustering",
-    subtitle = NULL, color_scale = getOption("notame.color_scale_dis")) {
+plot_dendrogram <- function(object, all_features = FALSE, 
+                            color = group_col(object), 
+                            dist_method = "euclidean", clust_method = "ward.D2",
+                            center = TRUE, scale = "uv", 
+                            title = "Dendrogram of hierarchical clustering",
+                            subtitle = NULL, 
+                            color_scale = getOption("notame.color_scale_dis")) {
   if (!requireNamespace("pcaMethods", quietly = TRUE)) {
-    stop("Package \"pcaMethods\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'pcaMethods\' needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
   if (!requireNamespace("ggdendro", quietly = TRUE)) {
-    stop("Package \"ggdendro\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'ggdendro\' needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
   color <- color %||% NULL
-
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
-
-  subtitle <- subtitle %||% paste("Distance method:", dist_method, "Clustering method:", clust_method)
+  
+  subtitle <- subtitle %||% paste("Distance method:", dist_method, 
+                                  "Clustering method:", clust_method)
 
   object <- pcaMethods::prep(object, center = center, scale = scale)
 
@@ -54,14 +54,16 @@ plot_dendrogram <- function(
 
   labels <- ggdendro::label(d_data) %>%
     dplyr::mutate(label = .data$label) %>%
-    dplyr::left_join(pData(object)[c("Sample_ID", color)], by = c("label" = "Sample_ID"))
+    dplyr::left_join(pData(object)[c("Sample_ID", color)], 
+                     by = c("label" = "Sample_ID"))
   labels[, color] <- as.factor(labels[, color])
   p <- ggplot(ggdendro::segment(d_data)) +
-    geom_segment(aes(x = .data$x, y = .data$y, xend = .data$xend, yend = .data$yend)) +
-    geom_text(
-      data = labels, aes(x = .data[["x"]], y = .data[["y"]], label = .data[["label"]], color = .data[[color]]),
-      angle = 90, hjust = 1
-    ) +
+    geom_segment(aes(x = .data$x, y = .data$y,
+                     xend = .data$xend, yend = .data$yend)) +
+    geom_text(data = labels, aes(x = .data[["x"]], y = .data[["y"]],
+                                 label = .data[["label"]],
+                                 color = .data[[color]]),
+              angle = 90, hjust = 1) +
     ggdendro::theme_dendro() +
     color_scale +
     labs(title = title, subtitle = subtitle)
@@ -96,27 +98,30 @@ plot_dendrogram <- function(
 #' @seealso \code{\link{dist}} \code{\link{hclust}}
 #'
 #' @export
-plot_sample_heatmap <- function(object, all_features = FALSE, dist_method = "euclidean", clust_method = "ward.D2",
+plot_sample_heatmap <- function(object, all_features = FALSE, 
+                                dist_method = "euclidean", 
+                                clust_method = "ward.D2",
                                 center = TRUE, scale = "uv",
                                 group_bar = TRUE, group = group_col(object),
                                 title = "Heatmap of distances between samples",
-                                subtitle = NULL, fill_scale_con = getOption("notame.fill_scale_con"),
-                                fill_scale_dis = getOption("notame.fill_scale_dis")) {
+                                subtitle = NULL, fill_scale_con =
+                                getOption("notame.fill_scale_con"),
+                                fill_scale_dis =
+                                getOption("notame.fill_scale_dis")) {
   if (!requireNamespace("pcaMethods", quietly = TRUE)) {
-    stop("Package \"pcaMethods\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'pcaMethods\' needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
   if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \"cowplot\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'cowplot\' needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
 
   # Default settings
-  subtitle <- subtitle %||% paste("Distance method:", dist_method, "Clustering method:", clust_method)
+  subtitle <- subtitle %||% paste("Distance method:", dist_method, 
+                                  "Clustering method:", clust_method)
 
   object <- pcaMethods::prep(object, center = center, scale = scale)
 
@@ -133,7 +138,8 @@ plot_sample_heatmap <- function(object, all_features = FALSE, dist_method = "euc
     tidyr::gather("Y", "Distance", -"X")
   # Set the correct order given by hclust
   distances_df$X <- factor(distances_df$X, levels = hc_order, ordered = TRUE)
-  distances_df$Y <- factor(distances_df$Y, levels = rev(hc_order), ordered = TRUE)
+  distances_df$Y <- factor(distances_df$Y, levels = rev(hc_order), 
+                           ordered = TRUE)
 
   # Heatmap
   p <- ggplot(distances_df, aes(.data$X, .data$Y, fill = .data$Distance)) +
@@ -146,14 +152,17 @@ plot_sample_heatmap <- function(object, all_features = FALSE, dist_method = "euc
   # Group bar
   if (group_bar && !is.na(group)) {
     pheno_data <- pData(object)
-    pheno_data$Sample_ID <- factor(pheno_data$Sample_ID, levels = hc_order, ordered = TRUE)
+    pheno_data$Sample_ID <- factor(pheno_data$Sample_ID, levels = hc_order,
+                                   ordered = TRUE)
 
-    gb <- ggplot(pheno_data, aes(x = .data[["Sample_ID"]], y = 1, fill = .data[[group]])) +
+    gb <- ggplot(pheno_data, aes(x = .data[["Sample_ID"]], y = 1, 
+                                 fill = .data[[group]])) +
       geom_tile(color = "white") +
       theme_void() +
       fill_scale_dis
 
-    p <- cowplot::plot_grid(p, gb, ncol = 1, align = "v", rel_heights = c(10 / 11, 1 / 11))
+    p <- cowplot::plot_grid(p, gb, ncol = 1, align = "v", 
+                            rel_heights = c(10 / 11, 1 / 11))
   }
 
   p

@@ -17,11 +17,12 @@ Initialize a log file with the current data and time.
 All major operations run after this will be logged to the specified file.
 }
 \examples{
+\dontshow{.old_wd <- setwd(tempdir())}
 file_name <- "~/log.txt"
 init_log(file_name)
 # Print the contents of the file
 scan(file_name, sep = "\n", what = "character")
-
+\dontshow{setwd(.old_wd)}
 }
 \seealso{
 \code{\link{log_text}}, \code{\link{finish_log}}

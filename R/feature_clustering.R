@@ -33,14 +33,15 @@
 #' @export
 cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
                              all_features = FALSE, rt_window = 1 / 60,
-                             corr_thresh = 0.9, d_thresh = 0.8,
-                             plotting = FALSE, min_size_plotting = 3, prefix = NULL) {
+                             corr_thresh = 0.9, d_thresh = 0.8, 
+                             plotting = FALSE, min_size_plotting = 3, 
+                             prefix = NULL) {
   # Drop flagged compounds before clustering
   orig <- object
   object <- drop_flagged(object, all_features)
 
   if (is.null(mz_col) || is.null(rt_col)) {
-    cols <- find_mz_rt_cols(fData(object))
+    cols <- .find_mz_rt_cols(fData(object))
   }
   mz_col <- mz_col %||% cols$mz_col
   rt_col <- rt_col %||% cols$rt_col
@@ -57,15 +58,11 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
     features_tmp <- features[features$Split == s, ]
     data_tmp <- data[, features_tmp$Feature_ID]
 
-    conn_tmp <- find_connections(
-      data = data_tmp,
-      features = features_tmp,
-      corr_thresh = corr_thresh,
-      rt_window = rt_window,
-      name_col = "Feature_ID",
-      mz_col = mz_col,
-      rt_col = rt_col
-    )
+    conn_tmp <- find_connections(data = data_tmp, features = features_tmp,
+                                 corr_thresh = corr_thresh,
+                                 rt_window = rt_window, name_col = "Feature_ID",
+                                 mz_col = mz_col, rt_col = rt_col)
+    
     conn <- rbind(conn, conn_tmp)
     log_text(paste("Found", nrow(conn_tmp), "connections in", s))
   }
@@ -74,34 +71,26 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
 
   # Form clusters
   clusters <- find_clusters(conn, d_thresh)
-  lens <- vapply(clusters, function(x) {
-    length(x$features)
-  }, integer(1))
-  log_text(paste(
-    "Found", sum(lens > 1),
-    "clusters of 2 or more features, clustering finished at", Sys.time()
-  ))
-
+  lens <- vapply(clusters, function(x) length(x$features), integer(1))
+  log_text(paste("Found", sum(lens > 1),
+                 "clusters of 2 or more features, clustering finished at",
+                 Sys.time()))
   # Compute median peak area and assing cluster ID
   features$MPA <- apply(exprs(object), 1, finite_median)
   features <- assign_cluster_id(data, clusters, features, "Feature_ID")
 
   if (plotting) {
-    visualize_clusters(
-      data = data,
-      features = features, clusters = clusters,
-      min_size = min_size_plotting,
-      rt_window = rt_window, name_col = "Feature_ID",
-      mz_col = mz_col, rt_col = rt_col, file_path = prefix
-    )
+    visualize_clusters(data = data, features = features, clusters = clusters,
+                       min_size = min_size_plotting, rt_window = rt_window,
+                       name_col = "Feature_ID", mz_col = mz_col, 
+                       rt_col = rt_col, file_path = prefix)
     log_text(paste("Saved cluster plots to:", prefix))
   }
   # Add cluster IDs to the ORIGINAL object (flagged features still there)
-  clustered <- join_fData(orig, features[c(
-    "Feature_ID", "MPA",
-    "Cluster_ID", "Cluster_size",
-    "Cluster_features"
-  )])
+  clustered <- join_fData(orig, features[c("Feature_ID", "MPA",
+                                            "Cluster_ID", "Cluster_size",
+                                            "Cluster_features")])
+                                            
   clustered
 }
 
@@ -121,7 +110,8 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
 #' @export
 assign_cluster_id <- function(data, clusters, features, name_col) {
   if (!"MPA" %in% colnames(features)) {
-    features$MPA <- vapply(data[, features[, name_col]], finite_median, numeric(1))
+    features$MPA <- vapply(data[, features[, name_col]], 
+                           finite_median, numeric(1))
   }
 
   features$Cluster_ID <- features[, name_col]
@@ -134,12 +124,14 @@ assign_cluster_id <- function(data, clusters, features, name_col) {
       idx <- features[, name_col] %in% cluster$features
       # The cluster is named for the feature with the largest median peak area
       features_tmp <- features[idx, ]
-      max_mpa_idx <- which(features_tmp$MPA == max(features_tmp$MPA, na.rm = TRUE))[1]
+      max_mpa_idx <- which(features_tmp$MPA == max(features_tmp$MPA, 
+                                                   na.rm = TRUE))[1]
       max_mpa_feature <- features_tmp[max_mpa_idx, name_col]
       # Saving some information about the clusters
       features$Cluster_ID[idx] <- paste0("Cluster_", max_mpa_feature)
       features$Cluster_size[idx] <- length(cluster$features)
-      features$Cluster_features[idx] <- paste(sort(cluster$features), collapse = ";")
+      features$Cluster_features[idx] <- paste(sort(cluster$features), 
+                                              collapse = ";")
     }
   }
   features
@@ -164,7 +156,8 @@ assign_cluster_id <- function(data, clusters, features, name_col) {
 compress_clusters <- function(object) {
   cluster_names <- fData(object)$Cluster_ID
   if (is.null(cluster_names)) {
-    stop('No "Cluster_ID" found in fData(object), please run cluster_features first!')
+    stop("No 'Cluster_ID' found in fData(object), ",
+         "please run cluster_features first!")
   }
   # Get only "real" clusters
   clusters <- cluster_names[grepl("^Cluster_", cluster_names)] %>%
@@ -200,7 +193,8 @@ compress_clusters <- function(object) {
 pull_clusters <- function(data, features, name_col) {
   cluster_names <- features$Cluster_ID
   if (is.null(cluster_names)) {
-    stop('No "Cluster_ID" found in features, please run assign_cluster_id first!')
+    stop("No 'Cluster_ID' found in features, ",
+         "please run assign_cluster_id first!")
   }
   # Get only "real" clusters
   clusters <- cluster_names[grepl("^Cluster_", cluster_names)] %>%
@@ -262,15 +256,15 @@ pull_clusters <- function(data, features, name_col) {
 #' @importFrom stats cor
 #'
 #' @export
-find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 60,
-                             name_col, mz_col, rt_col) {
+find_connections <- function(data, features, corr_thresh = 0.9,
+                             rt_window = 1 / 60, name_col, mz_col, rt_col) {
   d <- data[features[, name_col]]
   if (ncol(d) < 2) {
     stop("Need at least 2 features to do any clustering!")
   }
   n <- nrow(features)
   
-  connections <- BiocParallel::bplapply(X = seq_len(n -1), FUN = function(i) {
+  connections <- BiocParallel::bplapply(seq_len(n -1), function(i) {
     if (i %% 100 == 0) {
       message(i)
     }
@@ -281,9 +275,12 @@ find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 
       if (!is.na(cor_coef)) {
         if (abs(rt_diff) < rt_window && cor_coef > corr_thresh) {
           mz_diff <- features[j, mz_col] - features[i, mz_col]
-          connections_tmp <- rbind(connections_tmp, data.frame(
-            x = features[i, name_col], y = features[j, name_col],
-            cor = cor_coef, rt_diff = rt_diff, mz_diff = mz_diff))
+          connections_tmp <- rbind(connections_tmp, 
+                                   data.frame(x = features[i, name_col], 
+                                              y = features[j, name_col],
+                                              cor = cor_coef, 
+                                              rt_diff = rt_diff, 
+                                              mz_diff = mz_diff))
         }
       }
     }
@@ -314,15 +311,18 @@ find_connections <- function(data, features, corr_thresh = 0.9, rt_window = 1 / 
 #' @export
 find_clusters <- function(connections, d_thresh = 0.8) {
   if (!requireNamespace("igraph", quietly = TRUE)) {
-    stop("Package \"igraph\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"igraph\" needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("igraph package was used to construct networks of features for feature clustering:", citation("igraph"))
+  .add_citation(paste0("igraph package was used to construct networks of", 
+                       " features for feature clustering:"), 
+                citation("igraph"))
 
   # Construct graph from the given edges
-  g <- igraph::graph_from_edgelist(as.matrix(connections[seq_len(2)]), directed = FALSE)
-  g <- igraph::set.edge.attribute(graph = g, name = "weight", value = connections$cor)
+  g <- igraph::graph_from_edgelist(as.matrix(connections[seq_len(2)]), 
+                                   directed = FALSE)
+  g <- igraph::set.edge.attribute(graph = g, name = "weight", 
+                                  value = connections$cor)
 
   # Initialize list of clusters
   clusters <- list()
@@ -336,15 +336,15 @@ find_clusters <- function(connections, d_thresh = 0.8) {
     message(n_comp, " components found")
 
     # Only keep the densely connected part of each component (subgraph)
-    clusters_tmp <- BiocParallel::bplapply(X = comp, FUN = function(subg) {
+    clusters_tmp <- BiocParallel::bplapply(comp, function(subg) {
       n_nodes <- length(igraph::V(subg))
       d <- igraph::degree(subg)
       # The limit of the degree a node needs to be kept
       d_lim <- round(d_thresh * (n_nodes - 1))
       
       if (n_nodes >= 3) {
-        # Remove the node with the smallest degree until all nodes in the cluster have
-        # a degree above the limit
+        # Remove the node with the smallest degree until all nodes in the
+        # cluster have a degree above the limit
         while (any(d < d_lim)) {
           idx <- which(d == min(d))
           if (length(idx) > 1) {
@@ -359,9 +359,8 @@ find_clusters <- function(connections, d_thresh = 0.8) {
       }
 
       # Record the final cluster and remove the nodes from the main graph
-      list(list(
-        features = names(igraph::V(subg)),
-        graph = subg))
+      list(list(features = names(igraph::V(subg)),
+                graph = subg))
     })
     clusters_tmp <- do.call(c, clusters_tmp)
 
@@ -378,7 +377,7 @@ find_clusters <- function(connections, d_thresh = 0.8) {
 
 # A helper function for plotting, scales the values in X
 # between new min and max
-rescale <- function(x, new_min, new_max) {
+.rescale <- function(x, new_min, new_max) {
   y <- (new_max - new_min) * (x - min(x)) / (max(x) - min(x)) + new_min
   # If all MPAs are equal, the sizes are NaN (possibly other reasons)
   if (sum(is.na(y))) {
@@ -388,13 +387,14 @@ rescale <- function(x, new_min, new_max) {
 }
 
 # UNFINISHED!!
-plot_graph <- function(features, cluster, name_col, mz_col, rt_col) {
+.plot_graph <- function(features, cluster, name_col, mz_col, rt_col) {
   if (!requireNamespace("igraph", quietly = TRUE)) {
-    stop("Package \"igraph\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'igraph\' needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("igraph package was used to construct networks of features for feature clustering:", citation("igraph"))
+  .add_citation(paste0("igraph package was used to construct networks of ",
+                       "features for feature clustering:"), 
+                citation("igraph"))
 
   # Ensure a correct order of the rows
   g <- cluster$graph
@@ -404,7 +404,7 @@ plot_graph <- function(features, cluster, name_col, mz_col, rt_col) {
 
   # Scaling of MPA to correct size
   # Square root to scale area, not radius
-  size <- sqrt(rescale(features_tmp$MPA, new_min = 15^2, new_max = 40^2))
+  size <- sqrt(.rescale(features_tmp$MPA, new_min = 15^2, new_max = 40^2))
 
   if (length(igraph::E(g)) <= 20) {
     edge_labels <- as.character(round(igraph::E(g)$weight, digits = 2))
@@ -412,36 +412,32 @@ plot_graph <- function(features, cluster, name_col, mz_col, rt_col) {
     edge_labels <- NULL
   }
 
-
-  g$palette <- RColorBrewer::brewer.pal(n = max(3, length(unique(igraph::degree(g)))), name = "Blues")
-  plot(g,
-    vertex.label = as.character(features_tmp[, mz_col]),
-    vertex.size = size,
-    vertex.label.dist = 0.1 * size,
-    vertex.label.degree = -pi / 2,
-    vertex.color = igraph::degree(g),
-    edge.label = edge_labels
-  )
+  g$palette <- RColorBrewer::brewer.pal(
+    n = max(3, length(unique(igraph::degree(g)))), 
+    name = "Blues")
+  plot(g, vertex.label = as.character(features_tmp[, mz_col]),
+       vertex.size = size, vertex.label.dist = 0.1 * size,
+       vertex.label.degree = -pi / 2, vertex.color = igraph::degree(g),
+       edge.label = edge_labels)
 }
 
-plot_features <- function(features, cluster, name_col, mz_col, rt_col, rt_window) {
+.plot_features <- function(features, cluster, name_col, 
+                          mz_col, rt_col, rt_window) {
   if (!requireNamespace("ggrepel", quietly = TRUE)) {
-    stop("Package \"ggrepel\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'ggrepel\' needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
-
   features_tmp <- features[features[, name_col] %in% cluster$features, ]
-
   p1 <- ggplot(features_tmp, aes(.data[[mz_col]], .data[["MPA"]])) +
     geom_point(size = 3, color = "steelblue4") +
-    geom_segment(aes(x = .data[[mz_col]], yend = .data[["MPA"]], xend = .data[[mz_col]]), y = 0, color = "steelblue4") +
-    ggrepel::geom_label_repel(aes(label = .data[[mz_col]]), color = "steelblue4") +
+    geom_segment(aes(x = .data[[mz_col]], yend = .data[["MPA"]], 
+                     xend = .data[[mz_col]]),
+                 y = 0, color = "steelblue4") +
+    ggrepel::geom_label_repel(aes(label = .data[[mz_col]]), 
+                              color = "steelblue4") +
     theme_minimal() +
-    xlim(
-      0.9 * min(features_tmp[, mz_col], na.rm = TRUE),
-      1.15 * max(features_tmp[, mz_col], na.rm = FALSE)
-    ) +
+    xlim(0.9 * min(features_tmp[, mz_col], na.rm = TRUE),
+         1.15 * max(features_tmp[, mz_col], na.rm = FALSE)) +
     expand_limits(y = 0) +
     labs(x = "Mass-to-charge ratio", y = "Median Peak Area")
 
@@ -450,15 +446,17 @@ plot_features <- function(features, cluster, name_col, mz_col, rt_col, rt_window
 
   p2 <- ggplot(features_tmp, aes(.data[[rt_col]], .data[[mz_col]])) +
     geom_point(size = 3, color = "steelblue4") +
-    geom_errorbarh(aes(xmin = .data$rtmin, xmax = .data$rtmax), color = "steelblue4") +
+    geom_errorbarh(aes(xmin = .data$rtmin, xmax = .data$rtmax), 
+                   color = "steelblue4") +
     theme_minimal() +
-    labs(x = "Retention time", y = "Mass-to-charge ratio", title = "Retention time & tolerance")
+    labs(x = "Retention time", y = "Mass-to-charge ratio", 
+         title = "Retention time & tolerance")
 
   plot(p1)
   plot(p2)
 }
 
-plot_heatmaps <- function(data, features, cluster, name_col, mz_col, rt_col) {
+.plot_heatmaps <- function(data, features, cluster, name_col, mz_col, rt_col) {
   features_tmp <- features[features[, name_col] %in% cluster$features, ]
 
   n <- length(cluster$features)
@@ -471,8 +469,7 @@ plot_heatmaps <- function(data, features, cluster, name_col, mz_col, rt_col) {
         y = features_tmp[j, name_col],
         mz_diff = features_tmp[i, mz_col] - features_tmp[j, mz_col],
         rt_diff = features_tmp[i, rt_col] - features_tmp[j, rt_col],
-        stringsAsFactors = FALSE
-      ))
+        stringsAsFactors = FALSE))
     }
   }
 
@@ -512,7 +509,8 @@ plot_heatmaps <- function(data, features, cluster, name_col, mz_col, rt_col) {
 #' @inherit find_connections return examples
 #'
 #' @export
-visualize_clusters <- function(data, features, clusters, min_size, rt_window, name_col, mz_col, rt_col, file_path) {
+visualize_clusters <- function(data, features, clusters, min_size, rt_window,
+                               name_col, mz_col, rt_col, file_path) {
   for (i in seq_along(clusters)) {
     if (i %% 100 == 0) {
       message(i, " / ", length(clusters))
@@ -521,11 +519,10 @@ visualize_clusters <- function(data, features, clusters, min_size, rt_window, na
     if (length(cluster$features) >= min_size) {
       features_tmp <- features[features[, name_col] %in% cluster$features, ]
       cluster_id <- features_tmp$Cluster_ID[1]
-
       pdf(paste0(file_path, cluster_id, ".pdf"), width = 10, height = 10)
-      plot_heatmaps(data, features, cluster, name_col, mz_col, rt_col)
-      plot_features(features, cluster, name_col, mz_col, rt_col, rt_window)
-      plot_graph(features, cluster, name_col, mz_col, rt_col)
+      .plot_heatmaps(data, features, cluster, name_col, mz_col, rt_col)
+      .plot_features(features, cluster, name_col, mz_col, rt_col, rt_window)
+      .plot_graph(features, cluster, name_col, mz_col, rt_col)
       dev.off()
     }
   }

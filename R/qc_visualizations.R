@@ -1,10 +1,12 @@
-density_plot <- function(data, x, fill, fill_scale = NULL, color_scale = NULL,
+.density_plot <- function(data, x, fill, fill_scale = NULL, color_scale = NULL,
                          title = NULL, subtitle = NULL,
                          xlab = x, fill_lab = fill) {
-  p <- ggplot(data, aes(.data[[x]], fill = .data[[fill]], color = .data[[fill]])) +
+  p <- ggplot(data, aes(.data[[x]], fill = .data[[fill]], 
+                        color = .data[[fill]])) +
     geom_density(alpha = 0.2) +
     fill_scale +
-    labs(title = title, subtitle = subtitle, x = xlab, fill = fill_lab, color = NULL) +
+    labs(title = title, subtitle = subtitle, x = xlab, 
+         fill = fill_lab, color = NULL) +
     theme_bw() +
     theme(panel.grid = element_blank()) +
     color_scale
@@ -37,16 +39,17 @@ density_plot <- function(data, x, fill, fill_scale = NULL, color_scale = NULL,
 #' @seealso \code{\link[stats]{dist}}
 #'
 #' @export
-plot_dist_density <- function(object, all_features = FALSE, dist_method = "euclidean",
-                              center = TRUE, scale = "uv",
+plot_dist_density <- function(object, all_features = FALSE, 
+                              dist_method = "euclidean", center = TRUE, 
+                              scale = "uv", 
                               color_scale = getOption("notame.color_scale_dis"),
                               fill_scale = getOption("notame.fill_scale_dis"),
-                              title = paste("Density plot of", dist_method, "distances between samples"),
+                              title = paste("Density plot of", dist_method,
+                                            "distances between samples"),
                               subtitle = NULL) {
   if (!requireNamespace("pcaMethods", quietly = TRUE)) {
-    stop("Package \"pcaMethods\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'pcaMethods\' needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
@@ -62,12 +65,9 @@ plot_dist_density <- function(object, all_features = FALSE, dist_method = "eucli
   qc <- rep(c("QC", "Sample"), times = c(length(qc_dist), length(sample_dist)))
   distances <- data.frame(dist = c(qc_dist, sample_dist), qc = qc)
 
-  density_plot(distances,
-    x = "dist", fill = "qc", fill_scale = fill_scale,
-    color_scale = color_scale,
-    xlab = "Distance", fill_lab = NULL,
-    title = title, subtitle = subtitle
-  )
+  .density_plot(distances, x = "dist", fill = "qc", fill_scale = fill_scale,
+               color_scale = color_scale, xlab = "Distance", fill_lab = NULL,
+               title = title, subtitle = subtitle)
 }
 
 #' Estimate the magnitude of drift
@@ -93,15 +93,14 @@ plot_injection_lm <- function(object, all_features = FALSE) {
 
   # Apply linear model to QC samples and biological samples separately
   lm_all <- perform_lm(object, "Feature ~ Injection_order")
-  lm_sample <- perform_lm(object[, object$QC != "QC"], "Feature ~ Injection_order")
+  lm_sample <- perform_lm(object[, object$QC != "QC"], 
+                          "Feature ~ Injection_order")
   lm_qc <- perform_lm(object[, object$QC == "QC"], "Feature ~ Injection_order")
 
   # Only interested in the p_values
-  p_values <- list(
-    "All samples" = lm_all$Injection_order_P,
-    "Biological samples" = lm_sample$Injection_order_P,
-    "QC samples" = lm_qc$Injection_order_P
-  )
+  p_values <- list("All samples" = lm_all$Injection_order_P,
+                   "Biological samples" = lm_sample$Injection_order_P,
+                   "QC samples" = lm_qc$Injection_order_P)
   # Plotting
   plot_p_histogram(p_values)
 }
@@ -119,18 +118,18 @@ plot_injection_lm <- function(object, all_features = FALSE) {
 #' @param x_label the x-axis label
 #'
 #' @examples 
-#' lm_sample <- perform_lm(object[, object$QC != "QC"], "Feature ~ Injection_order")
+#' lm_sample <- perform_lm(drop_qcs(example_set), "Feature ~ Injection_order")
 #' p_values <- list("Biological samples" = lm_sample$Injection_order_P)
 #' plot_p_histogram(p_values)
 #'
 #' @return if combine = TRUE, a ggplot object. Otherwise a list of ggplot objects
 #'
 #' @export
-plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, x_label = "p-value") {
+plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, 
+                             x_label = "p-value") {
   if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \"cowplot\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'cowplot\' needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
   # Custom breaks for the x-axis
   breaks <- seq(0, 1, by = 0.05)
@@ -139,7 +138,8 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, x_label = "
   plots <- list()
   for (i in seq_along(p_values)) {
     p <- ggplot(data.frame(P = p_values[[i]]), aes(.data$P)) +
-      geom_histogram(breaks = breaks, col = "grey50", fill = "grey80", size = 1) +
+      geom_histogram(breaks = breaks, col = "grey50", 
+                     fill = "grey80", size = 1) +
       labs(x = x_label, y = "Frequency") +
       ggtitle(names(p_values)[i]) +
       theme_minimal() +
@@ -149,8 +149,8 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, x_label = "
       # Compute the position of the expected line
       finite_count <- sum(is.finite(p_values[[i]]))
       h_line <- finite_count / (length(breaks) - 1)
-      p <- p +
-        geom_hline(yintercept = h_line, color = "red", linetype = "dashed", size = 1)
+      p <- p + geom_hline(yintercept = h_line, color = "red", 
+                          linetype = "dashed", size = 1)
     }
 
     plots <- c(plots, list(p))
@@ -182,9 +182,8 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, x_label = "
 #' @export
 plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
   if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \"cowplot\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'cowplot\' needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
   if (plot_flags) {
     # Plot bar plot of flags
@@ -194,7 +193,8 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
 
     fp <- ggplot(data.frame(flags), aes(x = flags)) +
       geom_bar(col = "grey50", fill = "grey80", size = 1) +
-      scale_y_continuous(sec.axis = sec_axis(~ . * 100 / length(flags), name = "Percentage")) +
+      scale_y_continuous(sec.axis = sec_axis(~ . * 100 / length(flags), 
+                         name = "Percentage")) +
       theme_minimal() +
       labs(x = "Flag")
   }
@@ -209,7 +209,8 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
   }
 
   # Distribution of quality metrics
-  qps <- plot_p_histogram(quality(object)[, -1], hline = FALSE, combine = FALSE, x_label = "")
+  qps <- plot_p_histogram(quality(object)[, -1], hline = FALSE, 
+                          combine = FALSE, x_label = "")
 
   if (plot_flags) {
     p <- cowplot::plot_grid(plotlist = c(qps, list(fp)), ncol = 1)
@@ -267,8 +268,7 @@ plot_sample_boxplots <- function(
     data <- tidyr::unite(data, "fill_by", fill_by, remove = FALSE)
   }
 
-  data <- data %>%
-    dplyr::arrange(order_by)
+  data <- data %>% dplyr::arrange(order_by)
 
   data$Sample_ID <- factor(data$Sample_ID, levels = data$Sample_ID)
 
@@ -281,10 +281,8 @@ plot_sample_boxplots <- function(
     # compute lower and upper whiskers
     ylimits <- data %>%
       dplyr::group_by(.data$Sample_ID) %>%
-      dplyr::summarise(
-        low = boxplot.stats(.data$Value)$stats[1],
-        high = boxplot.stats(.data$Value)$stats[5]
-      )
+      dplyr::summarise(low = boxplot.stats(.data$Value)$stats[1],
+                       high = boxplot.stats(.data$Value)$stats[5])
 
 
     ylimits <- c(0, max(ylimits$high))
@@ -293,24 +291,20 @@ plot_sample_boxplots <- function(
       geom_boxplot(outlier.shape = NA) +
       coord_cartesian(ylim = ylimits)
     # add text to main title
-    subtitle <- paste(subtitle, "(zoomed in boxplot: outliers out of view)", sep = " ")
+    subtitle <- paste(subtitle, 
+                      "(zoomed in boxplot: outliers out of view)", sep = " ")
   } else {
-    p <- p +
-      geom_boxplot()
+    p <- p + geom_boxplot()
   }
 
   p <- p +
-    labs(
-      x = paste(order_by, collapse = "_"),
-      y = "Abundance of metabolites",
-      fill = paste(fill_by, collapse = "_"),
-      title = title, subtitle = subtitle
-    ) +
+    labs(x = paste(order_by, collapse = "_"),
+         y = "Abundance of metabolites",
+         fill = paste(fill_by, collapse = "_"),
+         title = title, subtitle = subtitle) +
     theme_bw() +
-    theme(
-      plot.title = element_text(face = "bold"),
-      axis.text.x = element_text(angle = 90, vjust = 0.3)
-    ) +
+    theme(plot.title = element_text(face = "bold"),
+          axis.text.x = element_text(angle = 90, vjust = 0.3)) +
     fill_scale
 
   p

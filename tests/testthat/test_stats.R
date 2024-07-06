@@ -162,13 +162,13 @@ test_that("P-value correction works", {
     y_P = runif(26)
   )
 
-  adj <- adjust_p_values(ps, flags = rep(NA, 26))
+  adj <- .adjust_p_values(ps, flags = rep(NA, 26))
 
   expect_equal(adj$x_P_FDR, p.adjust(ps$x_P, method = "BH"))
   expect_equal(adj[colnames(ps)], ps)
   expect_equal(ncol(adj), ncol(ps) + 2)
 
-  adj2 <- adjust_p_values(ps, flags = c(
+  adj2 <- .adjust_p_values(ps, flags = c(
     "a", "a", "a",
     rep(NA, 23)
   ))

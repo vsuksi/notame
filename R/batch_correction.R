@@ -21,28 +21,24 @@
 #' @export
 ruvs_qc <- function(object, batch, replicates, k = 3, ...) {
   if (!requireNamespace("RUVSeq", quietly = TRUE)) {
-    stop("Bioconductor package RUVSeq needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Bioconductor package RUVSeq needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("RUVSeq was used for batch correction:", citation("RUVSeq"))
-
+  .add_citation("RUVSeq was used for batch correction:", citation("RUVSeq"))
   # Transform data to pseudo counts for RUVs
   exprs(object)[exprs(object) == 0] <- 1
   exprs(object) <- round(exprs(object))
-
   # Pad each replicate vector with -1 and transform to matrix
   max_len <- max(vapply(replicates, length, integer(1)))
-  scIdx <- matrix(-1, nrow = length(replicates), ncol = max_len) # nolint: object_name_linter.
+  scIdx <- matrix(-1, nrow = length(replicates), ncol = max_len)
+  # Populate matrix of replicates
   for (i in seq_along(replicates)) {
-    scIdx[i, seq_along(replicates[[i]])] <- replicates[[i]] # nolint: object_name_linter.
+    scIdx[i, seq_along(replicates[[i]])] <- replicates[[i]]
   }
-
-  ruv_results <- RUVSeq::RUVs(
-    x = exprs(object), cIdx = featureNames(object),
-    k = k, scIdx = scIdx, ...
-  )
-
+  # Perform batch correction
+  ruv_results <- RUVSeq::RUVs(x = exprs(object), cIdx = featureNames(object),
+                              k = k, scIdx = scIdx, ...)
+  # Include results in object
   exprs(object) <- ruv_results$normalizedCounts
   pData(object) <- cbind(pData(object), ruv_results$W)
   object
@@ -75,43 +71,42 @@ ruvs_qc <- function(object, batch, replicates, k = 3, ...) {
 #'
 #' @importFrom stats cov
 #' @export
-pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE, center = TRUE,
-                                   scale = "uv", nPcs = 3, ...) { # nolint: object_name_linter.
+pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE, 
+                                   center = TRUE, scale = "uv", nPcs = 3, ...){ 
   if (!requireNamespace("fpc", quietly = TRUE)) {
     stop("Package \"fpc\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+         call. = FALSE)
   }
   if (!requireNamespace("pcaMethods", quietly = TRUE)) {
-    stop("Package \"pcaMethods\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"pcaMethods\" needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
-  add_citation("PCA was performed using pcaMethods package:", citation("pcaMethods"))
-  add_citation("fpc package was used for Bhattacharyaa distance computation:", citation("fpc"))
-
+  .add_citation("PCA was performed using pcaMethods package:",
+                citation("pcaMethods"))
+  .add_citation("fpc package was used for Bhattacharyaa distance computation:",
+                citation("fpc"))
   # Drop flagged features if not told otherwise
   object <- drop_flagged(object, all_features)
-
   # PCA to 2 dimenstions
-  pca_res <- pcaMethods::pca(object, center = center, scale = scale, nPcs = nPcs, ...)
+  pca_res <- pcaMethods::pca(object, center = center, scale = scale, 
+                             nPcs = nPcs, ...)
   pca_scores <- pcaMethods::scores(pca_res)
-
   # Split to batches
   batches <- list()
   for (b in unique(pData(object)[, batch])) {
     batches[[b]] <- pca_scores[pData(object)[, batch] == b, ]
   }
-
   # Compute means and covariance matrices for Bhattacharyya distance
   muarray <- vapply(batches, colMeans, double(nPcs))
-  sigmaarray <- array(vapply(batches, cov, double(nPcs * nPcs)), dim = c(nPcs, nPcs, length(batches)))
-
-  fpc::bhattacharyya.matrix(muarray, sigmaarray, ipairs = "all", misclassification.bound = FALSE)
+  sigmaarray <- array(vapply(batches, cov, double(nPcs * nPcs)), 
+                      dim = c(nPcs, nPcs, length(batches)))
+  # Compute Bhattacharyya distance
+  fpc::bhattacharyya.matrix(muarray, sigmaarray, ipairs = "all",
+                            misclassification.bound = FALSE)
 }
 
 
-pooled_variance <- function(x, group) {
+.pooled_variance <- function(x, group) {
   # Remove missing values
   group <- group[!is.na(x)]
   x <- x[!is.na(x)]
@@ -122,7 +117,7 @@ pooled_variance <- function(x, group) {
   sum(n_1 * vapply(group_list, var, numeric(1))) / sum(n_1)
 }
 
-between_variance <- function(x, group) {
+.between_variance <- function(x, group) {
   # Remove missing values
   group <- group[!is.na(x)]
   x <- x[!is.na(x)]
@@ -135,9 +130,11 @@ between_variance <- function(x, group) {
   sum(n * (means - mean(x))^2) / k_1
 }
 
-repeatability <- function(x, group) {
-  pv <- pooled_variance(x, group)
-  bv <- between_variance(x, group)
+.repeatability <- function(x, group) {
+  # Calculate pooled variance
+  pv <- .pooled_variance(x, group)
+  # Calculate between group variance
+  bv <- .between_variance(x, group)
   bv / (bv + pv)
 }
 
@@ -169,12 +166,14 @@ repeatability <- function(x, group) {
 perform_repeatability <- function(object, group) {
   group <- pData(object)[, group]
   features <- featureNames(object)
-  repeatability <- BiocParallel::bplapply(X = features, 
+  repeatability <- BiocParallel::bplapply(
+    X = features, 
     FUN = function(feature) {
-      result_row <- data.frame( # nolint: object_usage_linter.
-        Feature_ID = feature, # nolint: object_usage_linter.
-        Repeatability = repeatability(exprs(object)[feature, ], group))
-      })
+      result_row <- data.frame(
+        Feature_ID = feature,
+        Repeatability = .repeatability(exprs(object)[feature, ], group))
+      }
+    )
   do.call(rbind, repeatability)
 }
 
@@ -194,16 +193,16 @@ perform_repeatability <- function(object, group) {
 #' @return a MetaboSet object with the aligned features
 #'
 #' @export
-align_batches <- function(object_na, object_fill, batch, mz, rt, mzdiff, rtdiff, plot_folder = NULL) {
+align_batches <- function(object_na, object_fill, batch, mz, rt,
+                          mzdiff, rtdiff, plot_folder = NULL) {
   if (!requireNamespace("batchCorr", quietly = TRUE)) {
-    stop("Package \"batchCorr\" needed for this function to work. Please install it from
-         https://gitlab.com/CarlBrunius/batchCorr.",
-      call. = FALSE
-    )
+    stop("Package \"batchCorr\" needed for this function to work.",
+         " Please install it from https://gitlab.com/CarlBrunius/batchCorr.",
+         call. = FALSE)
   }
-  add_citation("batchCorr was used for batch correction:", citation("batchCorr"))
-
-  # Set working directory for plotting (the bathCorr functions saves plots in the current working directory...)
+  .add_citation("batchCorr was used for batch correction:",
+                citation("batchCorr"))
+  # Set working directory for plotting (batchCorr saves in working directory)
   if (!is.null(plot_folder)) {
     old_wd <- getwd()
     setwd(plot_folder)
@@ -211,24 +210,21 @@ align_batches <- function(object_na, object_fill, batch, mz, rt, mzdiff, rtdiff,
   } else {
     report <- FALSE
   }
-
-
   # Extract peak mz and rt information
-  p_info <- as.matrix(fData(object_na)[, c(mz, rt)]) # nolint: object_usage_linter.
+  p_info <- as.matrix(fData(object_na)[, c(mz, rt)])
   colnames(p_info) <- c("mz", "rt")
-
   # Align batches based on the QCs
-  aligned <- batchCorr::alignBatches(
-    peakInfo = p_info, PeakTabNoFill = t(exprs(object_na)), PeakTabFilled = t(exprs(object_fill)),
-    batches = pData(object_na)[, batch], sampleGroups = object_na$QC, selectGroup = "QC",
-    mzdiff = mzdiff, rtdiff = rtdiff, report = report
-  )
-
+  aligned <- batchCorr::alignBatches(peakInfo = p_info, 
+                                     PeakTabNoFill = t(exprs(object_na)),
+                                     PeakTabFilled = t(exprs(object_fill)),
+                                     batches = pData(object_na)[, batch],
+                                     sampleGroups = object_na$QC, 
+                                     selectGroup = "QC", mzdiff = mzdiff,
+                                     rtdiff = rtdiff, report = report)
   # Reset working directory
   if (!is.null(plot_folder)) {
     setwd(old_wd)
   }
-
   # Attach aligned features
   exprs(object_fill) <- t(aligned$PTalign)
   object_fill
@@ -259,25 +255,28 @@ align_batches <- function(object_na, object_fill, batch, mz, rt, mzdiff, rtdiff,
 #' pca_bhattacharyya_dist(batch_corrected, batch = "Batch")
 #' }
 #' @export
-normalize_batches <- function(object, batch, group, ref_label, population = "all", ...) {
+normalize_batches <- function(object, batch, group, ref_label, 
+                              population = "all", ...) {
   if (!requireNamespace("batchCorr", quietly = TRUE)) {
-    stop("Package \"batchCorr\" needed for this function to work. Please install it from
-         https://gitlab.com/CarlBrunius/batchCorr.",
-      call. = FALSE
-    )
+    stop("Package \'batchCorr\' needed for this function to work.", 
+         " Please install it from https://gitlab.com/CarlBrunius/batchCorr.",
+         call. = FALSE)
   }
-  add_citation("batchCorr was used for batch correction:", citation("batchCorr"))
-
-  norm_data <- batchCorr::normalizeBatches(
-    peakTableCorr = t(exprs(object)), batches = pData(object)[, batch],
-    sampleGroup = pData(object)[, group], refGroup = ref_label,
-    population = population, ...
-  )
-
+  .add_citation("batchCorr was used for batch correction:",
+                citation("batchCorr"))
+  # Perform batch correction
+  norm_data <- batchCorr::normalizeBatches(peakTableCorr = t(exprs(object)), 
+                                           batches = pData(object)[, batch],
+                                           sampleGroup = 
+                                           pData(object)[, group], 
+                                           refGroup = ref_label,
+                                           population = population, ...)
+  # Include corrected abundances and correction information in object
   exprs(object) <- t(norm_data$peakTable)
   ref_corrected <- as.data.frame(t(norm_data$refCorrected))
-  colnames(ref_corrected) <- paste0("Ref_corrected_", seq_len(ncol(ref_corrected)))
-  ref_corrected$Feature_ID <- featureNames(object) # nolint: object_usage_linter.
+  colnames(ref_corrected) <- paste0("Ref_corrected_",
+                                    seq_len(ncol(ref_corrected)))
+  ref_corrected$Feature_ID <- featureNames(object)
   object <- join_fData(object, ref_corrected)
 }
 
@@ -315,18 +314,20 @@ normalize_batches <- function(object, batch, group, ref_label, population = "all
 save_batch_plots <- function(orig, corrected, file, width = 14, height = 10,
                              batch = "Batch", color = "Batch", shape = "QC",
                              color_scale = getOption("notame.color_scale_dis"),
-                             shape_scale = scale_shape_manual(values = c(15, 21))) {
+                             shape_scale = 
+                             scale_shape_manual(values = c(15, 21))) {
   data_orig <- combined_data(orig)
   data_corr <- combined_data(corrected)
-
+  # Prepare data.frame for batch means with batch and injection order range
   batch_injections <- data_orig %>%
     dplyr::group_by(!!dplyr::sym(batch)) %>%
-    dplyr::summarise(start = min(.data$Injection_order), end = max(.data$Injection_order)) # nolint: object_usage_linter.
+    dplyr::summarise(start = min(.data$Injection_order), 
+                     end = max(.data$Injection_order))
 
   batch_mean_helper <- function(data) {
     data %>%
       dplyr::group_by(!!dplyr::sym(batch)) %>%
-      dplyr::summarise_at(featureNames(orig), finite_mean) %>% # nolint: object_usage_linter.
+      dplyr::summarise_at(featureNames(orig), finite_mean) %>%
       dplyr::left_join(batch_injections, ., by = batch)
   }
 
@@ -337,50 +338,42 @@ save_batch_plots <- function(orig, corrected, file, width = 14, height = 10,
       dplyr::filter(.data$QC == "QC") %>%
       batch_mean_helper() %>%
       dplyr::mutate(QC = "QC")
-
     rbind(batch_means, batch_means_qc)
   }
-
+  # Get batch means for QC and biological samples of the original data
   batch_means_orig <- get_batch_means(data_orig)
-
-
+  # Get batch means for QC and biological samples of the corrected data
   batch_means_corr <- get_batch_means(data_corr)
-
-
+  
   batch_plot_helper <- function(data, fname, batch_means) {
     p <- ggplot() +
-      geom_point(data = data, mapping = aes(
-        x = .data[["Injection_order"]], y = .data[[fname]],
-        color = .data[[color]], shape = .data[[shape]]
-      )) +
+      geom_point(data = data, 
+                 mapping = aes(x = .data[["Injection_order"]], 
+                               y = .data[[fname]],
+                               color = .data[[color]], 
+                               shape = .data[[shape]])) +
       theme_bw() +
       theme(panel.grid = element_blank()) +
       color_scale +
       shape_scale
-
     p <- p +
-      geom_segment(
-        data = batch_means, mapping = aes(
-          x = .data[["start"]], xend = .data[["end"]],
-          y = .data[[fname]], yend = .data[[fname]],
-          color = .data[[color]], linetype = .data[["QC"]]
-        ),
-        size = 1
-      ) +
+      geom_segment(data = batch_means, 
+                   mapping = aes(x = .data[["start"]], xend = .data[["end"]],
+                                 y = .data[[fname]], yend = .data[[fname]],
+                                 color = .data[[color]], 
+                                 linetype = .data[["QC"]]),
+                             size = 1) +
       scale_linetype(guide = "none")
+      
     p
   }
-
+  # Save plots with original and corrected data to pdf
   pdf(file, width = width, height = height)
-
   for (feature in featureNames(orig)) {
     p1 <- batch_plot_helper(data_orig, feature, batch_means_orig)
-
     p2 <- batch_plot_helper(data_corr, feature, batch_means_corr)
-
     p <- cowplot::plot_grid(p1, p2, nrow = 2)
     plot(p)
   }
-
   dev.off()
 }

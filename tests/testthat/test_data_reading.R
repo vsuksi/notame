@@ -11,7 +11,7 @@ test_that("Column conversion works", {
     Sample_ID = sample(letters, size = 100, replace = TRUE),
     few_numbers = c(1.3, 2.5)
   )
-  converted <- best_classes(df)
+  converted <- .best_classes(df)
   converted_classes <- unname(sapply(converted, class))
   expected_classes <- c("numeric", "factor", "factor", "character", "numeric")
 
@@ -21,17 +21,17 @@ test_that("Column conversion works", {
 
 test_that("Pheno data checking works", {
   df <- data.frame(Group = letters[1:2])
-  expect_error(check_pheno_data(df), '"Injection_order" not found')
+  expect_error(.check_pheno_data(df), "'Injection_order' not found")
 
   df <- data.frame(Injection_order = c(1:5, 3:9))
-  expect_error(check_pheno_data(df), "Injection_order is not unique")
+  expect_error(.check_pheno_data(df), "Injection_order is not unique")
   # Check that error is thrown if injection order is not numeric
   df <- data.frame(Injection_order = c(1:2, "a", 4:9))
-  expect_error(check_pheno_data(df), '"Injection_order" is not numeric')
+  expect_error(.check_pheno_data(df), "'Injection_order' is not numeric")
   # Check if conversion to numeric works
   df <- data.frame(Injection_order = c(1:2, "3", 4:9))
   expect_warning(
-    expect_visible(check_pheno_data(df, id_prefix = "ID_")),
+    expect_visible(.check_pheno_data(df, id_prefix = "ID_")),
     "QC not found"
   )
   # Check QC generator
@@ -40,21 +40,21 @@ test_that("Pheno data checking works", {
     Sample_ID = c(letters[1:5], letters[1:5])
   )
   expect_warning(
-    expect_error(check_pheno_data(df), "Sample_ID is not unique"),
+    expect_error(.check_pheno_data(df), "Sample_ID is not unique"),
     "QC not found"
   )
   df <- data.frame(
     Injection_order = seq_len(5),
     Sample_ID = c(letters[1:5])
   )
-  expect_warning(check_pheno_data(df), "QC not found")
+  expect_warning(.check_pheno_data(df), "QC not found")
 
   df <- data.frame(
     Injection_order = seq_len(10),
     Sample_ID = c(letters[1:5], rep("QC", 5)),
     QC = as.factor(rep(c("Sample", "QC"), each = 5))
   )
-  checked <- check_pheno_data(df)
+  checked <- .check_pheno_data(df)
   expected <- data.frame(
     Sample_ID = c(letters[1:5], paste0("QC_", 1:5)),
     Injection_order = seq_len(10),
@@ -68,14 +68,15 @@ test_that("Pheno data checking works", {
 
 test_that("Feature data checking works", {
   df <- data.frame(Feature_ID = 1:5)
-  expect_error(check_feature_data(df), "Numbers are not allowed as feature IDs")
+  expect_error(.check_feature_data(df), 
+               "Numbers are not allowed as feature IDs")
 
   df <- data.frame(Feature_ID = c(letters[1:5], letters[3:5]))
-  expect_error(check_feature_data(df), "Feature_ID values are not unique")
+  expect_error(.check_feature_data(df), "Feature_ID values are not unique")
 
   df <- data.frame(Feature_ID = letters[1:9])
   df$Feature_ID[6] <- NA
-  expect_error(check_feature_data(df), "Missing values in Feature IDs")
+  expect_error(.check_feature_data(df), "Missing values in Feature IDs")
 })
 
 
@@ -101,7 +102,7 @@ test_that("Easy example data is read correctly", {
     "MS_MS_Spectrum" = c("(123.45; 678)", rep(NA, 9)),
     stringsAsFactors = FALSE
   )
-  fd <- name_features(fd)
+  fd <- .name_features(fd)
   rownames(fd) <- fd$Feature_ID
 
   # Assay data
@@ -154,7 +155,7 @@ test_that("Data is split correctly", {
     "MS_MS_Spectrum" = c("(123.45; 678)", rep(NA, 15)),
     stringsAsFactors = FALSE
   )
-  fd <- name_features(fd)
+  fd <- .name_features(fd)
   rownames(fd) <- fd$Feature_ID
 
   # Assay data

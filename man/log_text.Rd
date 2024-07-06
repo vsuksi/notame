@@ -17,11 +17,13 @@ The specified text is printed and written to the current log file. Does not over
 Also used internally by many functions in the package
 }
 \examples{
+\dontshow{.old_wd <- setwd(tempdir())}
 file_name <- "~/log.txt"
 init_log(file_name)
 log_text("Hello World!")
 # Print the contents of the file
 scan(file_name, sep = "\n", what = "character")
+\dontshow{setwd(.old_wd)}
 
 }
 \seealso{

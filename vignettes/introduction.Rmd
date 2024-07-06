@@ -37,7 +37,8 @@ To install ```notame```, install BiocManager first, if it is not installed. Afte
 ```{r, eval = FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install("mia")
+BiocManager::install("notame")
+library(notame)
 ```
 
 # How it works

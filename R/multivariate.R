@@ -26,18 +26,20 @@
 #' importance_rf(rf)
 #'
 #' @export
-fit_rf <- function(object, y, all_features = FALSE, covariates = NULL, importance = TRUE, ...) {
+fit_rf <- function(object, y, all_features = FALSE, 
+                   covariates = NULL, importance = TRUE, ...) {
   if (!requireNamespace("randomForest", quietly = TRUE)) {
-    stop("Package \"randomForest\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"randomForest\" needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("randomFOrest package was used to fit random forest models:", citation("randomForest"))
+  .add_citation("randomFOrest package was used to fit random forest models:",
+                citation("randomForest"))
 
   object <- drop_flagged(object, all_features = all_features)
 
   x <- combined_data(object)[, c(featureNames(object), covariates)]
-  rf <- randomForest::randomForest(x = x, y = pData(object)[, y], importance = importance, ...)
+  rf <- randomForest::randomForest(x = x, y = pData(object)[, y], 
+                                   importance = importance, ...)
 
   rf
 }
@@ -61,11 +63,9 @@ fit_rf <- function(object, y, all_features = FALSE, covariates = NULL, importanc
 #' @export
 importance_rf <- function(rf) {
   # Extract metrics and feature ID
-  df <- data.frame(
-    Feature_ID = rownames(rf$importance),
-    as.data.frame(rf$importance),
-    stringsAsFactors = FALSE, check.names = FALSE
-  )
+  df <- data.frame(Feature_ID = rownames(rf$importance),
+                   as.data.frame(rf$importance),
+                   stringsAsFactors = FALSE, check.names = FALSE)
   df
 }
 
@@ -78,10 +78,11 @@ importance_rf <- function(rf) {
 #' @param covariates character, column names of pData to use as covariates in the model, in addition to
 #' molecular features
 #' @return A data frame with predictors, including covariates.
-get_x <- function(object, covariates) {
+#' @noRd
+.get_x <- function(object, covariates) {
   # Convert covariates to numeric
-  if (any(!vapply(pData(object)[, covariates], looks_numeric, logical(1)))) {
-    stop("All covariates should be convertable to numeric")
+  if (any(!vapply(pData(object)[, covariates], .looks_numeric, logical(1)))) {
+    stop("All covariates should be convertable to numeric.")
   }
   pData(object)[covariates] <- lapply(pData(object)[covariates], as.numeric)
 
@@ -99,22 +100,21 @@ get_x <- function(object, covariates) {
 #' @param y the name of the y variable
 #' @param title plot title
 #' @noRd
-plot_pls <- function(model, Y, y, title) { # nolint: object_name_linter.
+.plot_pls <- function(model, Y, y, title) {
   # Extract scores and add y variable
   scores <- data.frame(model$variates$X[, seq_len(2)])
   colnames(scores) <- c("X1", "X2")
   scores[, y[1]] <- Y[, 1]
   # Explained variance as percentage
   var_exp <- 100 * model$prop_expl_var$X[seq_len(2)] %>% round(digits = 3)
-  p <- ggplot(scores, aes(x = .data[["X1"]], y = .data[["X2"]], color = .data[[y]])) +
+  p <- ggplot(scores, aes(x = .data[["X1"]], y = .data[["X2"]], 
+                          color = .data[[y]])) +
     geom_point() +
     getOption("notame.color_scale_con") +
     theme_minimal() +
-    labs(
-      x = paste("X1:", var_exp[1], "%"),
-      y = paste("X2:", var_exp[2], "%"),
-      title = title
-    )
+    labs(x = paste("X1:", var_exp[1], "%"),
+         y = paste("X2:", var_exp[2], "%"),
+         title = title)
   plot(p)
 }
 
@@ -161,24 +161,25 @@ NULL
 
 #' @rdname pls
 #' @export
-mixomics_pls <- function(object, y, ncomp, plot_scores = TRUE, all_features = FALSE,
-                         covariates = NULL, ...) {
+mixomics_pls <- function(object, y, ncomp, plot_scores = TRUE, 
+                         all_features = FALSE, covariates = NULL, ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
-    stop("Package \"mixOmics\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"mixOmics\" needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("mixOmics package was used to fit PLS models:", citation("mixOmics"))
+  .add_citation("mixOmics package was used to fit PLS models:",
+                citation("mixOmics"))
   object <- drop_flagged(object, all_features = all_features)
 
-  predictors <- get_x(object, covariates)
+  predictors <- .get_x(object, covariates)
   outcome <- pData(object)[y]
 
   log_text("Fitting PLS")
   pls_model <- mixOmics::pls(predictors, outcome, ncomp = ncomp, ...)
 
   if (plot_scores && ncomp > 1) {
-    plot_pls(pls_model, outcome, y, title = "PLS: first 2 components and the outcome variable")
+    .plot_pls(pls_model, outcome, y, 
+             title = "PLS: first 2 components and the outcome variable")
   }
   pls_model
 }
@@ -186,28 +187,28 @@ mixomics_pls <- function(object, y, ncomp, plot_scores = TRUE, all_features = FA
 #' @rdname pls
 #'
 #' @export
-mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plot_scores = TRUE,
-                                  all_features = FALSE, covariates = NULL, ...) {
+mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50,
+                                  plot_scores = TRUE, all_features = FALSE, covariates = NULL, ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
-    stop("Package \"mixOmics\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"mixOmics\" needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
-  add_citation("mixOmics package was used to fit PLS models:", citation("mixOmics"))
+  
+  .add_citation("mixOmics package was used to fit PLS models:",
+                citation("mixOmics"))
 
-  pls_res <- mixomics_pls(
-    object = object, y = y, ncomp = ncomp, plot_scores = FALSE,
-    all_features = all_features, covariates = covariates, ...
-  )
+  pls_res <- mixomics_pls(object = object, y = y, ncomp = ncomp, 
+                          plot_scores = FALSE, all_features = all_features,
+                          covariates = covariates, ...)
 
   log_text("Evaluating PLS performance")
-  perf_pls <- mixOmics::perf(pls_res, validation = "Mfold", folds = folds, nrepeat = nrepeat)
+  perf_pls <- mixOmics::perf(pls_res, validation = "Mfold", 
+                             folds = folds, nrepeat = nrepeat)
 
   # Plot Mean Square Error
-  p1 <- ggplot(data.frame(
-    ncomp = seq_len(ncomp),
-    MSEP = as.vector(perf_pls$measure$MSEP$summary$mean)
-  ), aes(x = ncomp, y = .data$MSEP)) +
+  p1 <- ggplot(data.frame(ncomp = seq_len(ncomp),
+                          MSEP = as.vector(perf_pls$measure$MSEP$summary$mean)),
+               aes(x = ncomp, y = .data$MSEP)) +
     geom_line() +
     labs(color = NULL, title = "Mean Square Error") +
     theme_bw() +
@@ -215,11 +216,9 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
     theme(panel.grid.minor.x = element_blank())
 
   # Plot R2 and Q2
-  plot_data <- data.frame(
-    R2 = as.vector(perf_pls$measure$R2$summary$mean),
-    Q2 = as.vector(perf_pls$measure$Q2$summary$mean),
-    ncomp = seq_len(ncomp)
-  ) %>%
+  plot_data <- data.frame(R2 = as.vector(perf_pls$measure$R2$summary$mean),
+                          Q2 = as.vector(perf_pls$measure$Q2$summary$mean),
+                          ncomp = seq_len(ncomp)) %>%
     tidyr::gather(key = "key", value = "value", -ncomp)
 
   p2 <- ggplot(plot_data, aes(x = ncomp, y = .data$value, color = .data$key)) +
@@ -239,74 +238,72 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plo
 
 
   # Find the optimal number of components
-  ncomp_opt <- which(perf_pls$measure$MSEP$summary$mean == min(perf_pls$measure$MSEP$summary$mean))[1]
-  log_text(paste0(
-    "Choosing a PLS model with ", ncomp_opt, " component(s) based on the minimal MSE\n",
-    "Take a look at the plot and make sure this is the correct number of components"
+  ncomp_opt <- which(perf_pls$measure$MSEP$summary$mean ==
+    min(perf_pls$measure$MSEP$summary$mean))[1]
+  log_text(paste0("Choosing a PLS model with ", ncomp_opt, 
+                  " component(s) based on the minimal MSE\n",
+                  "Take a look at the plot and make sure this", 
+                  " is the correct number of components"
   ))
   
-  mixomics_pls(
-    object = object, y = y, ncomp = ncomp_opt, plot_scores = plot_scores,
-    covariates = covariates, ...
-  )
+  mixomics_pls(object = object, y = y, ncomp = ncomp_opt, 
+               plot_scores = plot_scores, covariates = covariates, ...)
 }
 
 #' @rdname pls
 #'
 #' @importFrom graphics title
 #' @export
-mixomics_spls_optimize <- function(object, y, ncomp,
-                                   n_features = c(seq_len(10), seq(20, 300, 10)), folds = 5, nrepeat = 50,
-                                   plot_scores = TRUE, all_features = FALSE, covariates = NULL, ...) {
+mixomics_spls_optimize <- function(object, y, ncomp, n_features =
+                                   c(seq_len(10), seq(20, 300, 10)), 
+                                   folds = 5, nrepeat = 50, plot_scores = TRUE,
+                                   all_features = FALSE, covariates = NULL,
+                                   ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
-    stop("Package \"mixOmics\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"mixOmics\" needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("mixOmics package was used to fit PLS models:", citation("mixOmics"))
+  .add_citation("mixOmics package was used to fit PLS models:",
+                citation("mixOmics"))
   object <- drop_flagged(object, all_features = all_features)
 
-  predictors <- get_x(object, covariates)
+  predictors <- .get_x(object, covariates)
   outcome <- pData(object)[y]
 
   # Test different number of components and features with cross validation
   log_text("Tuning sPLS")
-  tuned_spls <- mixOmics::tune.spls(predictors, outcome,
-    ncomp = ncomp,
-    test.keepX = n_features,
-    validation = "Mfold", folds = folds,
-    nrepeat = nrepeat,
-    measure = "MAE"
-  )
+  tuned_spls <- mixOmics::tune.spls(predictors, outcome, ncomp = ncomp,
+                                    test.keepX = n_features,
+                                    validation = "Mfold", folds = folds,
+                                    nrepeat = nrepeat, measure = "MAE")
   # Plot error for each component with different number of features
   plot(plot(tuned_spls) + ggtitle("Performance of sPLS models"))
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_spls$choice.ncomp$ncomp
   keep_x <- tuned_spls$choice.keepX[seq_len(ncomp_opt)]
-  log_text(paste(
-    "Final model has", ncomp_opt, "components with the numbers of features:",
-    paste(keep_x, collapse = ", ")
-  ))
+  log_text(paste("Final model has", ncomp_opt, 
+                 "components with the numbers of features:",
+                 paste(keep_x, collapse = ", ")))
   # Fit the final model
-  spls_final <- mixOmics::spls(predictors, outcome, ncomp = ncomp_opt, keepX = keep_x, ...)
+  spls_final <- mixOmics::spls(predictors, outcome, ncomp = ncomp_opt, 
+                               keepX = keep_x, ...)
   # Scatter plot of points in PLS space
   if (ncomp_opt > 1) {
-    plot_pls(spls_final, outcome, y, title = "Final sPLS model: first 2 components and the outcome variable")
+    .plot_pls(spls_final, outcome, y, title = 
+             "Final sPLS model: first 2 components and the outcome variable")
   }
 
   spls_final
 }
 
-plot_plsda <- function(model, y, title, dist = "max.dist") {
-  background <- mixOmics::background.predict(model, comp.predicted = 2, dist = dist)
-  mixOmics::plotIndiv(model,
-    comp = seq_len(2), group = y, ind.names = FALSE,
-    title = paste(title), legend = TRUE, ellipse = TRUE
-  )
-  mixOmics::plotIndiv(model,
-    comp = seq_len(2), group = y, ind.names = FALSE,
-    title = paste(title, "prediction areas"), legend = TRUE, background = background
-  )
+.plot_plsda <- function(model, y, title, dist = "max.dist") {
+  background <- mixOmics::background.predict(model, comp.predicted = 2, 
+                                             dist = dist)
+  mixOmics::plotIndiv(model, comp = seq_len(2), group = y, ind.names = FALSE,
+                      title = paste(title), legend = TRUE, ellipse = TRUE)
+  mixOmics::plotIndiv(model, comp = seq_len(2), group = y, ind.names = FALSE,
+                      title = paste(title, "prediction areas"), legend = TRUE,
+                      background = background)
 }
 
 
@@ -358,30 +355,28 @@ NULL
 
 #' @rdname pls_da
 #' @export
-mixomics_plsda <- function(object, y, ncomp, plot_scores = TRUE, all_features = FALSE,
-                           covariates = NULL, ...) {
+mixomics_plsda <- function(object, y, ncomp, plot_scores = TRUE, 
+                           all_features = FALSE, covariates = NULL, ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
-    stop("Package \"mixOmics\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"mixOmics\" needed for this function to work.",
+         "Please install it.", call. = FALSE)
   }
-  add_citation("mixOmics package was used to fit PLS models:", citation("mixOmics"))
+  .add_citation("mixOmics package was used to fit PLS models:",
+                citation("mixOmics"))
   object <- drop_flagged(object, all_features = all_features)
 
-  predictors <- get_x(object, covariates)
+  predictors <- .get_x(object, covariates)
   outcome <- pData(object)[, y]
   # outcome needs to be a factor, this ensures the levels are right
   if (!is(outcome, "factor")) {
     outcome <- as.factor(outcome)
-    warning(paste(
-      y, "is not encoded as a factor, converted to factor with levels:",
-      paste(levels(outcome), collapse = ", ")
-    ))
+    warning(y, " is not encoded as a factor, converted to factor with levels: ",
+            paste(levels(outcome), collapse = ", "))
   }
   log_text("Fitting PLS-DA")
   plsda_model <- mixOmics::plsda(predictors, outcome, ncomp = ncomp, ...)
   if (plot_scores && ncomp > 1) {
-    plot_plsda(plsda_model, outcome, title = "PLS-DA")
+    .plot_plsda(plsda_model, outcome, title = "PLS-DA")
   }
 
   plsda_model
@@ -390,23 +385,25 @@ mixomics_plsda <- function(object, y, ncomp, plot_scores = TRUE, all_features = 
 
 #' @rdname pls_da
 #' @export
-mixomics_plsda_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, plot_scores = TRUE,
-                                    all_features = FALSE, covariates = NULL, ...) {
+mixomics_plsda_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50,
+                                    plot_scores = TRUE, all_features = FALSE,
+                                    covariates = NULL, ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
-    stop("Package \"mixOmics\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"mixOmics\" needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
-  add_citation("mixOmics package was used to fit PLS models:", citation("mixOmics"))
-  plsda_res <- mixomics_plsda(
-    object = object, y = y, ncomp = ncomp, plot_scores = FALSE,
-    all_features = all_features, covariates = covariates, ...
-  )
+  .add_citation("mixOmics package was used to fit PLS models:",
+                citation("mixOmics"))
+  plsda_res <- mixomics_plsda(object = object, y = y, ncomp = ncomp,
+                              plot_scores = FALSE, all_features = all_features,
+                              covariates = covariates, ...)
 
   log_text("Evaluating PLS-DA performance")
-  perf_plsda <- mixOmics::perf(plsda_res, validation = "Mfold", folds = 5, auc = TRUE, nrepeat = 50)
+  perf_plsda <- mixOmics::perf(plsda_res, validation = "Mfold", folds = 5,
+                               auc = TRUE, nrepeat = 50)
 
-  plot(perf_plsda, col = mixOmics::color.mixo(seq_len(3)), sd = TRUE, legend.position = "horizontal")
+  plot(perf_plsda, col = mixOmics::color.mixo(seq_len(3)), 
+       sd = TRUE, legend.position = "horizontal")
   title("Performance of PLS-DA models")
   # Find the distance metric with minimum BER
   ber <- perf_plsda$error.rate$BER
@@ -414,62 +411,62 @@ mixomics_plsda_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50, p
   dist_met <- colnames(ber)[inds[2]]
   # Find the optimal number of components
   ncomp_opt <- perf_plsda$choice.ncomp["BER", dist_met]
-  log_text(paste("Choosing a PLS-DA model with", ncomp_opt, "components using", dist_met))
+  log_text(paste("Choosing a PLS-DA model with", ncomp_opt, 
+                 "components using", dist_met))
 
-  mixomics_plsda(object = object, y = y, ncomp = ncomp_opt, plot_scores = plot_scores, ...)
+  mixomics_plsda(object = object, y = y, ncomp = ncomp_opt, 
+                 plot_scores = plot_scores, ...)
 }
 
 
 #' @rdname pls_da
 #' @export
 mixomics_splsda_optimize <- function(object, y, ncomp, dist,
-                                     n_features = c(seq_len(10), seq(20, 300, 10)),
+                                     n_features = c(seq_len(10), 
+                                                    seq(20, 300, 10)),
                                      folds = 5, nrepeat = 50,
                                      plot_scores = TRUE,
                                      all_features = FALSE,
                                      covariates = NULL, ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
-    stop("Package \"mixOmics\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"mixOmics\" needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("mixOmics package was used to fit PLS models:", citation("mixOmics"))
+  .add_citation("mixOmics package was used to fit PLS models:",
+                citation("mixOmics"))
   object <- drop_flagged(object, all_features = all_features)
 
-  predictors <- get_x(object, covariates)
+  predictors <- .get_x(object, covariates)
   outcome <- pData(object)[, y]
   # outcome needs to be a factor, this ensures the levels are right
   if (!is(outcome, "factor")) {
     outcome <- as.factor(outcome)
-    warning(paste(
-      y, "is not encoded as a factor, converted to factor with levels:",
-      paste(levels(outcome), collapse = ", ")
-    ))
+    warning(y, " is not encoded as a factor, converted to factor with levels: ",
+            paste(levels(outcome), collapse = ", "))
   }
   # Test different components and numbers of features with cross validation
   log_text("Tuning sPLS-DA")
-  tuned_splsda <- mixOmics::tune.splsda(predictors, outcome,
-    ncomp = ncomp,
-    validation = "Mfold", folds = folds,
-    dist = dist,
-    measure = "BER", nrepeat = nrepeat,
-    test.keepX = n_features
-  )
+  tuned_splsda <- mixOmics::tune.splsda(predictors, outcome, ncomp = ncomp,
+                                        validation = "Mfold", folds = folds,
+                                        dist = dist, measure = "BER", 
+                                        nrepeat = nrepeat,
+                                        test.keepX = n_features)
   # Plot error rate of different components as a function of number of features
   plot(plot(tuned_splsda) + ggtitle("Performance of sPLS-DA models"))
   
   # Choose optimal numbers of components and features
   ncomp_opt <- tuned_splsda$choice.ncomp$ncomp
   keep_x <- tuned_splsda$choice.keepX[seq_len(ncomp_opt)]
-  log_text(paste(
-    "Final model has", ncomp_opt, "components with the numbers of features:",
-    paste(keep_x, collapse = ", ")
-  ))
+  log_text(paste("Final model has", ncomp_opt, 
+                 "components with the numbers of features:",
+                 paste(keep_x, collapse = ", ")))
   # Fit the final model
-  splsda_final <- mixOmics::splsda(predictors, outcome, ncomp = ncomp_opt, keepX = keep_x)
+  splsda_final <- mixOmics::splsda(predictors, outcome, ncomp = ncomp_opt,
+                                   keepX = keep_x)
   # Scatterplots with prediction surface and ellipses
   if (plot_scores && ncomp_opt > 1) {
-    plot_plsda(splsda_final, outcome, title = "Final sPLS-DA model", dist = dist)
+    .plot_plsda(splsda_final, outcome, title = "Final sPLS-DA model", 
+               dist = dist)
   }
 
   splsda_final
@@ -520,91 +517,92 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
 #' @seealso \code{\link[MUVR]{MUVR}}
 #'
 #' @export
-muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE, multi_level_var = NULL,
-                          covariates = NULL, static_covariates = NULL, all_features = FALSE,
-                          nRep = 5, nOuter = 6, nInner = nOuter - 1, # nolint: object_name_linter.
-                          varRatio = 0.75, method = c("PLS", "RF"), ...) { # nolint: object_name_linter.
+muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
+                          multi_level_var = NULL, covariates = NULL,
+                          static_covariates = NULL, all_features = FALSE,
+                          nRep = 5, nOuter = 6, nInner = nOuter - 1,
+                          varRatio = 0.75, method = c("PLS", "RF"), ...) {
   if (!requireNamespace("MUVR", quietly = TRUE)) {
-    stop("Package \"MUVR\" needed for this function to work. Please install it from
-         https://gitlab.com/CarlBrunius/MUVR",
-      call. = FALSE
-    )
+    stop("Package \"MUVR\" needed for this function to work.", 
+         " Please install it from https://gitlab.com/CarlBrunius/MUVR",
+         call. = FALSE)
   }
-  add_citation("MUVR package was used to fit multivariate models with variable selection:", citation("MUVR"))
+  .add_citation(paste("MUVR package was used to fit multivariate models",
+                      "with variable selection:"),
+                citation("MUVR"))
 
   # MUVR can only use numeric input
-  classes <- vapply(pData(object)[, c(covariates, static_covariates)], class, character(1))
+  classes <- vapply(pData(object)[, c(covariates, static_covariates)], 
+                    class, character(1))
   if (length(classes) && any(classes != "numeric")) {
-    stop("MUVR can only deal with numeric inputs, please transform all covariates to numeric",
-      call. = FALSE
-    )
+    stop("MUVR can only deal with numeric inputs,", 
+         " please transform all covariates to numeric", call. = FALSE)
   }
 
   object <- drop_flagged(object, all_features = all_features)
 
-  if (any(!vapply(pData(object)[, covariates], looks_numeric, logical(1)))) {
-    stop("All covariates should be convertable to numeric")
+  if (any(!vapply(pData(object)[, covariates], .looks_numeric, logical(1)))) {
+    stop("All covariates should be convertable to numeric.")
   }
   pData(object)[covariates] <- lapply(pData(object)[covariates], as.numeric)
 
   # Classic MUVR
   if (!multi_level) {
     if (is.null(y)) {
-      stop("y variable needs to be defined unless doing multi-level modeling")
+      stop("y variable needs to be defined unless doing multi-level modeling.")
     }
     predictors <- combined_data(object)[, c(featureNames(object), covariates)]
     outcome <- pData(object)[, y]
 
     # Independent samples
     if (is.null(id)) {
-      muvr_model <- MUVR::MUVR(
-        X = predictors, Y = outcome, nRep = nRep, nOuter = nOuter, nInner = nInner,
-        varRatio = varRatio, method = method, ...
-      )
+      muvr_model <- MUVR::MUVR(X = predictors, Y = outcome, nRep = nRep, 
+                               nOuter = nOuter, nInner = nInner,
+                               varRatio = varRatio, method = method, ...)
     } else {
       # Multiple measurements
-      ID <- pData(object)[, id] # nolint: object_name_linter.
-      muvr_model <- MUVR::MUVR(
-        X = predictors, Y = outcome, ID = ID, nRep = nRep, nOuter = nOuter, nInner = nInner,
-        varRatio = varRatio, method = method, ...
-      )
+      ID <- pData(object)[, id]
+      muvr_model <- MUVR::MUVR(X = predictors, Y = outcome, ID = ID, 
+                               nRep = nRep, nOuter = nOuter, nInner = nInner,
+                               varRatio = varRatio, method = method, ...)
     }
   } else { # Multi-level analysis
     if (is.null(id) || is.null(multi_level_var)) {
-      stop("id and multi_level_var needed for multi-level modeling")
+      stop("id and multi_level_var needed for multi-level modeling.")
     }
     # Check that multi_level_var has only 2 unique values
-    ml_var <- pData(object)[, multi_level_var] <- as.factor(pData(object)[, multi_level_var])
+    ml_var <- pData(object)[, multi_level_var] <-
+      as.factor(pData(object)[, multi_level_var])
     if (length(levels(ml_var)) != 2) {
-      stop("The multilevel variable should have exactly 2 unique values")
+      stop("The multilevel variable should have exactly 2 unique values.")
     } else {
-      message(
-        "Computing effect matrix according to ", multi_level_var, " : ", levels(ml_var)[2], " - ", levels(ml_var)[1]
-      )
+      message("Computing effect matrix according to ", multi_level_var, " : ",
+              levels(ml_var)[2], " - ", levels(ml_var)[1])
     }
 
     # Compute effect matrix with covariates
     cd <- combined_data(object)
     cd <- cd[order(cd[, id]), ]
-    x1 <- cd[cd[, multi_level_var] == levels(ml_var)[1], c(featureNames(object), covariates)]
-    x2 <- cd[cd[, multi_level_var] == levels(ml_var)[2], c(featureNames(object), covariates)]
+    x1 <- cd[cd[, multi_level_var] == levels(ml_var)[1],
+             c(featureNames(object), covariates)]
+    x2 <- cd[cd[, multi_level_var] == levels(ml_var)[2],
+             c(featureNames(object), covariates)]
     predictors <- x2 - x1
     # Add static covariates, where we don't want to compute change, such as sex
-    predictors[, static_covariates] <- cd[cd[, multi_level_var] == levels(ml_var)[1], static_covariates]
+    predictors[, static_covariates] <- 
+      cd[cd[, multi_level_var] == levels(ml_var)[1], static_covariates]
     rownames(predictors) <- unique(cd[, id])
 
     # Modeling
     if (!is.null(y)) { # Compare change of multi_level_var between levels of y
       outcome <- cd[cd[, multi_level_var] == levels(ml_var)[1], y]
-      muvr_model <- MUVR::MUVR(
-        X = predictors, Y = outcome, nRep = nRep, nOuter = nOuter, nInner = nInner,
-        varRatio = varRatio, method = method, ...
-      )
+      muvr_model <- MUVR::MUVR(X = predictors, Y = outcome, nRep = nRep, 
+                               nOuter = nOuter, nInner = nInner, 
+                               varRatio = varRatio, method = method, ...)
     } else { # Compare levels of multi_level_var
-      muvr_model <- MUVR::MUVR(
-        X = predictors, ML = TRUE, nRep = nRep, nOuter = nOuter, nInner = nInner,
-        varRatio = varRatio, method = method, ...
-      )
+      muvr_model <- MUVR::MUVR(X = predictors, ML = TRUE, nRep = nRep, 
+                               nOuter = nOuter, nInner = nInner,
+                               varRatio = varRatio, method = method, ...)
     }
   }
   # Plot performance
@@ -633,16 +631,12 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE, mult
 #' permanova_res <- perform_permanova(drop_qcs(example_set), group = "Group")
 #'
 #' @export
-perform_permanova <- function(object, group,
-                              all_features = FALSE,
+perform_permanova <- function(object, group, all_features = FALSE,
                               transform = "Standardize columns",
-                              coef = "Pythagorean",
-                              ...) {
+                              coef = "Pythagorean", ...) {
   if (!requireNamespace("PERMANOVA", quietly = TRUE)) {
-    stop("Package \"PERMANOVA\" needed for this function to work.
-         Please install it.",
-      call. = FALSE
-    )
+    stop("Package \"PERMANOVA\" needed for this function to work.", 
+         " Please install it.", call. = FALSE)
   }
   if (!is.factor(pData(object)[, group])) {
     stop("Group column is not a factor.")

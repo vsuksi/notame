@@ -52,14 +52,11 @@ mark_nas <- function(object, value) {
 #' fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean[!is.na(fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean)]
 #'
 #' @export
-fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum", # nolint: object_name_linter.
-                     peak_num = 10,
-                     min_abund = 5,
-                     deci_num = 3) {
+fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum",
+                     peak_num = 10, min_abund = 5, deci_num = 3) {
   if (!requireNamespace("stringr", quietly = TRUE)) {
-    stop("Package \"stringr\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'stringr\' needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
   spec <- fData(object)[, ms_ms_spectrum_col]
   to_metab <- NULL
@@ -73,7 +70,9 @@ fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum", # nolint: ob
     # Transform format
     spectrum <- spec[i]
     spectrum2 <- t(stringr::str_split(spectrum, pattern = " ", simplify = TRUE))
-    spectrum3 <- as.data.frame(stringr::str_split(spectrum2, pattern = ":", simplify = TRUE))
+    spectrum3 <- as.data.frame(stringr::str_split(spectrum2, 
+                                                  pattern = ":", 
+                                                  simplify = TRUE))
     spectrum3 <- as.data.frame(lapply(spectrum3, as.numeric))
     spectrum3 <- spectrum3[order(spectrum3$V2, decreasing = TRUE), ]
 
@@ -81,19 +80,22 @@ fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum", # nolint: ob
     ifelse(nrow(spectrum3) > peak_num, num <- peak_num, num <- nrow(spectrum3))
     spectrum4 <- spectrum3[c(seq_len(num)), ]
 
-    # Round the m/z of fragments to n decimals and calculate the relative intensity (%)
+    # Round m/z of fragments to n decimals and calculate relative intensity (%)
     spectrum4$V1 <- round(spectrum4$V1, digits = deci_num)
-    spectrum4$relative <- round(spectrum4$V2 / max(spectrum3$V2) * 100, digits = 1)
+    spectrum4$relative <- round(spectrum4$V2 / max(spectrum3$V2) * 100, 
+                                digits = 1)
 
-    # Remove fragment peaks with relative intensity less than n% (recommended: 1-5)
+    # Remove peaks with relative intensity less than n% (recommended: 1-5)
     spectrum5 <- spectrum4[c(spectrum4$relative > min_abund), ]
 
     # Finalize format and write results
-    to_metab[i] <- paste(paste0(spectrum5$V1, " (", spectrum5$relative, ")"), collapse = ", ")
+    to_metab[i] <- paste(paste0(spectrum5$V1, " (", spectrum5$relative, ")"),
+                         collapse = ", ")
   }
 
   fData(object)$MS_MS_Spectrum_clean <- to_metab
-  log_text('Saving fixed MS/MS spectra to column "MS_MS_Spectrum_clean" in fData')
+  log_text(paste0("Saving fixed MS/MS spectra to column",
+                  " \'MS_MS_Spectrum_clean\' in fData"))
   object
 }
 
@@ -205,10 +207,10 @@ drop_flagged <- function(object, all_features = FALSE) {
 merge_exprs <- function(object, y) {
   # Colnames and rownames should be found in the object
   if (!all(colnames(y) %in% colnames(exprs(object))) || is.null(colnames(y))) {
-    stop("Column names of y do not match column names of exprs(object)")
+    stop("Column names of y do not match column names of exprs(object).")
   }
   if (!all(rownames(y) %in% rownames(exprs(object))) || is.null(rownames(y))) {
-    stop("Row names of y do not match row names of exprs(object)")
+    stop("Row names of y do not match row names of exprs(object).")
   }
 
   exprs_tmp <- exprs(object)
@@ -245,28 +247,26 @@ merge_exprs <- function(object, y) {
 #' @export
 impute_rf <- function(object, all_features = FALSE, ...) {
   if (!requireNamespace("missForest", quietly = TRUE)) {
-    stop("Package \"missForest\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'missForest\' needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
-  add_citation("missForest package was used for random forest imputation:", citation("missForest"))
+  .add_citation("missForest package was used for random forest imputation:",
+                citation("missForest"))
   # Start log
   log_text(paste("\nStarting random forest imputation at", Sys.time()))
   # Drop flagged features
   dropped <- drop_flagged(object, all_features)
 
   if (!requireNamespace("missForest", quietly = TRUE)) {
-    stop("missForest package not found")
+    stop("missForest package not found.")
   }
 
   # Impute missing values
   mf <- missForest::missForest(xmis = t(exprs(dropped)), ...)
   imputed <- t(mf$ximp)
   # Log imputation error
-  log_text(paste0(
-    "Out-of-bag error in random forest imputation: ",
-    round(mf$OOBerror, digits = 3)
-  ))
+  log_text(paste0("Out-of-bag error in random forest imputation: ",
+                  round(mf$OOBerror, digits = 3)))
   # Assign imputed data to the droppped
   rownames(imputed) <- rownames(exprs(dropped))
   colnames(imputed) <- colnames(exprs(dropped))
@@ -311,7 +311,8 @@ impute_simple <- function(object, value, na_limit = 0) {
   nas <- apply(imp, 1, prop_na)
   imp <- imp[nas > na_limit, , drop = FALSE]
   if (nrow(imp) == 0) {
-    warning("none of the features satisfy the NA limit, returning the original object")
+    warning("None of the features satisfy the NA limit,", 
+            " returning the original object.")
     return(object)
   }
 
@@ -344,7 +345,8 @@ impute_simple <- function(object, value, na_limit = 0) {
       x
     }))
   } else {
-    stop('value should be a numeric value or one of "min", "half_min", "small_random"')
+    stop("value should be a numeric value or one of 'min',",
+         " 'half_min', 'small_random'.")
   }
 
   obj <- merge_exprs(object, imp)
@@ -425,24 +427,30 @@ flag_report <- function(object) {
 #' @return An object with the assay transformed.
 #'
 #' @export
-setMethod("log", "MetaboSet", function(x, base = exp(1)) {
-  exprs(x) <- log(exprs(x), base = base)
-  x
-})
+setMethod("log", "MetaboSet", 
+  function(x, base = exp(1)) {
+    exprs(x) <- log(exprs(x), base = base)
+    x
+  }
+)
 
 #' @rdname log-MetaboSet-method
 #' @export
-setMethod("log2", "MetaboSet", function(x) {
-  exprs(x) <- log2(exprs(x))
-  x
-})
+setMethod("log2", "MetaboSet", 
+  function(x) {
+    exprs(x) <- log2(exprs(x))
+    x
+  }
+)
 
 #' @rdname log-MetaboSet-method
 #' @export
-setMethod("log10", "MetaboSet", function(x) {
-  exprs(x) <- log10(exprs(x))
-  x
-})
+setMethod("log10", "MetaboSet", 
+  function(x) {
+    exprs(x) <- log10(exprs(x))
+    x
+  }
+)
 
 # scale
 setGeneric("scale")
@@ -457,10 +465,12 @@ setGeneric("scale")
 #' @return A Metaboset object with modified assay.
 #'
 #' @export
-setMethod("scale", "MetaboSet", function(x, center = TRUE, scale = TRUE) {
-  exprs(x) <- t(scale(t(exprs(x)), center = center, scale = scale))
-  x
-})
+setMethod("scale", "MetaboSet", 
+  function(x, center = TRUE, scale = TRUE) {
+    exprs(x) <- t(scale(t(exprs(x)), center = center, scale = scale))
+    x
+  }
+)
 
 #' Exponential function
 #'
@@ -478,15 +488,12 @@ setMethod("scale", "MetaboSet", function(x, center = TRUE, scale = TRUE) {
 #' orig_data <- exponential(log_data)
 #'
 #' @export
-setGeneric("exponential",
-  signature = "object",
-  function(object, base = exp(1)) standardGeneric("exponential")
-)
+setGeneric("exponential", signature = "object",
+           function(object, base = exp(1)) standardGeneric("exponential"))
 
 #' @rdname exponential
 #' @export
-setMethod(
-  "exponential", c(object = "MetaboSet"),
+setMethod("exponential", c(object = "MetaboSet"),
   function(object, base = exp(1)) {
     exprs(object) <- base^exprs(object)
     object
@@ -511,30 +518,29 @@ setMethod(
 #' pqn_set <- pqn_normalization(merged_sample)
 #'
 #' @export
-pqn_normalization <- function(object, ref = c("qc", "all"), method = c("median", "mean"), all_features = FALSE) {
+pqn_normalization <- function(object, ref = c("qc", "all"),
+                              method = c("median", "mean"), 
+                              all_features = FALSE) {
   log_text("Starting PQN normalization")
   ref <- match.arg(ref)
   method <- match.arg(method)
   # Use only good-quality features for calculating reference spectra
   ref_data <- exprs(drop_flagged(object, all_features))
   # Select reference samples
-  switch(ref,
-    qc = reference <- ref_data[, object$QC == "QC"],
-    all = reference <- ref_data
-  )
+  switch(ref, qc = reference <- ref_data[, object$QC == "QC"],
+         all = reference <- ref_data)
   if (ncol(reference) == 0 || all(is.na(reference))) {
-    stop("No specified reference samples found")
+    stop("No specified reference samples found.")
   }
   # Calculate reference spectrum
   switch(method,
-    median = reference_spectrum <- apply(reference, 1, finite_median),
-    mean = reference_spectrum <- apply(reference, 1, finite_mean)
-  )
+         median = reference_spectrum <- apply(reference, 1, finite_median),
+         mean = reference_spectrum <- apply(reference, 1, finite_mean))
   log_text(paste("Using", method, "of", ref, "samples as reference spectrum"))
   # Calculate median of quotients
   quotients <- ref_data / reference_spectrum
   quotient_md <- apply(quotients, 2, notame::finite_median)
-  # do the normalization
+  # Do the normalization
   data <- exprs(object)
   pqn_data <- t(t(data) / quotient_md)
   colnames(pqn_data) <- colnames(data)

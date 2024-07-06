@@ -1,5 +1,5 @@
 # Combines two matrices
-coalesce <- function(...) {
+.coalesce <- function(...) {
   x <- lapply(list(...), function(z) {
     if (is.factor(z)) as.character(z) else z
   })
@@ -11,7 +11,8 @@ coalesce <- function(...) {
     } else if (length(x[[i]]) == 1) {
       x[[1]][m] <- x[[i]]
     } else {
-      stop("length mismatch in argument ", i, " - found:", length(x[[i]]), " expected:", length(x[[1]]))
+      stop("length mismatch in argument ", i, " - found:", length(x[[i]]), 
+           " expected:", length(x[[1]]))
     }
     m <- is.na(x[[1]])
     i <- i + 1
@@ -79,16 +80,21 @@ coalesce <- function(...) {
 #' )
 #'
 #' @export
-plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1, point_size_range = c(1, 6),
-                                log2_effect = FALSE, discretize_effect = FALSE, breaks = 5,
-                                clustering = TRUE, dist_method = "euclidean", clust_method = "ward.D2",
+plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
+                                point_size_range = c(1, 6),
+                                log2_effect = FALSE, discretize_effect = FALSE,
+                                breaks = 5,  clustering = TRUE, 
+                                dist_method = "euclidean", 
+                                clust_method = "ward.D2",
                                 lower_tri = FALSE, reverse_y = TRUE,
-                                use_coord_fixed = TRUE, symmetric_aspect_ratio = TRUE,
-                                title = NULL, subtitle = NULL, fill_scale = NA) {
+                                use_coord_fixed = TRUE, 
+                                symmetric_aspect_ratio = TRUE,
+                                title = NULL, subtitle = NULL, fill_scale = NA){
   # Get default fill scales
   if (!is.null(fill_scale)) {
     if (is.na(fill_scale)) {
-      if (discretize_effect || class(data[, effect]) %in% c("factor", "character")) {
+      if (discretize_effect ||
+          class(data[, effect]) %in% c("factor", "character")) {
         fill_scale <- getOption("notame.fill_scale_div_dis")
       } else {
         fill_scale <- getOption("notame.fill_scale_div_con")
@@ -105,38 +111,33 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1, poi
 
   if (lower_tri) {
     # Clustering is handled inside to_lowertri
-    data <- to_lowertri(data, x, y, effect, clustering, clust_method, dist_method)
+    data <- .to_lowertri(data, x, y, effect, clustering, 
+                         clust_method, dist_method)
   } else if (clustering) {
-    data <- hclust_effects(data, x, y, effect, clust_method, dist_method)
+    data <- .hclust_effects(data, x, y, effect, clust_method, dist_method)
   } else if (reverse_y) {
     # Reverse order of y axis so diagonal is from top left to bottom right
     data[y] <- factor(data[, y], levels = rev(levels(factor(data[, y]))))
   }
 
   if (discretize_effect) {
-    data[effect] <- cut(data[, effect],
-      breaks = breaks,
-      dig.lab = 2
-    )
+    data[effect] <- cut(data[, effect], breaks = breaks, dig.lab = 2)
     data[effect] <- factor(data[, effect], levels = rev(levels(data[, effect])))
   }
 
-  ggp <- ggplot(data, aes(x = .data[[x]], y = .data[[y]], fill = .data[[effect]])) +
+  ggp <- ggplot(data, aes(x = .data[[x]], y = .data[[y]], 
+                          fill = .data[[effect]])) +
     geom_tile() +
     theme_minimal() +
-    theme(
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      axis.text.x = element_text(angle = 90)
-    ) +
-    labs(
-      x = "", y = "", fill = legend_label,
-      title = title, subtitle = subtitle
-    ) +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.text.x = element_text(angle = 90)) +
+    labs(x = "", y = "", fill = legend_label,
+         title = title, subtitle = subtitle) +
     fill_scale
 
   if (use_coord_fixed) {
-    ggp <- ggp +
+    ggp <- ggp + 
       coord_fixed()
   }
   if (symmetric_aspect_ratio) {
@@ -149,9 +150,8 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1, poi
     small_p[p] <- -log10(small_p[, p])
     ggp <- ggp +
       geom_point(aes(size = .data[[p]]),
-        data = small_p,
-        colour = "grey10", fill = "grey30", alpha = 0.3, shape = 21
-      ) +
+                 data = small_p, colour = "grey10",
+                 fill = "grey30", alpha = 0.3, shape = 21) +
       scale_size(name = "-log10(p-value)", range = point_size_range)
   }
 
@@ -159,7 +159,8 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1, poi
 }
 
 # Helper function to cluster effects without setting to lower triangular
-hclust_effects <- function(data, x, y, effect, clust_method, dist_method) {
+.hclust_effects <- function(data, x, y, effect, 
+                            clust_method, dist_method) {
   # Convert to wide format matrix for clustering
   data_wide <- data %>%
     dplyr::select(x, y, effect) %>%
@@ -171,8 +172,10 @@ hclust_effects <- function(data, x, y, effect, clust_method, dist_method) {
   data_wide[is.na(data_wide)] <- 0
 
   # Separate clustering for y and x
-  x_order <- hclust(dist(data_wide, method = dist_method), method = clust_method)$order
-  y_order <- hclust(dist(t(data_wide), method = dist_method), method = clust_method)$order
+  x_order <- hclust(dist(data_wide, method = dist_method), 
+                    method = clust_method)$order
+  y_order <- hclust(dist(t(data_wide), method = dist_method), 
+                    method = clust_method)$order
   data_wide <- data_wide[x_order, y_order]
 
   data[x] <- factor(data[, x], levels = rev(rownames(data_wide)))
@@ -183,7 +186,8 @@ hclust_effects <- function(data, x, y, effect, clust_method, dist_method) {
 
 
 # Converts data to only include the lower triangular
-to_lowertri <- function(data, x, y, effect, clustering, clust_method, dist_method) {
+.to_lowertri <- function(data, x, y, effect, clustering, 
+                         clust_method, dist_method) {
   # Rename columns for simplicity
   data <- data %>% dplyr::rename("x" = x, "y" = y, "effect" = effect)
 
@@ -197,11 +201,11 @@ to_lowertri <- function(data, x, y, effect, clustering, clust_method, dist_metho
   y_missing <- setdiff(vars, dat$y)
   append_len <- max(length(x_missing), length(y_missing))
   if (append_len) {
-    append_df <- data.frame(
-      x = c(x_missing, rep(NA, append_len - length(x_missing))),
-      y = c(y_missing, rep(NA, append_len - length(y_missing))),
-      effect = rep(NA, append_len)
-    )
+    append_df <- data.frame(x = c(x_missing, 
+                                  rep(NA, append_len - length(x_missing))),
+                            y = c(y_missing, 
+                                  rep(NA, append_len - length(y_missing))),
+                            effect = rep(NA, append_len))
     colnames(append_df) <- colnames(dat)
 
     dat <- rbind(dat, append_df)
@@ -214,15 +218,18 @@ to_lowertri <- function(data, x, y, effect, clustering, clust_method, dist_metho
     dplyr::filter(!is.na(x))
   # Move column x to rownames
   dat_w <- tibble::column_to_rownames(dat_w, "x")
-  dat_w <- dat_w[rownames(dat_w) != "NA", !colnames(dat_w) %in% c("NA", "<NA>")] # one of the columns or rows is named NA # nolint: line_length_linter.
-  dat_w <- dat_w[rev(order(names(dat_w))), rev(order(names(dat_w)))] # this makes the image lie on the lower triangular
+  dat_w <- dat_w[rownames(dat_w) != "NA", 
+                 # One of the columns or rows is named NA 
+                 !colnames(dat_w) %in% c("NA", "<NA>")]
+  # This makes the image lie on the lower triangular
+  dat_w <- dat_w[rev(order(names(dat_w))), rev(order(names(dat_w)))] 
 
 
   # dat_w only has one-directional interactions
   # for example, metformine vs morphine = 1.09, but morphine vs metformine = NA
   # transpose values are added to make the matrix symmetrical
   dat_w_t <- data.frame(t(dat_w))
-  dat_w_whole <- coalesce(dat_w, dat_w_t)
+  dat_w_whole <- .coalesce(dat_w, dat_w_t)
 
   if (clustering) {
     data_w_zeros <- dat_w_whole
@@ -243,14 +250,16 @@ to_lowertri <- function(data, x, y, effect, clustering, clust_method, dist_metho
   dat_l$y <- as.character(dat_l$y)
 
 
-  # The order of Variable1 and 2 has changed for some associations, so two joins are required
+  # The order of Variable1 and 2 has changed for some associations, 
+  # so two joins are required
   combined1 <- dplyr::inner_join(dat_l, data, by = c("x", "y", "effect"))
-  combined2 <- dplyr::inner_join(dat_l, data, by = c("x" = "y", "y" = "x", "effect"))
+  combined2 <- dplyr::inner_join(dat_l, data, 
+                                 by = c("x" = "y", "y" = "x", "effect"))
   dat_l <- rbind(combined1, combined2) %>%
     dplyr::distinct() # Remove duplicated associations with same x and y
 
   # Setting the factor levels to correctly draw the heatmap
-  # This ensures the tiles are plotted in correct order to make a lower triangular heat map
+  # This ensures the tiles are plotted in correct order for lower triangular
   dat_l$x <- dat_l$x %>%
     factor(levels = rev(rownames(dat_w_whole)))
   dat_l$y <- dat_l$y %>%

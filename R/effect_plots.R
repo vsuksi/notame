@@ -13,15 +13,15 @@
 #' Should return a ggplot object for plotting
 #' @param ... other arguments to plotting function
 #' @noRd
-save_feature_plots <- function(object, file_path, format,
-                               title, subtitle, text_base_size,
-                               plot_fun, ...) {
+.save_feature_plots <- function(object, file_path, format, title, subtitle,
+                               text_base_size, plot_fun, ...) {
   if (is.null(file_path)) file_path <- getwd()
   if (endsWith(file_path, ".pdf") && format != "pdf") {
     message("Switching to PDF format based on file path")
     format <- "pdf"
   } else if (!endsWith(file_path, "/") && format != "pdf") {
-    message("Adding an additional slash to file path to allow proper folder structure")
+    message("Adding an additional slash to file path", 
+            " to allow proper folder structure")
     file_path <- paste0(file_path, "/")
   }
 
@@ -49,7 +49,6 @@ save_feature_plots <- function(object, file_path, format,
       } else {
         file <- paste0(file_path, gsub("[:/]", "_", name), ".", format)
       }
-
       save_plot(p, file, ...)
     } else {
       p
@@ -68,8 +67,10 @@ save_feature_plots <- function(object, file_path, format,
 #' @param object a MetaboSet object, should contain only features to be plotted
 #' @param plot_fun function, a notame plot function
 #' @return a list of ggplot objects
-create_feature_plot_list <- function(object, plot_fun) {
-  message("Just a remainder, creating a long list of plots takes a lot of memory!")
+#' @noRd
+.create_feature_plot_list <- function(object, plot_fun) {
+  message("Just a remainder, creating a long list of plots",
+          " takes a lot of memory!")
   plot_list <- vector("list", nrow(object))
   for (i in seq_len(nrow(object))) {
     if (i %% 500 == 0) {
@@ -126,24 +127,18 @@ create_feature_plot_list <- function(object, plot_fun) {
 #' \dontshow{setwd(.old_wd)}
 #'
 #' @export
-save_subject_line_plots <- function(object,
-                                    all_features = FALSE,
-                                    save = TRUE,
-                                    file_path = NULL,
-                                    format = "emf",
-                                    x = time_col(object),
+save_subject_line_plots <- function(object, all_features = FALSE, save = TRUE,
+                                    file_path = NULL, format = "emf",
+                                    x = time_col(object), 
                                     id = subject_col(object),
                                     title = "Feature_ID",
-                                    subtitle = NULL,
-                                    color = NA,
-                                    color_scale = getOption("notame.color_scale_dis"),
-                                    facet = NULL,
-                                    text_base_size = 14,
-                                    line_width = 0.3,
-                                    mean_line_width = 1.2,
-                                    title_line_length = 40,
-                                    theme = theme_bw(base_size = text_base_size),
-                                    ...) {
+                                    subtitle = NULL, color = NA,
+                                    color_scale =
+                                    getOption("notame.color_scale_dis"),
+                                    facet = NULL, text_base_size = 14,
+                                    line_width = 0.3, mean_line_width = 1.2,
+                                    title_line_length = 40,theme =
+                                    theme_bw(base_size = text_base_size), ...) {
   if (is.na(x)) {
     stop("The time column is missing")
   }
@@ -158,57 +153,41 @@ save_subject_line_plots <- function(object,
 
     if (is.na(color)) {
       p <- p +
-        geom_line(aes(group = .data[[id]]),
-          color = "grey20",
-          alpha = 0.35,
-          size = line_width
-        ) +
-        stat_summary(aes(group = 1),
-          fun.data = "mean_se",
-          geom = "line",
-          size = mean_line_width,
-          color = color_scale$palette(1)[1]
-        )
+        geom_line(aes(group = .data[[id]]), color = "grey20",
+                  alpha = 0.35, size = line_width) +
+        stat_summary(aes(group = 1), fun.data = "mean_se", geom = "line",
+                     size = mean_line_width, color = color_scale$palette(1)[1])
     } else {
       p <- p +
         geom_line(aes(group = .data[[id]], color = .data[[color]]),
-          alpha = 0.35,
-          size = line_width
-        ) +
+                  alpha = 0.35, size = line_width) +
         stat_summary(aes(group = .data[[color]], color = .data[[color]]),
-          fun.data = "mean_se",
-          geom = "line",
-          size = mean_line_width
-        ) +
+                     fun.data = "mean_se", geom = "line",
+                     size = mean_line_width) +
         color_scale
     }
     if (!is.null(facet)) {
       p <- p + facet_wrap(facets = facet)
     }
     if (is(data[, x], "factor")) {
-      p <- p +
-        scale_x_discrete(expand = c(0.05, 0.05))
+      p <- p + scale_x_discrete(expand = c(0.05, 0.05))
     }
     splitted_title <-
       p <- p +
       theme +
-      labs(
-        title = stringr::str_wrap(fData(object)[fname, title], title_line_length),
-        subtitle = fData(object)[fname, subtitle],
-        y = "Abundance"
-      )
+      labs(title = stringr::str_wrap(fData(object)[fname, title],
+                                     title_line_length),
+           subtitle = fData(object)[fname, subtitle], y = "Abundance")
     p
   }
 
   object <- drop_flagged(object, all_features)
   if (save) {
-    save_feature_plots(
-      object, file_path, format,
-      title, subtitle, text_base_size, subject_line_fun, ...
-    )
+    .save_feature_plots(object, file_path, format, title, subtitle,
+                        text_base_size, subject_line_fun, ...)
     log_text(paste("Saved line plots with mean line to:", file_path))
   } else {
-    return(create_feature_plot_list(object, subject_line_fun))
+    return(.create_feature_plot_list(object, subject_line_fun))
     log_text("Created a list of line plots with mean line")
   }
 }
@@ -261,42 +240,31 @@ save_subject_line_plots <- function(object,
 #' \dontshow{setwd(.old_wd)}
 #' 
 #' @export
-save_group_boxplots <- function(object,
-                                all_features = FALSE,
-                                save = TRUE,
-                                file_path = NULL,
-                                format = "emf",
-                                x = group_col(object),
+save_group_boxplots <- function(object, all_features = FALSE, save = TRUE,
+                                file_path = NULL, format = "emf",
+                                x = group_col(object), 
                                 color = group_col(object),
-                                title = "Feature_ID",
-                                subtitle = NULL,
-                                color_scale = getOption("notame.color_scale_dis"),
-                                text_base_size = 14,
-                                box_width = 0.8,
-                                line_width = 0.5,
-                                point_size = 3,
-                                title_line_length = 40,
-                                theme = theme_bw(base_size = text_base_size),
-                                ...) {
+                                title = "Feature_ID", subtitle = NULL,
+                                color_scale =
+                                getOption("notame.color_scale_dis"),
+                                text_base_size = 14, box_width = 0.8,
+                                line_width = 0.5, point_size = 3,
+                                title_line_length = 40, theme =
+                                theme_bw(base_size = text_base_size), ...) {
   boxplot_fun <- function(object, fname) {
     data <- combined_data(object)
     dodge_amount <- box_width + 0.05
-    p <- ggplot(data, aes(x = .data[[x]], y = .data[[fname]], color = .data[[color]])) +
-      geom_boxplot(position = position_dodge(dodge_amount), width = box_width, size = line_width) +
-      stat_summary(
-        fun.data = mean_se,
-        geom = "point",
-        shape = 18,
-        size = point_size,
-        position = position_dodge(dodge_amount)
-      ) +
+    p <- ggplot(data, aes(x = .data[[x]], y = .data[[fname]], 
+                          color = .data[[color]])) +
+      geom_boxplot(position = position_dodge(dodge_amount), 
+                   width = box_width, size = line_width) +
+      stat_summary(fun.data = mean_se, geom = "point", shape = 18, 
+                   size = point_size, position = position_dodge(dodge_amount)) +
       color_scale +
       theme +
-      labs(
-        title = stringr::str_wrap(fData(object)[fname, title], title_line_length),
-        subtitle = fData(object)[fname, subtitle],
-        y = "Abundance"
-      )
+      labs(title = stringr::str_wrap(fData(object)[fname, title],
+                                     title_line_length),
+           subtitle = fData(object)[fname, subtitle], y = "Abundance")
     if (x == color) {
       p <- p + guides(color = "none")
     }
@@ -305,18 +273,14 @@ save_group_boxplots <- function(object,
 
   object <- drop_flagged(object, all_features)
   if (save) {
-    save_feature_plots(
-      object, file_path, format,
-      title, subtitle, text_base_size, boxplot_fun, ...
-    )
+    .save_feature_plots(object, file_path, format, title, subtitle,
+                        text_base_size, boxplot_fun, ...)
     log_text(paste("Saved group boxplots to:", file_path))
   } else {
-    return(create_feature_plot_list(object, boxplot_fun))
+    return(.create_feature_plot_list(object, boxplot_fun))
     log_text("Created a list of group boxplots")
   }
 }
-
-
 
 #' Save beeswarm plots of each feature by group
 #'
@@ -366,26 +330,19 @@ save_group_boxplots <- function(object,
 #' \dontshow{setwd(.old_wd)}
 #'
 #' @export
-save_beeswarm_plots <- function(object,
-                                all_features = FALSE,
-                                save = TRUE,
-                                file_path = NULL,
-                                format = "emf",
-                                x = group_col(object),
-                                add_boxplots = FALSE,
-                                title = "Feature_ID",
-                                subtitle = NULL,
-                                color = group_col(object),
-                                color_scale = getOption("notame.color_scale_dis"),
-                                text_base_size = 14,
-                                cex = 2,
-                                size = 2,
-                                title_line_length = 40,
-                                theme = theme_bw(base_size = text_base_size),
-                                ...) {
+save_beeswarm_plots <- function(object, all_features = FALSE, save = TRUE,
+                                file_path = NULL, format = "emf",
+                                x = group_col(object), add_boxplots = FALSE,
+                                title = "Feature_ID", subtitle = NULL,
+                                color = group_col(object), color_scale =
+                                getOption("notame.color_scale_dis"),
+                                text_base_size = 14, cex = 2, size = 2,
+                                title_line_length = 40, theme =
+                                theme_bw(base_size = text_base_size),...) {
   beeswarm_fun <- function(object, fname) {
     data <- combined_data(object)
-    p <- ggplot(data, aes(x = .data[[x]], y = .data[[fname]], color = .data[[color]]))
+    p <- ggplot(data, aes(x = .data[[x]], y = .data[[fname]],
+                          color = .data[[color]]))
 
     if (add_boxplots) {
       p <- p +
@@ -396,11 +353,10 @@ save_beeswarm_plots <- function(object,
       ggbeeswarm::geom_beeswarm(cex = cex, size = size) +
       color_scale +
       theme +
-      labs(
-        title = stringr::str_wrap(fData(object)[fname, title], title_line_length),
-        subtitle = fData(object)[fname, subtitle],
-        y = "Abundance"
-      )
+      labs(title = stringr::str_wrap(fData(object)[fname, title],
+                                     title_line_length),
+           subtitle = fData(object)[fname, subtitle],
+           y = "Abundance")
     if (x == color) {
       p <- p + guides(color = "none")
     }
@@ -409,14 +365,12 @@ save_beeswarm_plots <- function(object,
 
   object <- drop_flagged(object, all_features)
   if (save) {
-    save_feature_plots(
-      object, file_path, format,
-      title, subtitle, text_base_size, beeswarm_fun, ...
-    )
+    .save_feature_plots(object, file_path, format, title, subtitle,
+                        text_base_size, beeswarm_fun, ...)
 
     log_text(paste("Saved beeswarm plots to:", file_path))
   } else {
-    return(create_feature_plot_list(object, beeswarm_fun))
+    return(.create_feature_plot_list(object, beeswarm_fun))
     log_text("Created a list of beeswarm plots")
   }
 }
@@ -466,54 +420,35 @@ save_beeswarm_plots <- function(object,
 #' \dontshow{setwd(.old_wd)}
 #'
 #' @export
-save_scatter_plots <- function(object,
-                               x = "Injection_order",
-                               save = TRUE,
-                               file_path = NULL,
-                               format = "emf",
-                               all_features = FALSE,
-                               color = NULL,
-                               color_scale = NA,
-                               shape = NULL,
-                               title = "Feature_ID",
-                               subtitle = NULL,
+save_scatter_plots <- function(object, x = "Injection_order", save = TRUE,
+                               file_path = NULL, format = "emf",
+                               all_features = FALSE, color = NULL,
+                               color_scale = NA, shape = NULL,
+                               title = "Feature_ID", subtitle = NULL,
                                shape_scale = getOption("notame.shape_scale"),
-                               text_base_size = 14,
-                               point_size = 2,
-                               title_line_length = 40,
-                               theme = theme_bw(base_size = text_base_size),
-                               ...) {
+                               text_base_size = 14, point_size = 2,
+                               title_line_length = 40, theme =
+                               theme_bw(base_size = text_base_size), ...) {
   scatter_fun <- function(object, fname) {
     data <- combined_data(object)
-    p <- scatter_plot(
-      data = data,
-      x = x,
-      y = fname,
-      color = color,
-      color_scale = color_scale,
-      shape = shape,
-      shape_scale = shape_scale,
-      point_size = point_size,
-      fixed = FALSE,
-      apply_theme_bw = FALSE
-    ) +
+    p <- .scatter_plot(data = data, x = x, y = fname, color = color,
+                       color_scale = color_scale, shape = shape,
+                       shape_scale = shape_scale, point_size = point_size,
+                       fixed = FALSE, apply_theme_bw = FALSE) +
       theme +
-      labs(
-        title = stringr::str_wrap(fData(object)[fname, title], title_line_length),
-        subtitle = fData(object)[fname, subtitle],
-        y = "Abundance"
-      )
+      labs(title = stringr::str_wrap(fData(object)[fname, title],
+                                     title_line_length),
+           subtitle = fData(object)[fname, subtitle],
+           y = "Abundance")
     p
   }
   object <- drop_flagged(object, all_features)
   if (save) {
-    save_feature_plots(
-      object, file_path, format,
-      title, subtitle, text_base_size, scatter_fun, ...
-    )
+    .save_feature_plots(object, file_path, format, title, subtitle,
+                        text_base_size, scatter_fun, ...)
     log_text(paste("Saved scatter plots to:", file_path))
   } else {
-    return(create_feature_plot_list(object, scatter_fun))
+    return(.create_feature_plot_list(object, scatter_fun))
     log_text("Created a list of scatter plots")
   }
 }
@@ -573,16 +508,13 @@ save_group_lineplots <- function(object, all_features = FALSE, save = TRUE,
                                  x = time_col(object), 
                                  group = group_col(object), 
                                  title = "Feature_ID", subtitle = NULL,
-                                 fun.data = "mean_cl_boot", # nolint: object_name_linter.
-                                 fun = NULL,
-                                 fun.min = NULL, # nolint: object_name_linter.
-                                 fun.max = NULL, # nolint: object_name_linter.
+                                 fun.data = "mean_cl_boot", fun = NULL,
+                                 fun.min = NULL, fun.max = NULL,
                                  position_dodge_amount = 0.2,
-                                 color_scale = getOption("notame.color_scale_dis"),
-                                 text_base_size = 14,
-                                 line_width = 0.5,
-                                 point_size = 4,
-                                 title_line_length = 40,
+                                 color_scale =
+                                 getOption("notame.color_scale_dis"),
+                                 text_base_size = 14, line_width = 0.5,
+                                 point_size = 4, title_line_length = 40,
                                  theme = theme_bw(base_size = text_base_size),
                                  ...) {
   if (is.na(group)) {
@@ -594,45 +526,28 @@ save_group_lineplots <- function(object, all_features = FALSE, save = TRUE,
 
   line_fun <- function(object, fname) {
     data <- combined_data(object)
-    p <- ggplot(
-      data,
-      aes(x = .data[[x]], y = .data[[fname]], group = .data[[group]], color = .data[[group]])
-    ) +
+    p <- ggplot(data, aes(x = .data[[x]], y = .data[[fname]], 
+                          group = .data[[group]], color = .data[[group]])) +
       # Errorbars with solid lines
-      stat_summary(
-        fun.data = fun.data,
-        geom = "errorbar", width = line_width,
-        fun = fun,
-        fun.min = fun.min,
-        fun.max = fun.max,
-        position = position_dodge(position_dodge_amount)
-      ) +
+      stat_summary(fun.data = fun.data, geom = "errorbar", width = line_width,
+                   fun = fun, fun.min = fun.min, fun.max = fun.max, 
+                   position = position_dodge(position_dodge_amount)) +
       # Plot point to mean
-      stat_summary(
-        fun.data = fun.data,
-        geom = "point",
-        fun = fun,
-        fun.min = fun.min,
-        fun.max = fun.max,
-        position = position_dodge(position_dodge_amount),
-        size = point_size
-      ) +
+      stat_summary(fun.data = fun.data, geom = "point", fun = fun, 
+                   fun.min = fun.min, fun.max = fun.max,
+                   position = position_dodge(position_dodge_amount),
+                   size = point_size) +
       # Line from mean to mean between for example timepoints
-      stat_summary(
-        fun.data = fun.data,
-        geom = "line",
-        position = position_dodge(position_dodge_amount), size = line_width,
-        fun = fun,
-        fun.min = fun.min,
-        fun.max = fun.max
-      ) +
+      stat_summary(fun.data = fun.data, geom = "line",
+                   position = position_dodge(position_dodge_amount), 
+                   size = line_width, fun = fun, fun.min = fun.min, 
+                   fun.max = fun.max) +
       color_scale +
       theme +
-      labs(
-        title = stringr::str_wrap(fData(object)[fname, title], title_line_length),
-        subtitle = fData(object)[fname, subtitle],
-        y = "Abundance"
-      )
+      labs(title = stringr::str_wrap(fData(object)[fname, title],
+                                     title_line_length),
+           subtitle = fData(object)[fname, subtitle],
+           y = "Abundance")
     if (x == group) {
       p <- p + guides(color = "none")
     }
@@ -641,14 +556,11 @@ save_group_lineplots <- function(object, all_features = FALSE, save = TRUE,
 
   object <- drop_flagged(object, all_features)
   if (save) {
-    save_feature_plots(
-      object, file_path, format,
-      title, subtitle, text_base_size, line_fun, ...
-    )
-
+    .save_feature_plots(object, file_path, format, title, 
+                        subtitle, text_base_size, line_fun, ...)
     log_text(paste("Saved line plots with mean line to:", file_path))
   } else {
-    return(create_feature_plot_list(object, line_fun))
+    return(.create_feature_plot_list(object, line_fun))
     log_text("Created a list of line plots with mean line")
   }
 }

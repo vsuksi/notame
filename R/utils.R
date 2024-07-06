@@ -16,26 +16,28 @@ utils::globalVariables(c('i', '.'))
   op <- options()
   op_notame <- list(
     notame.citations = list(
-      "Preprocessing and analyses were performed using notame package:" = utils::citation("notame"),
-      "notame is built on a class from Biobase package:" = utils::citation("Biobase"),
-      "visualizations in notame are built with ggplot2:" = utils::citation("ggplot2")
-    ),
+      "Preprocessing and analyses were performed using notame package:" =
+      utils::citation("notame"),
+      "notame is built on a class from Biobase package:" =
+      utils::citation("Biobase"),
+      "visualizations in notame are built with ggplot2:" =
+      utils::citation("ggplot2")),
     notame.color_scale_con = ggplot2::scale_color_viridis_c(),
     notame.color_scale_dis = ggplot2::scale_color_brewer(palette = "Set1"),
     notame.fill_scale_con = ggplot2::scale_fill_viridis_c(),
     notame.fill_scale_dis = ggplot2::scale_fill_brewer(palette = "Set1"),
     notame.fill_scale_div_con = ggplot2::scale_fill_distiller(palette = "RdBu"),
     notame.fill_scale_div_dis = ggplot2::scale_fill_brewer(palette = "RdBu"),
-    notame.shape_scale = ggplot2::scale_shape_manual(values = c(16, 17, 15, 3, 7, 8, 11, 13))
-  )
+    notame.shape_scale = ggplot2::scale_shape_manual(values = c(16, 17, 15, 3,
+                                                                7, 8, 11, 13)))
   toset <- !(names(op_notame) %in% names(op))
-  if (any(toset)) options(op_notame[toset])
-
+  if (any(toset)) {
+    options(op_notame[toset])
+  }
   invisible()
 }
 
-
-add_citation <- function(name, ref) {
+.add_citation <- function(name, ref) {
   cites <- getOption("notame.citations")
   if (!name %in% names(cites)) {
     cites[[name]] <- ref
@@ -132,7 +134,9 @@ finite_max <- function(x) {
 #' @export
 #' @rdname finite_helpers
 finite_mad <- function(x) {
-  mad(x[is.finite(x)], center = median(x[is.finite(x)], na.rm = TRUE), na.rm = TRUE)
+  mad(x[is.finite(x)], 
+      center = median(x[is.finite(x)], na.rm = TRUE), 
+      na.rm = TRUE)
 }
 
 #' @importFrom stats quantile
@@ -185,7 +189,7 @@ prop_found <- function(x) {
   sum(!is.na(x)) / length(x)
 }
 
-best_class <- function(x) {
+.best_class <- function(x) {
   x <- type.convert(as.character(x), as.is = TRUE)
   if (inherits(x, "numeric")) {
     x <- x
@@ -199,10 +203,10 @@ best_class <- function(x) {
   x
 }
 
-best_classes <- function(x) {
-  as.data.frame(lapply(x, best_class), stringsAsFactors = FALSE)
+.best_classes <- function(x) {
+  as.data.frame(lapply(x, .best_class), stringsAsFactors = FALSE)
 }
 
-all_unique <- function(x) {
+.all_unique <- function(x) {
   !any(duplicated(x))
 }

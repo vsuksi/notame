@@ -1,41 +1,37 @@
 # Used to combine and return multiple objects from a loop
-comb <- function(x, ...) {
+.comb <- function(x, ...) {
   mapply(rbind, x, ..., SIMPLIFY = FALSE)
 }
 
-.calc_cubic_spline <- function(feature, full_data, qc_data, n, qc_order,
-                               spar, spar_lower, spar_upper, full_order,
-                               log_transform) {
+.calc_cubic_spline <- function(feature, full_data, full_order, qc_data, n,
+                               qc_order, log_transform, 
+                               spar, spar_lower, spar_upper) {
   dnames <- list(feature, colnames(full_data))
   # Spline cannot be fitted if there are les than 4 QC values
   qc_detected <- !is.na(qc_data[feature, ])
   if (sum(qc_detected) < 4) {
     return(list(
       corrected = matrix(NA_real_, nrow = 1, ncol = n, dimnames = dnames),
-      predicted = matrix(NA_real_, nrow = 1, ncol = n, dimnames = dnames)
-    ))
+      predicted = matrix(NA_real_, nrow = 1, ncol = n, dimnames = dnames)))
   }
-
   # Spline regression
-  fit <- smooth.spline(
-    x = qc_order[qc_detected], y = qc_data[feature, qc_detected], 
-    all.knots = TRUE, spar = spar, 
-    control.spar = list("low" = spar_lower, "high" = spar_upper))
+  fit <- smooth.spline(x = qc_order[qc_detected], 
+                       y = qc_data[feature, qc_detected], 
+                       all.knots = TRUE, spar = spar, 
+                       control.spar = 
+                       list("low" = spar_lower, "high" = spar_upper))
   predicted <- predict(fit, full_order)$y
-  # Correction
   # Substraction in log space, division in original space
   if (log_transform) {
-    corrected <- full_data[feature, ] + mean(qc_data[feature, qc_detected]) - predicted
+    corrected <- full_data[feature, ] + 
+      mean(qc_data[feature, qc_detected]) - predicted
   } else {
     corr_factors <- predicted[1] / predicted
     corrected <- full_data[feature, ] * corr_factors
   }
-
-  # Each iteration of the loop returns one row to corrected and one row to predicted
-  list(
-    corrected = matrix(corrected, ncol = n, dimnames = dnames),
-    predicted = matrix(predicted, ncol = n, dimnames = dnames)
-  )
+  # Each iteration of the loop returns one row to both corrected and predicted
+  list(corrected = matrix(corrected, ncol = n, dimnames = dnames),
+       predicted = matrix(predicted, ncol = n, dimnames = dnames))
 }
 
 #' Fit a cubic spline to correct drift
@@ -75,12 +71,14 @@ comb <- function(x, ...) {
 #'
 #' @importFrom stats predict smooth.spline
 #' @export
-dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL, spar_lower = 0.5, spar_upper = 1.5) {
+dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL,
+                            spar_lower = 0.5, spar_upper = 1.5) {
   # Start log
   log_text(paste("\nStarting drift correction at", Sys.time()))
   # Zero values do not behave correctly
   if (sum(exprs(object) == 0, na.rm = TRUE)) {
-    log_text("Zero values in feature abundances detected. Zeroes will be replaced with 1.1")
+    log_text(paste0("Zero values in feature abundances detected.",
+                    " Zeroes will be replaced with 1.1."))
     exprs(object)[exprs(object) == 0] <- 1.1
   }
   # Extract data and injection order for QC samples and the full dataset
@@ -93,7 +91,8 @@ dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL, spar_lowe
   # log-transform before fiting the cubic spline
   if (log_transform) {
     if (sum(exprs(object) == 1, na.rm = TRUE)) {
-      log_text("Values of 1 in feature abundances detected. 1s will be replaced with 1.1.")
+      log_text(paste0("Values of 1 in feature abundances detected.", 
+                     " 1s will be replaced with 1.1."))
       exprs(object)[exprs(object) == 1] <- 1.1
     }
     qc_data <- log(qc_data)
@@ -101,9 +100,11 @@ dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL, spar_lowe
   }
   # comb needs a matrix with the right amount of columns
   n <- ncol(full_data)
-  # Return both predicted values (for plotting) and drift corrected values for each feature
-  dc_data <- BiocParallel::bplapply(X = features, FUN = .calc_cubic_spline, full_data, qc_data, n, qc_order, spar, spar_lower, spar_upper, full_order, log_transform)
-  dc_data <- do.call(comb, dc_data)
+  # Return both predicted values (for plotting) and drift corrected values
+  dc_data <- BiocParallel::bplapply(features, .calc_cubic_spline, full_data,
+                                    full_order, qc_data, n, qc_order,
+                                    log_transform, spar, spar_lower, spar_upper)
+  dc_data <- do.call(.comb, dc_data)
   corrected <- dc_data$corrected
   # Inverse the initial log transformation
   if (log_transform) {
@@ -112,21 +113,22 @@ dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL, spar_lowe
   exprs(object) <- corrected
   # Recompute quality metrics
   object <- assess_quality(object)
-
+  
   log_text(paste("Drift correction performed at", Sys.time()))
   return(list(object = object, predicted = dc_data$predicted))
 }
 
 
-.help_inspect_dc <- function(feature, orig_data, dc_data, check_quality,
-                             qdiff, condition) {
+.help_inspect_dc <- function(feature, orig_data, dc_data, qdiff,
+                             check_quality, condition) {
   data <- orig_data[feature, ]
   if (all(is.na(dc_data[feature, ]))) {
     dc_note <- "Missing_QCS"
   } else if (any(dc_data[feature, ] < 0, na.rm = TRUE)) {
     dc_note <- "Negative_DC"
   } else if (check_quality) {
-    pass <- paste0("qdiff[feature, ] %>% dplyr::filter(", condition, ") %>% nrow() %>% as.logical()") %>%
+    pass <- paste0("qdiff[feature, ] %>% dplyr::filter(", condition, 
+                   ") %>% nrow() %>% as.logical()") %>%
       parse(text = .) %>%
       eval()
     if (!pass) {
@@ -140,14 +142,9 @@ dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL, spar_lowe
     dc_note <- "Drift_corrected"
   }
 
-  list(
-    data = matrix(data, nrow = 1, dimnames = list(feature, names(data))),
-    dc_notes = data.frame(
-      Feature_ID = feature,
-      DC_note = dc_note,
-      stringsAsFactors = FALSE
-    )
-  )
+  list(data = matrix(data, nrow = 1, dimnames = list(feature, names(data))),
+       dc_notes = data.frame(Feature_ID = feature, DC_note = dc_note,
+                             stringsAsFactors = FALSE))
 }
 
 #' Flag the results of drift correction
@@ -187,7 +184,8 @@ dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL, spar_lowe
 #' )
 #'
 #' @export
-inspect_dc <- function(orig, dc, check_quality, condition = "RSD_r < 0 & D_ratio_r < 0") {
+inspect_dc <- function(orig, dc, check_quality, 
+                       condition = "RSD_r < 0 & D_ratio_r < 0") {
   if (is.null(quality(orig))) {
     orig <- assess_quality(orig)
   }
@@ -202,9 +200,10 @@ inspect_dc <- function(orig, dc, check_quality, condition = "RSD_r < 0 & D_ratio
 
   log_text(paste("Inspecting drift correction results", Sys.time()))
 
-  inspected <- BiocParallel::bplapply(X = features, FUN = .help_inspect_dc, orig_data, dc_data, check_quality, qdiff, condition)
+  inspected <- BiocParallel::bplapply(features, .help_inspect_dc, orig_data,
+                                      dc_data,  qdiff, check_quality, condition)
   
-  inspected <- do.call(comb, inspected)
+  inspected <- do.call(.comb, inspected)
 
   exprs(dc) <- inspected$data
   dc <- assess_quality(dc)
@@ -264,18 +263,20 @@ inspect_dc <- function(orig, dc, check_quality, condition = "RSD_r < 0 & D_ratio
 #' )
 #' \dontshow{setwd(.old_wd)}
 #' @export
-save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE, width = 16, height = 8, color = "QC",
-                          shape = color, color_scale = getOption("notame.color_scale_dis"),
-                          shape_scale = scale_shape_manual(values = c(15, 16))) {
+save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE,
+                          width = 16, height = 8, color = "QC",
+                          shape = color, 
+                          color_scale = getOption("notame.color_scale_dis"),
+                          shape_scale = scale_shape_manual(values = c(15, 16))){
   if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \"cowplot\" needed for this function to work. Please install it.",
-      call. = FALSE
-    )
+    stop("Package \'cowplot\' needed for this function to work.",
+         " Please install it.",   call. = FALSE)
   }
 
   # Create a helper function for plotting
   dc_plot_helper <- function(data, fname, title = NULL) {
-    p <- ggplot(mapping = aes(x = .data[["Injection_order"]], y = .data[[fname]])) +
+    p <- ggplot(mapping = aes(x = .data[["Injection_order"]], 
+                              y = .data[[fname]])) +
       theme_bw() +
       theme(panel.grid = element_blank()) +
       color_scale +
@@ -295,11 +296,14 @@ save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE, width
     ))
 
     for (yint in y_intercepts) {
-      p <- p + geom_hline(yintercept = yint, color = "grey", linetype = "dashed")
+      p <- p + geom_hline(yintercept = yint, color = "grey", 
+                          linetype = "dashed")
     }
     p +
-      scale_y_continuous(sec.axis = sec_axis(~., breaks = y_intercepts, labels = names(y_intercepts))) +
-      geom_point(data = data, mapping = aes(color = .data[[color]], shape = .data[[shape]]))
+      scale_y_continuous(sec.axis = sec_axis(~., breaks = y_intercepts, 
+                                             labels = names(y_intercepts))) +
+      geom_point(data = data, mapping = aes(color = .data[[color]], 
+                                            shape = .data[[shape]]))
   }
 
   orig_data_log <- combined_data(log(orig))
@@ -312,42 +316,26 @@ save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE, width
   pdf(file, width = width, height = height)
 
   for (fname in Biobase::featureNames(dc)) {
-    p2 <- dc_plot_helper(
-      data = dc_data, fname = fname,
-      title = "After"
-    )
+    p2 <- dc_plot_helper(data = dc_data, fname = fname, title = "After")
 
     if (log_transform) {
-      p1 <- dc_plot_helper(
-        data = orig_data, fname = fname,
-        title = "Before"
-      )
-      p3 <- dc_plot_helper(
-        data = orig_data_log, fname = fname,
-        title = "Drift correction in log space"
-      ) +
+      p1 <- dc_plot_helper(data = orig_data, fname = fname, title = "Before")
+      p3 <- dc_plot_helper(data = orig_data_log, fname = fname,
+                           title = "Drift correction in log space") +
         geom_line(data = predictions, color = "grey")
 
-      p4 <- dc_plot_helper(
-        data = dc_data_log, fname = fname,
-        title = "Corrected data in log space"
-      )
+      p4 <- dc_plot_helper(data = dc_data_log, fname = fname,
+                           title = "Corrected data in log space")
       p <- cowplot::plot_grid(p1, p3, p2, p4, nrow = 2)
     } else {
-      p1 <- dc_plot_helper(
-        data = orig_data, fname = fname,
-        title = "Before (original values)"
-      ) +
+      p1 <- dc_plot_helper(data = orig_data, fname = fname,
+                           title = "Before (original values)") +
         geom_line(data = predictions, color = "grey")
       p <- cowplot::plot_grid(p1, p2, nrow = 2)
     }
-
-
     plot(p)
   }
-
   dev.off()
-
   log_text(paste("\nSaved drift correction plots to:", file))
 }
 
@@ -399,32 +387,32 @@ save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE, width
 #'
 #'
 #' @export
-correct_drift <- function(object, log_transform = TRUE, spar = NULL, spar_lower = 0.5, spar_upper = 1.5,
-                          check_quality = FALSE, condition = "RSD_r < 0 & D_ratio_r < 0", plotting = FALSE,
-                          file = NULL, width = 16, height = 8, color = "QC",
-                          shape = NULL, color_scale = getOption("notame.color_scale_dis"),
-                          shape_scale = scale_shape_manual(values = c(15, 16))) {
+correct_drift <- function(object, log_transform = TRUE, spar = NULL, 
+                          spar_lower = 0.5, spar_upper = 1.5,
+                          check_quality = FALSE, 
+                          condition = "RSD_r < 0 & D_ratio_r < 0", 
+                          plotting = FALSE, file = NULL, width = 16, 
+                          height = 8, color = "QC", shape = NULL, 
+                          color_scale = getOption("notame.color_scale_dis"),
+                          shape_scale = scale_shape_manual(values = c(15, 16))){
   # Fit cubic spline and correct
-  corrected_list <- dc_cubic_spline(object,
-    log_transform = log_transform, spar = spar,
-    spar_lower = spar_lower, spar_upper = spar_upper
-  )
+  corrected_list <- dc_cubic_spline(object, log_transform = log_transform, 
+                                    spar = spar, spar_lower = spar_lower,
+                                    spar_upper = spar_upper)
   corrected <- corrected_list$object
-  # Only keep corrected versions of features where drift correction increases quality
-  inspected <- inspect_dc(
-    orig = object, dc = corrected,
-    check_quality = check_quality, condition = condition
-  )
+  # Only keep corrected versions of features with increased quality
+  inspected <- inspect_dc(orig = object, dc = corrected, 
+                          check_quality = check_quality, condition = condition)
   # Optionally save before and after plots
   if (plotting) {
     if (is.null(file)) {
-      stop("File must be specified")
+      stop("File must be specified.")
     }
-    save_dc_plots(
-      orig = object, dc = corrected, predicted = corrected_list$predicted,
-      file = file, log_transform = log_transform, width = width, height = height,
-      color = color, shape = shape, color_scale = color_scale, shape_scale = shape_scale
-    )
+    save_dc_plots(orig = object, dc = corrected, 
+                  predicted = corrected_list$predicted, file = file,
+                  log_transform = log_transform, width = width, height = height,
+                  color = color, shape = shape, color_scale = color_scale,
+                  shape_scale = shape_scale)
   }
   # Return the final version
   inspected
