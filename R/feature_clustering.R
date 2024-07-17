@@ -33,10 +33,6 @@
 #' clustered <- cluster_features(example_set, rt_window = 1, corr_thresh = 0.5, 
 #' d_thresh = 0.6)
 #'
-#' @seealso \code{\link{find_connections}}, \code{\link{find_clusters}},
-#' \code{\link{visualize_clusters}}, \code{\link{assign_cluster_id}},
-#' \code{\link{compress_clusters}}
-#'
 #' @export
 cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
                              all_features = FALSE, rt_window = 1 / 60,
@@ -116,7 +112,7 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
 #'
 #' @return A data frame similar to features, with cluster ID added.
 #'
-#' @export
+#' @noRd
 assign_cluster_id <- function(data, clusters, features, name_col) {
   if (!"MPA" %in% colnames(features)) {
     features$MPA <- vapply(data[, features[, name_col]], 
@@ -163,7 +159,7 @@ assign_cluster_id <- function(data, clusters, features, name_col) {
 #'
 #' @seealso \code{\link{cluster_features}}
 #'
-#' @export
+#' @noRd
 compress_clusters <- function(object) {
   cluster_names <- fData(object)$Cluster_ID
   if (is.null(cluster_names)) {
@@ -201,7 +197,7 @@ compress_clusters <- function(object) {
 #' \item cfeatures: data frame, feature information per cluster
 #' }
 #'
-#' @export
+#' @noRd
 pull_clusters <- function(data, features, name_col) {
   cluster_names <- features$Cluster_ID
   if (is.null(cluster_names)) {
@@ -271,7 +267,7 @@ pull_clusters <- function(data, features, name_col) {
 #' \item mz_diff & rt_diff: mass and retention time difference
 #' }
 #'
-#' @export
+#' @noRd
 find_connections <- function(data, features, corr_thresh = 0.9,
                              rt_window = 1 / 60, name_col, mz_col, rt_col) {
   d <- data[features[, name_col]]
@@ -325,7 +321,7 @@ find_connections <- function(data, features, corr_thresh = 0.9,
 #' \item graph: an igraph object of the cluster
 #' }
 #'
-#' @export
+#' @noRd
 find_clusters <- function(connections, d_thresh = 0.8) {
   if (!requireNamespace("igraph", quietly = TRUE)) {
     stop("Package \"igraph\" needed for this function to work.",
@@ -529,7 +525,7 @@ find_clusters <- function(connections, d_thresh = 0.8) {
 #'
 #' @inherit find_connections return examples
 #'
-#' @export
+#' @noRd
 visualize_clusters <- function(data, features, clusters, min_size, rt_window,
                                name_col, mz_col, rt_col, file_path) {
   for (i in seq_along(clusters)) {

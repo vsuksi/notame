@@ -71,5 +71,5 @@ save_dc_plots(
 \dontshow{setwd(.old_wd)}
 }
 \seealso{
-\code{\link{correct_drift}}, \code{\link{inspect_dc}}
+\code{\link{correct_drift}}
 }

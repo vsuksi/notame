@@ -69,14 +69,13 @@ between samples, ordered by hierarchical clustering using Ward's criterion
 \item \code{\link{plot_quality}} distributions of quality metrics plot 
 }
 
-#' Transformations:
+Transformations:
 \itemize{
-\item \code{\link[notame]{log}}, \code{\link[notame]{log2}}, 
-\code{\link[notame]{log10}} logarithms
+\item \code{\link{log}} logarithms
 \item \code{\link{exponential}} exponential
 \item \code{\link{pqn_normalization}} probabilistic quotient normalization
 \item \code{\link{inverse_normalize}} inverse-rank normalization
-\item \code{\link[notame]{scale}} scale
+\item \code{\link{scale}} scale
 }
 
 Univariate analysis (return data.frames):

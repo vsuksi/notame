@@ -102,40 +102,6 @@ fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum",
   object
 }
 
-#' Replace NA values in pheno data columns with "QC"
-#'
-#' Loops through specified columns in pheno data and replaces all NA values 
-#' with "QC". Also transforms the column to factor and sets "QC" as the last 
-#' level.
-#'
-#' @param data a data frame such as pheno_data returned by 
-#' \code{\link{read_from_excel}}
-#' @param cols the columns to fix
-#'
-#' @return A data frame with the column modified.
-#'
-#' @examples
-#' # Remove QC labels first
-#' pheno_data <- pData(merged_sample)
-#' pheno_data$Group[pheno_data$Group == "QC"] <- NA
-#' head(pheno_data$Group, 20)
-#' pheno_data <- mark_qcs(pheno_data, cols = "Group")
-#' head(pheno_data$Group, 20)
-#'
-#' @export
-mark_qcs <- function(data, cols) {
-  for (col in cols) {
-    data[col] <- as.character(data[, col])
-    data[is.na(data[, col]), col] <- "QC"
-    data[col] <- factor(data[, col])
-    good_levels <- levels(data[, col])
-    good_levels <- c(good_levels[good_levels != "QC"], "QC")
-    data[col] <- factor(as.character(data[, col]), levels = good_levels)
-  }
-  data
-}
-
-
 #' Drop QC samples
 #'
 #' @param object a MetaboSet object
@@ -207,7 +173,7 @@ drop_flagged <- function(object, all_features = FALSE) {
 #' merged <- merge_exprs(ex_set, replacement)
 #' exprs(merged)
 #'
-#' @export
+#' @noRd
 merge_exprs <- function(object, y) {
   # Colnames and rownames should be found in the object
   if (!all(colnames(y) %in% colnames(exprs(object))) || is.null(colnames(y))) {
@@ -440,6 +406,7 @@ flag_report <- function(object) {
 #'
 #' @return A MetaboSet object with the assay transformed.
 #'
+#' @rdname log
 #' @export
 setMethod("log", "MetaboSet", 
   function(x, base = exp(1)) {
@@ -448,7 +415,7 @@ setMethod("log", "MetaboSet",
   }
 )
 
-#' @rdname log-MetaboSet-method
+#' @rdname log
 #' @export
 setMethod("log2", "MetaboSet", 
   function(x) {
@@ -457,7 +424,7 @@ setMethod("log2", "MetaboSet",
   }
 )
 
-#' @rdname log-MetaboSet-method
+#' @rdname log
 #' @export
 setMethod("log10", "MetaboSet", 
   function(x) {
@@ -478,6 +445,8 @@ setGeneric("scale")
 #' @param center,scale as in base scale function
 #' 
 #' @return A Metaboset object with modified assay.
+#'
+#' @rdname scale
 #'
 #' @export
 setMethod("scale", "MetaboSet", 
@@ -557,7 +526,7 @@ pqn_normalization <- function(object, ref = c("qc", "all"),
   log_text(paste("Using", method, "of", ref, "samples as reference spectrum"))
   # Calculate median of quotients
   quotients <- ref_data / reference_spectrum
-  quotient_md <- apply(quotients, 2, notame::finite_median)
+  quotient_md <- apply(quotients, 2, finite_median)
   # Do the normalization
   data <- exprs(object)
   pqn_data <- t(t(data) / quotient_md)

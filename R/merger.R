@@ -289,27 +289,3 @@ merge_metabosets <- function(..., merge = c("features", "samples")) {
 
   merged_object
 }
-
-#' DEPRECATED: Merge MetaboSet objects of batches together
-#'
-#' NOTE: This function is deprecated, use merge_metabosets(..., merge = 
-#' '"samples") instead.
-#'
-#' @param ... MetaboSet objects or a list of Metaboset objects
-#'
-#' @return A merged MetaboSet object.
-#'
-#' @examples
-#' batch1 <- merged_sample[, merged_sample$Batch == 1]
-#' batch2 <- merged_sample[, merged_sample$Batch == 2]
-#' merged <- merge_batches(batch1, batch2)
-#'
-#' @export
-merge_batches <- function(...) {
-  warning("merge_batches is deprecated, merge_metabosets can now merge",
-          " objects from different batches as well as objects from different",
-          " modes. merge_batches(...) is equivalent to",
-          " merge_metabosets(..., merge = 'samples')", .call = FALSE)
-
-  merge_metabosets(..., merge = "samples")
-}

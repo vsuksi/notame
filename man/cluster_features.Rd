@@ -63,8 +63,3 @@ clustered <- cluster_features(example_set, rt_window = 1, corr_thresh = 0.5,
 d_thresh = 0.6)
 
 }
-\seealso{
-\code{\link{find_connections}}, \code{\link{find_clusters}},
-\code{\link{visualize_clusters}}, \code{\link{assign_cluster_id}},
-\code{\link{compress_clusters}}
-}

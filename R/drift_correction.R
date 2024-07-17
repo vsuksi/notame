@@ -76,7 +76,7 @@
 #' results, \code{\link{save_dc_plots}} for plotting the drift correction 
 #' process for each feature
 #'
-#' @export
+#' @noRd
 dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL,
                             spar_lower = 0.5, spar_upper = 1.5) {
   # Start log
@@ -193,7 +193,7 @@ dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL,
 #'   check_quality = TRUE
 #' )
 #'
-#' @export
+#' @noRd
 inspect_dc <- function(orig, dc, check_quality, 
                        condition = "RSD_r < 0 & D_ratio_r < 0") {
   if (is.null(quality(orig))) {
@@ -259,7 +259,7 @@ inspect_dc <- function(orig, dc, check_quality,
 #'
 #' @details By default, the column used for color is also used for shape.
 #'
-#' @seealso \code{\link{correct_drift}}, \code{\link{inspect_dc}}
+#' @seealso \code{\link{correct_drift}}
 #'
 #' @examples
 #' \dontshow{.old_wd <- setwd(tempdir())}
@@ -402,12 +402,7 @@ save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE,
 #' @examples
 #' corrected <- correct_drift(merged_sample)
 #'
-#' @seealso  \code{\link{dc_cubic_spline}}, \code{\link[stats]{smooth.spline}} 
-#' for details about the regression,
-#' \code{\link{inspect_dc}} for analysing the drift correction results,
-#' \code{\link{save_dc_plots}} for plotting the drift correction process for 
-#' each feature
-#'
+#' @seealso \code{\link[stats]{smooth.spline}} for details about the regression
 #'
 #' @export
 correct_drift <- function(object, log_transform = TRUE, spar = NULL, 

@@ -64,14 +64,13 @@
 #' \item \code{\link{plot_quality}} distributions of quality metrics plot 
 #' }
 #'
-#' #' Transformations:
+#' Transformations:
 #' \itemize{
-#' \item \code{\link[notame]{log}}, \code{\link[notame]{log2}}, 
-#' \code{\link[notame]{log10}} logarithms
+#' \item \code{\link{log}} logarithms
 #' \item \code{\link{exponential}} exponential
 #' \item \code{\link{pqn_normalization}} probabilistic quotient normalization
 #' \item \code{\link{inverse_normalize}} inverse-rank normalization
-#' \item \code{\link[notame]{scale}} scale
+#' \item \code{\link{scale}} scale
 #' }
 #' 
 #' Univariate analysis (return data.frames):
@@ -258,25 +257,22 @@ citations <- function() {
 
 #' Summary statistics of finite elements
 #'
-#' These functions first remove non-finite and missing values, then compute the 
-#' summary statistic in question.
-#' They are helper functions used for computing quality measurements.
+#' These functions first remove non-finite and missing values, then 
+#' compute the summary statistic in question. They are helper 
+#' functions used for computing quality measurements.
 #' 
 #' @param x a numeric vector.
 #' @param ... other parameters passed to underlying function
 #' @return A named, numeric vector with the summary statistic in question.
 #'
 #' @name finite_helpers
+#' @noRd
 NULL
 
-#' @export
-#' @rdname finite_helpers
 finite_sd <- function(x) {
   sd(x[is.finite(x)], na.rm = TRUE)
 }
 
-#' @export
-#' @rdname finite_helpers
 finite_mean <- function(x) {
   if (all(is.na(x))) {
     return(NA_real_)
@@ -284,20 +280,10 @@ finite_mean <- function(x) {
   mean(x[is.finite(x)], na.rm = TRUE)
 }
 
-#' @examples
-#' data <- combined_data(example_set)
-#' features <- fData(example_set)
-#' features$MPA <- sapply(data[, features[, "Feature_ID"]], finite_median)
-#'
-#' @importFrom stats median
-#' @export
-#' @rdname finite_helpers
 finite_median <- function(x) {
-  median(x[is.finite(x)], na.rm = TRUE)
+  stats::median(x[is.finite(x)], na.rm = TRUE)
 }
 
-#' @export
-#' @rdname finite_helpers
 finite_min <- function(x) {
   if (all(is.na(x))) {
     return(NA_real_)
@@ -305,8 +291,6 @@ finite_min <- function(x) {
   min(x[is.finite(x)], na.rm = TRUE)
 }
 
-#' @export
-#' @rdname finite_helpers
 finite_max <- function(x) {
   if (all(is.na(x))) {
     return(NA_real_)
@@ -314,22 +298,15 @@ finite_max <- function(x) {
   max(x[is.finite(x)], na.rm = TRUE)
 }
 
-#' @export
-#' @rdname finite_helpers
 finite_mad <- function(x) {
   mad(x[is.finite(x)], 
-      center = median(x[is.finite(x)], na.rm = TRUE), 
+      center = stats::median(x[is.finite(x)], na.rm = TRUE), 
       na.rm = TRUE)
 }
 
-#' @importFrom stats quantile
-#' @export
-#' @rdname finite_helpers
 finite_quantile <- function(x, ...) {
-  unname(quantile(x[is.finite(x)], na.rm = TRUE, ...))
+  unname(stats::quantile(x[is.finite(x)], na.rm = TRUE, ...))
 }
-
-
 
 # Defaults for NULL values
 `%||%` <- function(a, b) {
@@ -352,7 +329,7 @@ finite_quantile <- function(x, ...) {
 #' example_set <- mark_nas(example_set)
 #' prop_na(exprs(example_set))
 #' 
-#' @export
+#' @noRd
 prop_na <- function(x) {
   sum(is.na(x)) / length(x)
 }
@@ -367,7 +344,7 @@ prop_na <- function(x) {
 #' example_set <- mark_nas(example_set, value = 0)
 #' prop_found(exprs(example_set))
 #'
-#' @export
+#' @noRd
 prop_found <- function(x) {
   sum(!is.na(x)) / length(x)
 }
