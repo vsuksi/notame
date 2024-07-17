@@ -16,7 +16,6 @@
 #' \dontshow{setwd(.old_wd)}
 #' @seealso \code{\link{log_text}}, \code{\link{finish_log}}
 #'
-#' @import futile.logger
 #' @export
 init_log <- function(log_file) {
   futile.logger::flog.appender(futile.logger::appender.tee(log_file), 
@@ -30,8 +29,8 @@ init_log <- function(log_file) {
 
 #' Log text to the current log file
 #'
-#' The specified text is printed and written to the current log file. Does not overwrite the file.
-#' Also used internally by many functions in the package
+#' The specified text is printed and written to the current log file. Does not 
+#' overwrite the file. Also used internally by many functions in the package. 
 #'
 #' @param text The text to be logged
 #'
@@ -64,7 +63,6 @@ log_text <- function(text) {
 #'
 #' @seealso \code{\link{init_log}}, \code{\link{log_text}}
 #'
-#' @importFrom utils sessionInfo
 #' @export
 finish_log <- function() {
   # Return default option for error
@@ -72,7 +70,7 @@ finish_log <- function() {
   # Log end of session info
   futile.logger::flog.info(paste("Finished analysis. ", date(), 
                                  "\nSession info:\n", sep = ""))
-  futile.logger::flog.info(capture.output(sessionInfo()))
+  futile.logger::flog.info(utils::capture.output(utils::sessionInfo()))
   invisible(futile.logger::flog.appender(futile.logger::appender.console(),
                                          name = "notame"))
 }

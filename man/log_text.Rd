@@ -13,8 +13,8 @@ log_text(text)
 None, the function is invoked for its side effect.
 }
 \description{
-The specified text is printed and written to the current log file. Does not overwrite the file.
-Also used internally by many functions in the package
+The specified text is printed and written to the current log file. Does not 
+overwrite the file. Also used internally by many functions in the package.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}

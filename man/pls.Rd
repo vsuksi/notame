@@ -49,40 +49,49 @@ mixomics_spls_optimize(
 
 \item{ncomp}{number of X components}
 
-\item{plot_scores}{logical, if TRUE, a scatter plot with the first two PLS-components as x and y-axis will
-be drawn, colored by the y-variable. Only really makes sense if y is a single variable}
+\item{plot_scores}{logical, if TRUE, a scatter plot with the first two PLS-
+components as x and y-axis will be drawn, colored by the y-variable. 
+Only really makes sense if y is a single variable}
 
-\item{all_features}{logical, should all features be included in the model? if FALSE, flagged features are left out}
+\item{all_features}{logical, should all features be included in the model? 
+if FALSE, flagged features are left out}
 
-\item{covariates}{character, column names of pData to use as covariates in the model, in addition to
+\item{covariates}{character, column names of pData to use as covariates in 
+the model, in addition to
 molecular features}
 
-\item{...}{any parameters passed to \code{mixOmics::pls} or \code{mixOmics::spls}}
+\item{...}{any parameters passed to \code{mixOmics::pls} or 
+\code{mixOmics::spls}}
 
 \item{folds}{the number of folds to use in k-fold cross validation}
 
-\item{nrepeat}{the number of times to repeat the cross validation. Lower this for faster testing.}
+\item{nrepeat}{the number of times to repeat the cross validation. Lower 
+this for faster testing.}
 
 \item{n_features}{the number of features to try for each component}
 }
 \value{
-an object of class "mixo_pls" or "mixo_spls"
+An object of class "mixo_pls" or "mixo_spls".
 }
 \description{
-Simple wrappers for fitting a PLS model using pls function of the mixOmics package.
-The object can then be passed to many of the mixOmics functions for prediction,
-performance evaluation etc. Also plot a scores plot of the first two components.
+Simple wrappers for fitting a PLS model using pls function of the mixOmics 
+package. The object can then be passed to many of the mixOmics functions for 
+prediction, performance evaluation etc. Also plot a scores plot of the first 
+two components.
 \itemize{
-\item{\code{mixomics_pls} A simple PLS model with set number of components and all features}
+\item{\code{mixomics_pls} A simple PLS model with set number of components 
+and all features}
 \item{\code{mixomics_pls_optimize} Test different numbers of components,
 choose the one with minimal mean square error}
-\item{\code{mixomics_spls_optimize} sPLS model: Test different numbers of components and features,
+\item{\code{mixomics_spls_optimize} sPLS model: Test different numbers of 
+components and features,
 choose the one with minimal mean square error}
 }
 }
 \examples{
 pls_res <- mixomics_pls(merged_sample, y = "Injection_order", ncomp = 3)
-pls_opt <- mixomics_pls_optimize(merged_sample, y = "Injection_order", ncomp = 3)
+pls_opt <- mixomics_pls_optimize(merged_sample, 
+  y = "Injection_order", ncomp = 3)
 pls_res <- mixomics_spls_optimize(merged_sample,
   y = "Injection_order", ncomp = 3,
   n_features <- c(1:10, 12, 15, 20)

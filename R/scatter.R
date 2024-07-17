@@ -48,24 +48,28 @@
 #' PCA scatter plot
 #'
 #' Computes PCA using one of the methods provided in the Bioconductor package
-#' pcaMethods and plots the two first principal components
-#' \strong{CITATION:} When using this function, cite the \code{pcaMethods} package
+#' pcaMethods and plots the two first principal components.
 #'
 #' @param object a MetaboSet object
 #' @param pcs numeric vector of length 2, the principal components to plot
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
-#' @param color character, name of the column used for coloring the points. Set to NULL for black color.
-#' @param shape character, name of the column used for shape. Set to NULL for uniform round shapes.
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param center logical, should the data be centered prior to PCA? (usually 
+#' yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+#' variance
+#' @param color character, name of the column used for coloring the points. Set 
+#' to NULL for black color.
+#' @param shape character, name of the column used for shape. Set to NULL for 
+#' uniform round shapes.
 #' @param point_size numeric, size of the points.
 #' @param label character, name of the column used for point labels
 #' @param density logical, whether to include density plots to both axes.
 #' The density curves will be split and colored by the 'color' variable.
 #' @param title,subtitle the titles of the plot
-#' @param color_scale the color scale as returned by a ggplot function.
-#' Set to NA to choose the appropriate scale based on the class of the coloring variable.
+#' @param color_scale the color scale as returned by a ggplot function. Set to 
+#' NA to choose the appropriate scale based on the class of the coloring 
+#' variable.
 #' @param shape_scale the shape scale as returned by a ggplot function
 #' @param fill_scale the fill scale used for density curves.
 #' If a continuous variable is used as color, density curve will be colorless.
@@ -73,8 +77,8 @@
 #' @param point_size numeric, size of the points
 #' @param ... additional arguments passed to pcaMethods::pca
 #'
-#' @return a ggplot object. If \code{density} is \code{TRUE}, the plot will consist of multiple
-#' parts and is harder to modify.
+#' @return A ggplot object. If \code{density} is \code{TRUE}, the plot will 
+#' consist of multiple parts and is harder to modify.
 #'
 #' @examples
 #' plot_pca(merged_sample, color = "Injection_order", shape = "Group")
@@ -110,26 +114,31 @@ plot_pca <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' t-SNE scatter plot
 #'
 #' Computes t-SNE into two dimensions and plots the map points.
-#' In case there are missing values, PCA is performed using the nipals method of \code{pcaMethods::pca},
-#' the  method can be changed to "ppca" if nipals fails.
-#' \strong{CITATION:} When using this function, cite the \code{pcaMethods} and \code{Rtsne} packages
+#' In case there are missing values, PCA is performed using the nipals method 
+#' of \code{pcaMethods::pca}, the  method can be changed to "ppca" if nipals 
+#' fails.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param center logical, should the data be centered prior to PCA? (usually 
+#' yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+#' variance
 #' @param perplexity the perplexity used in t-SNE
 #' @param pca_method the method used in PCA if there are missing values
-#' @param color character, name of the column used for coloring the points. Set to NULL for black color.
-#' @param shape character, name of the column used for shape. Set to NULL for uniform round shapes.
+#' @param color character, name of the column used for coloring the points. Set 
+#' to NULL for black color.
+#' @param shape character, name of the column used for shape. Set to NULL for 
+#' uniform round shapes.
 #' @param point_size numeric, size of the points.
 #' @param label character, name of the column used for point labels
 #' @param density logical, whether to include density plots to both axes.
 #' The density curves will be split and colored by the 'color' variable.
 #' @param title,subtitle the titles of the plot
 #' @param color_scale the color scale as returned by a ggplot function.
-#' Set to NA to choose the appropriate scale based on the class of the coloring variable.
+#' Set to NA to choose the appropriate scale based on the class of the coloring 
+#' variable.
 #' @param shape_scale the shape scale as returned by a ggplot function
 #' @param fill_scale the fill scale used for density curves.
 #' If a continuous variable is used as color, density curve will be colorless.
@@ -137,8 +146,8 @@ plot_pca <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' @param point_size numeric, size of the points
 #' @param ... additional arguments passed to \code{Rtsne::Rtsne}
 #'
-#' @return a ggplot object. If \code{density} is \code{TRUE}, the plot will consist of multiple
-#' parts and is harder to modify.
+#' @return A ggplot object. If \code{density} is \code{TRUE}, the plot will 
+#' consist of multiple parts and is harder to modify.
 #'
 #' @examples
 #' plot_tsne(merged_sample, color = "Time", shape = "Group")
@@ -176,10 +185,6 @@ plot_tsne <- function(object, all_features = FALSE, center = TRUE,
                         fill_scale, label_text_size) {
   # Add point labels
   if (!is.null(label)) {
-    if (!requireNamespace("ggrepel", quietly = TRUE)) {
-      stop("Package \"ggrepel\" needed for this function to label the points.", 
-           " Please install it.", call. = FALSE)
-    }
     p <- p + ggrepel::geom_text_repel(mapping = aes(label = .data[[label]]),
                                       size = label_text_size) +
       # Remove "a" from the legend (ggrepel adds it by default)
@@ -188,10 +193,6 @@ plot_tsne <- function(object, all_features = FALSE, center = TRUE,
 
   # Add density plots to top and right
   if (density) {
-    if (!requireNamespace("cowplot", quietly = TRUE)) {
-      stop("Package \"cowplot\" needed for this function for density curves.", 
-           " Please install it.", call. = FALSE)
-    }
     xdens <- cowplot::axis_canvas(p, axis = "x") +
       geom_density(data = data, aes(x = .data[[x]], fill = .data[[color]]),
                    alpha = 0.7, size = 0.2) +
@@ -276,15 +277,16 @@ plot_tsne <- function(object, all_features = FALSE, center = TRUE,
 #' PCA loadings plot
 #'
 #' Computes PCA using one of the methods provided in the Bioconductor package
-#' pcaMethods and plots the loadings of first principal components
-#' \strong{CITATION:} When using this function, cite the \code{pcaMethods} package
+#' pcaMethods and plots the loadings of first principal components.
 #'
 #' @param object a MetaboSet object
 #' @param pcs numeric vector of length 2, the principal components to plot
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param center logical, should the data be centered prior to PCA? (usually 
+#' yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+#' variance
 #' @param n_features numeric vector of length two, number of top feature to plot
 #' for each principal component
 #' @param title,subtitle the titles of the plot
@@ -293,14 +295,13 @@ plot_tsne <- function(object, all_features = FALSE, center = TRUE,
 #' @param label_text_size numeric, size of the labels
 #' @param ... additional arguments passed to pcaMethods::pca
 #'
-#' @return a ggplot object.
+#' @return A ggplot object.
 #'
 #' @examples
 #' plot_pca_loadings(merged_sample, n_features = c(2, 4))
 #'
 #' @seealso \code{\link[pcaMethods]{pca}}
 #'
-#' @importFrom stats loadings
 #' @export
 plot_pca_loadings <- function(object, pcs = c(1, 2), all_features = FALSE,
                               center = TRUE, scale = "uv", 
@@ -312,10 +313,10 @@ plot_pca_loadings <- function(object, pcs = c(1, 2), all_features = FALSE,
     stop("Package \"pcaMethods\" needed for this function to work.", 
          " Please install it.", call. = FALSE)
   }
-  if (!requireNamespace("ggrepel", quietly = TRUE)) {
-    stop("Package \"ggrepel\" needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
+  
+  .add_citation("PCA was performed using pcaMethods package:",
+                citation("pcaMethods"))
+  
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
   pca_res <- pcaMethods::pca(object, nPcs = max(pcs), center = center, 
@@ -348,17 +349,19 @@ plot_pca_loadings <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' PCA hexbin plot
 #'
 #' Computes PCA using one of the methods provided in the Bioconductor package
-#' pcaMethods and plots the two first principal components as hexagonal bins, where the value of the coloring
-#' variable is summarised for each bin, by default as the mean of the values inside the bin.
-#' \strong{CITATION:} When using this function, cite the \code{pcaMethods} package
+#' pcaMethods and plots the two first principal components as hexagonal bins, 
+#' where the value of the coloring variable is summarised for each bin, by 
+#' default as the mean of the values inside the bin.
 #'
 #' @param object a MetaboSet object
 #' @param pcs numeric vector of length 2, the principal components to plot
 #' @param pcs numeric vector of length 2, the principal components to plot
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param center logical, should the data be centered prior to PCA? (usually 
+#' yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+#' variance
 #' @param fill character, name of the column used for coloring the hexagons
 #' @param summary_fun the function used to compute the value for each hexagon
 #' @param bins the number of bins in x and y axes
@@ -396,18 +399,20 @@ plot_pca_hexbin <- function(object, pcs = c(1, 2), all_features = FALSE,
 
 #' t-SNE hexbin plot
 #'
-#' Computes t-SNE into two dimensions and plots the map as hexagonal bins, where the value of the coloring
-#' variable is summarised for each bin, by default as the mean of the values inside the bin.
-#' In case there are missing values, PCA is performed using the nipals method of \code{pcaMethods::pca},
-#' the  method can be changed to "ppca" if niipals fails.
-#'
-#' \strong{CITATION:} When using this function, cite the \code{pcaMethods} and \code{Rtsne} packages
+#' Computes t-SNE into two dimensions and plots the map as hexagonal bins, 
+#' where the value of the coloring variable is summarised for each bin, by 
+#' default as the mean of the values inside the bin.
+#' In case there are missing values, PCA is performed using the nipals method 
+#' of \code{pcaMethods::pca}, the  method can be changed to "ppca" if nipals 
+#' fails.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param center logical, should the data be centered prior to PCA? (usually 
+#' yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+#' variance
 #' @param pca_method the method used in PCA if there are missing values
 #' @param perplexity the perplexity used in t-SNE
 #' @param fill character, name of the column used for coloring the hexagons
@@ -452,14 +457,6 @@ plot_tsne_hexbin <- function(object, all_features = FALSE, center = TRUE,
 .hexbin_plot <- function(data, x, y, fill, summary_fun = "mean", bins = 10,
                         fill_scale = NULL, title = NULL, subtitle = NULL, 
                         xlab = x, ylab = y, fill_lab = fill) {
-  if (!requireNamespace("hexbin", quietly = TRUE)) {
-    stop("Package \"hexbin\" needed for this function to work.",
-         " Please install it.", call. = FALSE)
-  }
-  if (!requireNamespace("Hmisc", quietly = TRUE)) {
-    stop("Package \"Hmisc\" needed for this function to work.",
-         " Please install it.", call. = FALSE)
-  }
 
   p <- ggplot(data, aes(x = .data[[x]], y = .data[[y]], z = .data[[fill]])) +
     stat_summary_hex(bins = bins, fun = summary_fun) +
@@ -493,27 +490,31 @@ plot_tsne_hexbin <- function(object, all_features = FALSE, center = TRUE,
 
 #' PCA plot with arrows
 #'
-#' Plots changes in PCA space according to time. All the observations of a single subject are connected
-#' by an arrow ending at the last observation.
+#' Plots changes in PCA space according to time. All the observations of a 
+#' single subject are connected by an arrow ending at the last observation.
 #'
 #' @param object a MetaboSet object
 #' @param pcs numeric vector of length 2, the principal components to plot
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param center logical, should the data be centered prior to PCA? (usually 
+#' yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+#' variance
 #' @param color character, name of the column used for coloring the arrows
 #' @param time character, name of the column containing timepoints
 #' @param subject character, name of the column containing subject identifiers
-#' @param alpha numeric, value for the alpha parameter of the arrows (transparency)
-#' @param arrow_style a description of arrow heads, the size and angle can be modified, see \code{?arrow}
+#' @param alpha numeric, value for the alpha parameter of the arrows 
+#' (transparency)
+#' @param arrow_style a description of arrow heads, the size and angle can be 
+#' modified, see \code{?arrow}
 #' @param title,subtitle the titles of the plot
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param text_base_size the base size of the text
 #' @param line_width the width of the arrows
 #' @param ... additional arguments passed to pcaMethods::pca
 #'
-#' @return a ggplot object.
+#' @return A ggplot object.
 #'
 #' @examples
 #' plot_pca_arrows(drop_qcs(example_set))
@@ -555,31 +556,35 @@ plot_pca_arrows <- function(object, pcs = c(1, 2), all_features = FALSE,
 #' t-SNE plot with arrows
 #'
 #' Computes t-SNE into two dimensions and plots changes according to time.
-#' All the observations of a single subject are connected by an arrow ending at the last observation.
-#' In case there are missing values, PCA is performed using the nipals method of \code{pcaMethods::pca},
-#' the  method can be changed to "ppca" if nipals fails.
-#' \strong{CITATION:} When using this function, cite the \code{pcaMethods} and \code{Rtsne} packages
+#' All the observations of a single subject are connected by an arrow ending at 
+#' the last observation. In case there are missing values, PCA is performed 
+#' using the nipals method of \code{pcaMethods::pca}, the method can be changed 
+#' to "ppca" if nipals fails.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param center logical, should the data be centered prior to PCA? (usually 
+#' yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+#' variance
 #' @param perplexity the perplexity used in t-SNE
 #' @param pca_method the method used in PCA if there are missing values
 #' @param color character, name of the column used for coloring the points
 #' @param time character, name of the column containing timepoints
 #' @param subject character, name of the column containing subject identifiers
-#' @param alpha numeric, value for the alpha parameter of the arrows (transparency)
-#' @param arrow_style a description of arrow heads, the size and angle can be modified, see \code{?arrow}
+#' @param alpha numeric, value for the alpha parameter of the arrows 
+#' (transparency)
+#' @param arrow_style a description of arrow heads, the size and angle can be 
+#' modified, see \code{?arrow}
 #' @param title,subtitle the titles of the plot
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param text_base_size the base size of the text
 #' @param line_width the width of the arrows
 #' @param ... additional arguments passed to \code{Rtsne::Rtsne}
 #'
-#' @return a ggplot object. If \code{density} is \code{TRUE}, the plot will consist of multiple
-#' parts and is harder to modify.
+#' @return A ggplot object. If \code{density} is \code{TRUE}, the plot will 
+#' consist of multiple parts and is harder to modify.
 #'
 #' @examples
 #' plot_tsne_arrows(drop_qcs(example_set), perplexity = 5)
@@ -628,19 +633,23 @@ minus_log10 <- scales::trans_new("minus_log10",
 #'
 #' Draws a volcano plot of effect size and p-values.
 #'
-#' @param object a MetaboSet object or a data frame. If x is a MetaboSet object, fData(x) is used.
-#' If x is a data frame, it is used as is.
+#' @param object a MetaboSet object or a data frame. If x is a MetaboSet 
+#' object, fData(x) is used. If x is a data frame, it is used as is.
 #' @param x,p the column names of effect size (x-axis) and p-values
-#' @param p_fdr column name of FDR corrected p-values, used to draw a line showing the fdr-corrected significance level
+#' @param p_fdr column name of FDR corrected p-values, used to draw a line 
+#' showing the fdr-corrected significance level
 #' @param color column name used to color the plots
 #' @param p_breaks a numerical vector of the p_values to show on the y-axis
 #' @param fdr_limit the significance level used in the experiment
 #' @param log2_x logical, whether effect size should be plotted on a log2 axis.
-#' @param center_x_axis logical, whether x-axis should be centered. If \code{TRUE}, the "zero-effect" will
-#' be on the middle of the plot. The "zero effect" is 0 if \code{log2_x = FALSE} and 1 if  \code{log2_x = TRUE}
-#' @param x_lim numerical vector of length 2 for manually setting the x-axis limits
+#' @param center_x_axis logical, whether x-axis should be centered. If 
+#' \code{TRUE}, the "zero-effect" will be on the middle of the plot. The 
+#' "zero effect" is 0 if \code{log2_x = FALSE} and 1 if \code{log2_x = TRUE}
+#' @param x_lim numerical vector of length 2 for manually setting the x-axis 
+#' limits
 #' @param label column name used to label the plots
-#' @param label_limit numeric, p-value which is used to limit label plotting. Defaults to 0.05.
+#' @param label_limit numeric, p-value which is used to limit label plotting. 
+#' Defaults to 0.05.
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param title,subtitle the title and subtitle of the plot
 #' @param text_base_size integer, base size for text in figures
@@ -649,11 +658,12 @@ minus_log10 <- scales::trans_new("minus_log10",
 #' such as shape and alpha values. New aesthetics can
 #' also be passed using \code{mapping = aes(...)}.
 #'
-#' @return a ggplot object
+#' @return A ggplot object.
 #'
 #' @examples
 #' # naturally, this looks messy as there are not enough p-values
-#' lm_results <- perform_lm(drop_qcs(merged_sample), formula_char = "Feature ~ Group")
+#' lm_results <- perform_lm(drop_qcs(merged_sample), 
+#'   formula_char = "Feature ~ Group")
 #' volcano_plot(lm_results,
 #'   x = "GroupB_Estimate",
 #'   p = "GroupB_P", p_fdr = "GroupB_P_FDR",
@@ -696,7 +706,8 @@ setMethod("volcano_plot", c(object = "MetaboSet"),
 setMethod("volcano_plot", c(object = "data.frame"),
   function(object, x, p, p_fdr = NULL, color = NULL,
            p_breaks = c(0.05, 0.01, 0.001, 1e-4), fdr_limit = 0.05,
-           log2_x = FALSE, center_x_axis = TRUE, x_lim = NULL, label = NULL, label_limit = 0.05,
+           log2_x = FALSE, center_x_axis = TRUE, x_lim = NULL, label = NULL,
+           label_limit = 0.05,
            color_scale = getOption("notame.color_scale_con"),
            title = "Volcano plot", subtitle = NULL,
            text_base_size = 14, label_text_size = 4, ...) {
@@ -712,6 +723,8 @@ setMethod("volcano_plot", c(object = "data.frame"),
                             log2_x, center_x_axis, x_lim, label, label_limit,
                             color_scale, title, subtitle, text_base_size,
                             label_text_size, ...) {
+                              
+                              
   if (center_x_axis && !is.null(x_lim)) {
     warning("Manually setting x-axis limits overrides x-axis centering.")
     center_x_axis <- FALSE
@@ -794,31 +807,36 @@ setMethod("volcano_plot", c(object = "data.frame"),
 
 #' Manhattan plot
 #'
-#' Draws a (directed) Manhattan plot of p-values and versus e.g. retention time or mass-to-charge ratio.
-#' If effect size and direction is supplied, the -log10(p-value) on the y-axis will be multiplied
-#' by the direction (sign) of the effect, so part of the points will "drop" from the p = 1 (-log10(p) = 0) line.
-#' This results in a so-called directed Manhattan plot.
+#' Draws a (directed) Manhattan plot of p-values and versus e.g. retention time 
+#' or mass-to-charge ratio. If effect size and direction is supplied, the -
+#' log10(p-value) on the y-axis will be multiplied by the direction (sign) of 
+#' the effect, so part of the points will "drop" from the p = 1 (-log10(p) = 0) 
+#' line. This results in a so-called directed Manhattan plot.
 #'
-#' @param object a MetaboSet object or a data frame. If x is a MetaboSet object, fData(x) is used.
-#' If x is a data frame, it is used as is.
+#' @param object a MetaboSet object or a data frame. If x is a MetaboSet 
+#' object, fData(x) is used. If x is a data frame, it is used as is.
 #' @param x,p the column names of x-axis and p-values
-#' @param effect column name of effect size (should have negative and positive values).
-#' @param p_fdr column name of FDR corrected p-values, used to draw a line showing the fdr-corrected significance level
+#' @param effect column name of effect size (should have negative and positive 
+#' values).
+#' @param p_fdr column name of FDR corrected p-values, used to draw a line 
+#' showing the fdr-corrected significance level
 #' @param color column name used to color the plots
 #' @param p_breaks a numerical vector of the p_values to show on the y-axis
 #' @param fdr_limit the significance level used in the experiment
-#' @param x_lim,y_lim numerical vectors of length 2 for manually setting the axis limits
+#' @param x_lim,y_lim numerical vectors of length 2 for manually setting the 
+#' axis limits
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param title,subtitle the title and subtitle of the plot
 #' @param ...  parameters passed to \code{\link[ggplot2]{geom_point}},
 #' such as shape and alpha values. New aesthetics can
 #' also be passed using \code{mapping = aes(...)}.
 #'
-#' @return a ggplot object
+#' @return A ggplot object.
 #'
 #' @examples
 #' # naturally, this looks messy as there are not enough p-values
-#' lm_results <- perform_lm(drop_qcs(merged_sample), formula_char = "Feature ~ Group")
+#' lm_results <- perform_lm(drop_qcs(merged_sample), 
+#'   formula_char = "Feature ~ Group")
 #' lm_data <- dplyr::left_join(fData(merged_sample), lm_results)
 #' # Traditional Manhattan plot from data frame
 #' manhattan_plot(lm_data,
@@ -948,27 +966,33 @@ setMethod("manhattan_plot", c(object = "data.frame"),
 
 #' Plot m/z vs retention time plot
 #'
-#' Plots a scatter plot of results of statistical tests, where each point represents a feature.
-#' The plot has retention time on x-axis, m/z on y-axis and the size of the points is scaled based on p-value
+#' Plots a scatter plot of results of statistical tests, where each point 
+#' represents a feature. The plot has retention time on x-axis, m/z on y-axis 
+#' and the size of the points is scaled based on p-value
 #'
-#' @param object a MetaboSet object or a data frame. If x is a MetaboSet object, fData(x) is used.
+#' @param object a MetaboSet object or a data frame. If x is a MetaboSet 
+#' object, fData(x) is used.
 #' If x is a data frame, it is used as is.
-#' @param p_col the column name containing p-values. This is used to scale the size of the points.
-#' @param p_limit numeric, limits plotted features by p-values. If NULL, plots all features.
-#' @param mz_col,rt_col the column names for m/z and retention time. If NULL, automatic detection is attempted.
+#' @param p_col the column name containing p-values. This is used to scale the 
+#' size of the points.
+#' @param p_limit numeric, limits plotted features by p-values. If NULL, plots 
+#' all features.
+#' @param mz_col,rt_col the column names for m/z and retention time. If NULL, 
+#' automatic detection is attempted.
 #' @param color the column name used to color the points
 #' @param title The plot title
 #' @param subtitle The plot subtitle
-#' @param color_scale color scale as returned by a ggplot function. Defaults to current continuous color scale.
-#' @param all_features logical, should all features be retained? Should be used only if x is a MetaboSet object.
+#' @param color_scale color scale as returned by a ggplot function. Defaults to 
+#' current continuous color scale.
+#' @param all_features logical, should all features be retained? Should be used 
+#' only if x is a MetaboSet object.
 #' @param ...  parameters passed to \code{\link[ggplot2]{geom_point}},
 #' such as shape and alpha values. New aesthetics can
 #' also be passed using \code{mapping = aes(...)}.
 #'
-#' @return a ggplot object
+#' @return A ggplot object.
 #'
 #' @examples
-#'
 #' # Compute results from a linear model
 #' lm_results <- perform_lm(merged_sample, formula_char = "Feature ~ Group")
 #' with_results <- join_fData(merged_sample, lm_results)

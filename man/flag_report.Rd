@@ -10,7 +10,7 @@ flag_report(object)
 \item{object}{a MetaboSet object}
 }
 \value{
-data frame with the number of features at each stage of flagging
+A data frame with the number of features at each stage of flagging.
 }
 \description{
 Computes the number of features at each stage of flagging for each mode.

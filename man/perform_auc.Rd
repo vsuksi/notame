@@ -14,17 +14,18 @@ perform_auc(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{time, subject, group}{column names of pData(object), holding time, subject and group labels}
+\item{time, subject, group}{column names of pData(object), holding time, 
+subject and group labels}
 }
 \value{
-a pseudo MetaboSet object with the AUCs
+A pseudo MetaboSet object with the AUCs.
 }
 \description{
 Compute area under curve (AUC) for each subject and feature.
 Creates a pseudo MetaboSet object, where the "samples" are subjects
-(or subject/group combinations in case the same subjects are submitted to different treatments)
-and the "abundances" are AUCs. This object can then be used to compute results of e.g. t-tests of
-AUCs between groups.
+(or subject/group combinations in case the same subjects are submitted to 
+different treatments) and the "abundances" are AUCs. This object can then be 
+used to compute results of e.g. t-tests of AUCs between groups.
 }
 \examples{
 # Drop QC samples before computing AUCs

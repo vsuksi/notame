@@ -1,11 +1,13 @@
 #' Save plots of individual features
 #'
 #' Helper function for saving plots of individual features
-#' to either one multi-page PDF or separate EMF figures
+#' to either one multi-page PDF or separate EMF figures.
 #' @param object a MetaboSet object
-#' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
+#' @param file_path character, a file path for PDF or prefix added to the file 
+#' paths for other formats
 #' @param format character, format in which the plots should be saved
-#' @param title,subtitle column names from fData to use as plot title/filename and subtitle
+#' @param title,subtitle column names from fData to use as plot title/filename 
+#' and subtitle
 #' @param text_base_size integer, base size for text in figures
 #' @param plot_fun a function with arguments:
 #' data frame from combined_data(object)
@@ -31,7 +33,7 @@
     dir.create(folder, recursive = TRUE)
   }
   if (format == "pdf") {
-    pdf(file_path, ...)
+    grDevices::pdf(file_path, ...)
   }
 
   for (i in seq_len(nrow(object))) {
@@ -56,13 +58,14 @@
   }
 
   if (format == "pdf") {
-    dev.off()
+    grDevices::dev.off()
   }
 }
 
 #' Generate a list of plots
 #'
-#' Helper function for generating a list of feature-wise plots given a plot function
+#' Helper function for generating a list of feature-wise plots given a plot 
+#' function.
 #'
 #' @param object a MetaboSet object, should contain only features to be plotted
 #' @param plot_fun function, a notame plot function
@@ -94,24 +97,29 @@
 #' @param all_features logical, should all features be used?
 #' If FALSE (the default), flagged features are removed before visualization.
 #' @param save logical, if false, the plots are not saved but returned as a list
-#' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
+#' @param file_path character, a file path for PDF or prefix added to the file 
+#' paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param x character, name of the column to be used as x-axis
 #' @param id character, name of the column containing subject IDs
-#' @param title,subtitle column names from fData to use as plot title/filename and subtitle.
+#' @param title,subtitle column names from fData to use as plot title/filename 
+#' and subtitle.
 #' Set to NULL for no title/subtitle, this creates running numbered filenames
 #' @param color character, the column name to color the lines by (optional)
 #' @param color_scale the color scale as returned by a ggplot function
-#' @param facet character, the column name to facet by (optional, usually same as color)
+#' @param facet character, the column name to facet by (optional, usually same 
+#' as color)
 #' @param text_base_size integer, base size for text in figures
 #' @param line_width numeric, width of the lines
 #' @param mean_line_width numeric, width of the mean line
-#' @param title_line_length integer, maximum length of the title line in characters, passed to stringr::str_wrap
+#' @param title_line_length integer, maximum length of the title line in 
+#' characters, passed to stringr::str_wrap
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
-#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
-
+#' @return By default, the function is invoked for its plot-saving side effect. 
+#' The function returns a list of plots when \code{save = FALSE}. 
+#'
 #' @seealso
 #' \code{\link[notame]{save_plot}}
 #'
@@ -198,25 +206,29 @@ save_subject_line_plots <- function(object, all_features = FALSE, save = TRUE,
 #' A separate plot is drawn and saved for each feature.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? 
+#' If FALSE (the default), flagged features are removed before visualization.
 #' @param save logical, if false, the plots are not saved but returned as a list
-#' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
+#' @param file_path character, a file path for PDF or prefix added to the file 
+#' paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param x character, name of the column to be used as x-axis
 #' @param color character, name of the column to be used for coloring
-#' @param title,subtitle column names from fData to use as plot title/filename and subtitle.
+#' @param title,subtitle column names from fData to use as plot title/filename 
+#' and subtitle.
 #' Set to NULL for no title/subtitle, this creates running numbered filenames
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param text_base_size integer, base size for text in figures
 #' @param box_width numeric, width of the boxes
 #' @param line_width numeric, width of the lines
 #' @param point_size numeric, size of the mean points
-#' @param title_line_length integer, maximum length of the title line in characters, passed to stringr::str_wrap
+#' @param title_line_length integer, maximum length of the title line in 
+#' characters, passed to stringr::str_wrap
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
-#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
+#' @return By default, the function is invoked for its plot-saving side effect. 
+#' The function returns a list of plots when \code{save = FALSE}. 
 #'
 #' @seealso
 #' \code{\link[notame]{save_plot}}
@@ -288,24 +300,29 @@ save_group_boxplots <- function(object, all_features = FALSE, save = TRUE,
 #' A separate plot is drawn and saved for each feature.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default), flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
 #' @param save logical, if false, the plots are not saved but returned as a list
-#' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
+#' @param file_path character, a file path for PDF or prefix added to the file 
+#' paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param x character, name of the column to be used as x-axis
 #' @param add_boxplots logical, should boxplots be added to the figure?
-#' @param title,subtitle column names from fData to use as plot title/filename and subtitle.
+#' @param title,subtitle column names from fData to use as plot title/filename 
+#' and subtitle.
 #' Set to NULL for no title/subtitle, this creates running numbered filenames
 #' @param color character, name of the column to be used for coloring
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param text_base_size integer, base size for text in figures
 #' @param cex numeric, scaling for adjusting point spacing
 #' @param size numeric, size of points
-#' @param title_line_length integer, maximum length of the title line in characters, passed to stringr::str_wrap
+#' @param title_line_length integer, maximum length of the title line in 
+#' characters, passed to stringr::str_wrap
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
-#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
+#' @return By default, the function is invoked for its plot-saving side effect. 
+#' The function returns a list of plots when \code{save = FALSE}. 
 #'
 #' @seealso
 #' \code{\link[notame]{save_plot}}
@@ -339,6 +356,7 @@ save_beeswarm_plots <- function(object, all_features = FALSE, save = TRUE,
                                 text_base_size = 14, cex = 2, size = 2,
                                 title_line_length = 40, theme =
                                 theme_bw(base_size = text_base_size),...) {
+                                  
   beeswarm_fun <- function(object, fname) {
     data <- combined_data(object)
     p <- ggplot(data, aes(x = .data[[x]], y = .data[[fname]],
@@ -383,24 +401,29 @@ save_beeswarm_plots <- function(object, all_features = FALSE, save = TRUE,
 #' @param object a MetaboSet object
 #' @param x character, name of the column to be used as x-axis
 #' @param save logical, if false, the plots are not saved but returned as a list
-#' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
+#' @param file_path character, a file path for PDF or prefix added to the file 
+#' paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param all_features logical, should all features be used? If FALSE
 #' (the default), flagged features are removed before visualization.
 #' @param color character, name of the column to be used for coloring
-#' @param color_scale the color scale as returned by a ggplot function.
-#' Set to NA to choose the appropriate scale based on the class of the coloring variable.
+#' @param color_scale the color scale as returned by a ggplot function. 
+#' Set to NA to choose the appropriate scale based on the class of the coloring 
+#' variable.
 #' @param shape character, name of the column used for shape
-#' @param title,subtitle column names from fData to use as plot title/filename and subtitle.
+#' @param title,subtitle column names from fData to use as plot title/filename 
+#' and subtitle.
 #' Set to NULL for no title/subtitle, this creates running numbered filenames
 #' @param shape_scale the shape scale as returned by a ggplot function
 #' @param text_base_size integer, base size for text in figures
 #' @param point_size numeric, size of the points
-#' @param title_line_length integer, maximum length of the title line in characters, passed to stringr::str_wrap
+#' @param title_line_length integer, maximum length of the title line in 
+#' characters, passed to stringr::str_wrap
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
-#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
+#' @return By default, the function is invoked for its plot-saving side effect. 
+#' The function returns a list of plots when \code{save = FALSE}. 
 #'
 #' @seealso
 #' \code{\link[notame]{save_plot}}
@@ -461,28 +484,37 @@ save_scatter_plots <- function(object, x = "Injection_order", save = TRUE,
 #' A separate plot is drawn for each feature.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default), flagged features are removed before visualization
+#' @param all_features logical, should all features be used? 
+#' If FALSE (the default), flagged features are removed before visualization
 #' @param save logical, if false, the plots are not saved but returned as a list
-#' @param file_path character, a file path for PDF or prefix added to the file paths for other formats
+#' @param file_path character, a file path for PDF or prefix added to the file 
+#' paths for other formats
 #' @param format character, format in which the plots should be saved
 #' @param x character, name of the column to be used as x-axis
-#' @param group character, name of the column containing group information, used for coloring
-#' @param title,subtitle column names from fData to use as plot title/filename and subtitle.
+#' @param group character, name of the column containing group information, 
+#' used for coloring
+#' @param title,subtitle column names from fData to use as plot title/filename 
+#' and subtitle.
 #' Set to NULL for no title/subtitle, this creates running numbered filenames
 #' @param fun.data passed to ggplot2::stat_summary and used for errorbars,
-#' "A function that is given the complete data and should return a data frame with variables ymin, y, and ymax."
-#' @param fun.min,fun,fun.max Alternative to fun.data, passed to ggplot2::stat_summary,
-#' "supply three individual functions that are each passed a vector of x's and should return a single number"
-#' @param position_dodge_amount numeric: how much the group mean points should dodge away from each other
+#' "A function that is given the complete data and should return a data frame 
+#' with variables ymin, y, and ymax."
+#' @param fun.min,fun,fun.max Alternative to fun.data, passed to 
+#' \code{ggplot2::stat_summary}, "supply three individual functions that are 
+#' each passed a vector of x's and should return a single number"
+#' @param position_dodge_amount numeric: how much the group mean points should 
+#' dodge away from each other
 #' @param color_scale the color scale as returned by a ggplot function
 #' @param text_base_size integer, base size for text in figures
 #' @param line_width numeric, width of the lines
 #' @param point_size numeric, size of the points
-#' @param title_line_length integer, maximum length of the title line in characters, passed to stringr::str_wrap
+#' @param title_line_length integer, maximum length of the title line in 
+#' characters, passed to stringr::str_wrap
 #' @param theme a ggplot theme to be added to the plot
 #' @param ... other arguments to graphic device functions, like width and height
 #'
-#' @return By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}. 
+#' @return By default, the function is invoked for its plot-saving side effect. 
+#' The function returns a list of plots when \code{save = FALSE}. 
 #'
 #' @seealso
 #' \code{\link[notame]{save_plot}},

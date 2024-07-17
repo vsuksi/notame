@@ -10,20 +10,21 @@ find_clusters(connections, d_thresh = 0.8)
 \item{connections}{data frame of pairs of signals that are linked together,
 output of find_connections}
 
-\item{d_thresh}{numeric, the minimum degree required for each signal in a cluster
-expressed as a percentage of the maximum degree in the cluster}
+\item{d_thresh}{numeric, the minimum degree required for each signal in a 
+cluster expressed as a percentage of the maximum degree in the cluster}
 }
 \value{
-a list of clusters, each a list of:
+A list of clusters, each a list of:
 \itemize{
-\item features: character vector of the names of the features included in the cluster
+\item features: character vector of the names of the features included in 
+the cluster
 \item graph: an igraph object of the cluster
 }
 }
 \description{
-First forms clusters of compounds that are linked together. Then the clusters are pruned
-so that in the final clusters, each feature is linked to at least a set percentage
-of the other features in the cluster.
+First forms clusters of compounds that are linked together. Then the 
+clusters are pruned so that in the final clusters, each feature is linked to 
+at least a set percentage of the other features in the cluster.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}

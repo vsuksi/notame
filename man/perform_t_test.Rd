@@ -9,28 +9,31 @@ perform_t_test(object, formula_char, all_features = FALSE, ...)
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{formula_char}{character, the formula to be used in the linear model (see Details)}
+\item{formula_char}{character, the formula to be used in the linear model 
+(see Details)}
 
 \item{all_features}{should all features be included in FDR correction?}
 
 \item{...}{additional parameters to t.test}
 }
 \value{
-data frame with the results
+A data frame with the results.
 }
 \description{
-Performs t-tests, the R default is Welch's t-test (unequal variances), use var.equal = TRUE
-for Student's t-test
+Performs t-tests, the R default is Welch's t-test (unequal variances), use 
+var.equal = TRUE for Student's t-test.
 }
 \details{
 The model is fit on combined_data(object). Thus, column names
-in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-must be used to signal the role of the features in the formula. "Feature" will be replaced
-by the actual Feature IDs during model fitting. For example, if testing for equality of
-means in study groups, use "Feature ~ Group".
+in pData(object) can be specified. To make the formulas flexible, the word 
+"Feature" must be used to signal the role of the features in the formula. 
+"Feature" will be replaced by the actual Feature IDs during model fitting. 
+For example, if testing for equality of means in study groups, use 
+"Feature ~ Group".
 }
 \examples{
-t_test_results <- perform_t_test(drop_qcs(merged_sample), formula_char = "Feature ~ Group")
+t_test_results <- perform_t_test(drop_qcs(merged_sample), 
+  formula_char = "Feature ~ Group")
 
 }
 \seealso{

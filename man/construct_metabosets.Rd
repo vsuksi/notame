@@ -17,27 +17,33 @@ construct_metabosets(
 \arguments{
 \item{exprs}{matrix, the feature abundances, size features x samples}
 
-\item{pheno_data}{data frame, sample information, size sample info variables x samples}
+\item{pheno_data}{data frame, sample information, size sample info variables 
+x samples}
 
-\item{feature_data}{data frame, information about the features, size features x feature info columns}
+\item{feature_data}{data frame, information about the features, size 
+features x feature info columns}
 
-\item{group_col}{character, the name of the column in pheno_data to use as the grouping variable}
+\item{group_col}{character, the name of the column in pheno_data to use as 
+the grouping variable}
 
-\item{time_col}{character, the name of the column in pheno_data to use as the time variable}
+\item{time_col}{character, the name of the column in pheno_data to use as 
+the time variable}
 
-\item{subject_col}{character, the name of the column in pheno_data to use as the subject ID variable}
+\item{subject_col}{character, the name of the column in pheno_data to use as 
+the subject ID variable}
 
-\item{split_data}{logical, whether to split data by analytical mode recorded in the "Split" column of feature data.
-If TRUE (the default), will return a list of MetaboSet objects, one per analytical mode.
-If FALSE, will return a single MetaboSet object.}
+\item{split_data}{logical, whether to split data by analytical mode recorded 
+in the "Split" column of feature data. If TRUE (the default), will return a 
+list of MetaboSet objects, one per analytical mode. If FALSE, will return a 
+single MetaboSet object.}
 }
 \value{
-list of MetaboSet objects or a single MetaboSet object
+A list of MetaboSet objects or a single MetaboSet object.
 }
 \description{
 Construct MetaboSet objects from input read by read_from_excel.
-Returns a list of MetaboSet objects, one per mode. The modes are separated by the "Split" column
-in feature_data.
+Returns a list of MetaboSet objects, one per mode. The modes are separated 
+by the "Split" column in feature_data.
 }
 \examples{
 data <- read_from_excel(

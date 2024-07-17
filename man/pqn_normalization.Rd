@@ -16,16 +16,19 @@ pqn_normalization(
 
 \item{ref}{character, the type of reference samples to use for normalization.}
 
-\item{method}{character, the method to use for calculating the reference sample.}
+\item{method}{character, the method to use for calculating the reference 
+sample.}
 
-\item{all_features}{logical, should all features be used for calculating the reference sample?}
+\item{all_features}{logical, should all features be used for calculating the 
+reference sample?}
 }
 \value{
-a MetaboSet object with altered feature abundances
+A MetaboSet object with altered feature abundances.
 }
 \description{
-Apply probabilistic quotient normalization (PQN) to the exprs part of a MetaboSet object. By default, reference
-is calculated from high-quality QC samples and the median of the reference is used for normalization.
+Apply probabilistic quotient normalization (PQN) to the exprs part of a 
+MetaboSet object. By default, reference is calculated from high-quality QC 
+samples and the median of the reference is used for normalization.
 Check parameters for more options.
 }
 \examples{

@@ -10,7 +10,8 @@ combined_data(object)
 \item{object}{a MetaboSet object}
 }
 \value{
-a data frame with sample information plus all features as columns, one row per sample.
+A data frame with sample information plus all features as columns,
+one row per sample.
 }
 \description{
 Retrieve both sample information and features

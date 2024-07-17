@@ -28,20 +28,24 @@ plot_tsne(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
-\item{center}{logical, should the data be centered prior to PCA? (usually yes)}
+\item{center}{logical, should the data be centered prior to PCA? (usually 
+yes)}
 
-\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+variance}
 
 \item{perplexity}{the perplexity used in t-SNE}
 
 \item{pca_method}{the method used in PCA if there are missing values}
 
-\item{color}{character, name of the column used for coloring the points. Set to NULL for black color.}
+\item{color}{character, name of the column used for coloring the points. Set 
+to NULL for black color.}
 
-\item{shape}{character, name of the column used for shape. Set to NULL for uniform round shapes.}
+\item{shape}{character, name of the column used for shape. Set to NULL for 
+uniform round shapes.}
 
 \item{label}{character, name of the column used for point labels}
 
@@ -51,7 +55,8 @@ The density curves will be split and colored by the 'color' variable.}
 \item{title, subtitle}{the titles of the plot}
 
 \item{color_scale}{the color scale as returned by a ggplot function.
-Set to NA to choose the appropriate scale based on the class of the coloring variable.}
+Set to NA to choose the appropriate scale based on the class of the coloring 
+variable.}
 
 \item{shape_scale}{the shape scale as returned by a ggplot function}
 
@@ -65,14 +70,14 @@ If a continuous variable is used as color, density curve will be colorless.}
 \item{...}{additional arguments passed to \code{Rtsne::Rtsne}}
 }
 \value{
-a ggplot object. If \code{density} is \code{TRUE}, the plot will consist of multiple
-parts and is harder to modify.
+A ggplot object. If \code{density} is \code{TRUE}, the plot will 
+consist of multiple parts and is harder to modify.
 }
 \description{
 Computes t-SNE into two dimensions and plots the map points.
-In case there are missing values, PCA is performed using the nipals method of \code{pcaMethods::pca},
-the  method can be changed to "ppca" if nipals fails.
-\strong{CITATION:} When using this function, cite the \code{pcaMethods} and \code{Rtsne} packages
+In case there are missing values, PCA is performed using the nipals method 
+of \code{pcaMethods::pca}, the  method can be changed to "ppca" if nipals 
+fails.
 }
 \examples{
 plot_tsne(merged_sample, color = "Time", shape = "Group")

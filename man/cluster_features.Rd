@@ -20,40 +20,47 @@ cluster_features(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{mz_col}{the column name in fData(object) that holds mass-to-charge ratios}
+\item{mz_col}{the column name in fData(object) that holds mass-to-charge 
+ratios}
 
 \item{rt_col}{the column name in fData(object) that holds retention times}
 
-\item{all_features}{logical, should all features be included in the clustering? If FALSE
-as the default, flagged features are not included in clustering}
+\item{all_features}{logical, should all features be included in the 
+clustering? If FALSE, as the default, flagged features are not included in 
+clustering}
 
 \item{rt_window}{the retention time window for potential links
 NOTE: use the same unit as the retention time}
 
-\item{corr_thresh}{the correlation threshold required for potential links between features}
+\item{corr_thresh}{the correlation threshold required for potential links 
+between features}
 
 \item{d_thresh}{the threshold for the relative degree required by each node}
 
 \item{plotting}{should plots be drawn for each cluster?}
 
-\item{min_size_plotting}{the minimum number of features a cluster needs to have to be plotted}
+\item{min_size_plotting}{the minimum number of features a cluster needs to 
+have to be plotted}
 
 \item{prefix}{the prefix to the files to be plotted}
 }
 \value{
-a MetaboSet object, with median peak area (MPA), the cluster ID, the features in the cluster,
-and cluster size added to fData.
+a MetaboSet object, with median peak area (MPA), the cluster ID, the 
+features in the cluster, and cluster size added to fData.
 }
 \description{
-Clusters features potentially originating from the same compound. Features with high
-Pearson correlation coefficient and small retention time difference are linked together.
-Then clusters are formed by setting a threshold for the relative degree that each node in a cluster needs
-to fulfil. Each cluster is named after the feature with the highest median peak area (median abundance)
-This is a wrapper around numerous functions that are based on the MATLAB code by David Broadhurst.
+Clusters features potentially originating from the same compound. Features 
+with high Pearson correlation coefficient and small retention time 
+difference are linked together. Then clusters are formed by setting a 
+threshold for the relative degree that each node in a cluster needs
+to fulfil. Each cluster is named after the feature with the highest median 
+peak area (median abundance). This is a wrapper around numerous functions 
+that are based on the MATLAB code by David Broadhurst.
 }
 \examples{
 # The parameters are really weird because example data is imaginary
-clustered <- cluster_features(example_set, rt_window = 1, corr_thresh = 0.5, d_thresh = 0.6)
+clustered <- cluster_features(example_set, rt_window = 1, corr_thresh = 0.5, 
+d_thresh = 0.6)
 
 }
 \seealso{

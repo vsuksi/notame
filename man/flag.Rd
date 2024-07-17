@@ -3,7 +3,7 @@
 \name{flag}
 \alias{flag}
 \alias{flag<-}
-\title{These generic functions access and set the values in the flag column}
+\title{Get and set the values in the flag column}
 \usage{
 flag(object)
 
@@ -20,7 +20,7 @@ Character vector of feature flags.
 For the endomorphism, an object with a modified flag column.
 }
 \description{
-These generic functions access and set the values in the flag column
+Get and set the values in the flag column
 }
 \examples{
 # Get values in flag column of fData

@@ -3,7 +3,7 @@
 \name{group_col}
 \alias{group_col}
 \alias{group_col<-}
-\title{These generic functions access and set the special column for group labels}
+\title{Get and set name of the special column for group labels}
 \usage{
 group_col(object)
 
@@ -17,10 +17,11 @@ group_col(object) <- value
 \value{
 Character, the name of the grouping variable.
 
-For the endomorphism, an object with the grouping variable set to the specified variable.
+For the endomorphism, an object with the grouping variable set to 
+the specified variable.
 }
 \description{
-These generic functions access and set the special column for group labels
+Get and set name of the special column for group labels
 }
 \examples{
 # Get name of grouping variable

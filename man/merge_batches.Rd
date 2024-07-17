@@ -10,10 +10,11 @@ merge_batches(...)
 \item{...}{MetaboSet objects or a list of Metaboset objects}
 }
 \value{
-A merged MetaboSet object
+A merged MetaboSet object.
 }
 \description{
-NOTE: This function is deprecated, use merge_metabosets(..., merge = "samples") instead.
+NOTE: This function is deprecated, use merge_metabosets(..., merge = 
+'"samples") instead.
 }
 \examples{
 batch1 <- merged_sample[, merged_sample$Batch == 1]

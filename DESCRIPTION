@@ -8,7 +8,7 @@ Authors@R: c(
     person("Oskari", "Timonen", role = c("aut", "cph")),
     person("Atte", "Lihtamo", role = "aut"),
     person("Vilhelm", "Suksi", email = "vksuks@utu.fi", role = c("aut", "cre"), comment = c(ORCID = "0009-0005-1108-518X")))
-Description: Provides functionality for untargeted LC-MS metabolomics research as specified in the associated publication in the "Metabolomics Data Processing and Data Analysis—Current Best Practices" special issue of the Metabolites journal (2020). This includes drift correction, quality control, statistical analyses and common visualizations. Raw data preprocessing and functionality related to biological context, such as pathway analysis, is not included.
+Description: Provides functionality for untargeted LC-MS metabolomics research as specified in the associated protocol article in the 'Metabolomics Data Processing and Data Analysis—Current Best Practices' special issue of the Metabolites journal (2020). This includes data pretreatment and quality control, uni- and multivariate analysis as well as quality control visualizations, feature-wise visualizations and results visualizations. Raw data preprocessing and functionality related to biological context, such as pathway analysis, is not included.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -17,54 +17,51 @@ Depends:
     R (>= 4.4.0),
     Biobase,
     ggplot2,
-    futile.logger,
-    BiocGenerics,
     magrittr
 Imports:
+    BiocGenerics,
     BiocParallel,
+    cowplot,
+    devEMF,
     dplyr,
+    futile.logger,
+    ggbeeswarm,
+    ggdendro,
+    ggrepel,
     graphics,
     grDevices,
     methods,
     openxlsx,
+    RColorBrewer,
+    scales,
+    stringr,
     stats, 
     tibble,
     tidyr,
     utils
 Suggests:
-    BiocManager,
+    batchCorr,
     BiocStyle,
     car,
-    cowplot,
-    devEMF,
-    devtools,
     fpc,
-    ggbeeswarm,
-    ggdendro,
-    ggrepel,
-    ggtext,
-    Hmisc,
-    hexbin,
     igraph,
     knitr,
-    lme4,
     lmerTest,
     missForest,
     mixOmics,
     MuMIn,
+    MUVR2,
     pcaMethods,
     PERMANOVA,
     PK,
     randomForest,
     rmcorr,
-    RColorBrewer,
     Rtsne,
     RUVSeq,
-    scales,
-    stringr,
     supraHex,
     testthat
 URL: https://github.com/vsuksi/notame
 BugReports: https://github.com/vsuksi/notame/issues
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
+Config/testthat/parallel: true

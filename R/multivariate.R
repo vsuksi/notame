@@ -2,23 +2,26 @@
 
 #' Fit Random Forest
 #'
-#' Fits a random forest, where given response column in pheno data is predicted using the features. Can be used
-#' both for classification and regression. For more information,
-#' see the documentation of \code{randomForest::randomForest}.
-#' After fitting the random forest, use rf_importance as a shortcut for getting the feature importance
-#'  in random forest prediction.
+#' Fits a random forest, where given response column in pheno data is predicted 
+#' using the features. Can be used both for classification and regression. For 
+#' more information, see the documentation of \code{randomForest::randomForest}.
+#' After fitting the random forest, use rf_importance as a shortcut for getting 
+#' the feature importance in random forest prediction.
 #'
 #' @param object a MetaboSet object
-#' @param y character, column name of phenoData giving the dependent variable of the model
-#' @param all_features logical, should all features be included in the model? if FALSE, flagged features are left out
-#' @param covariates character, column names of pData to use as covariates in the model, in addition to
-#' molecular features
+#' @param y character, column name of phenoData giving the dependent variable 
+#' of the model
+#' @param all_features logical, should all features be included in the model? 
+#' if FALSE, flagged features are left out
+#' @param covariates character, column names of pData to use as covariates in 
+#' the model, in addition to molecular features
 #' @param importance Should importance of features be assessed?
 #' @param ... other parameters passed to \code{randomForest::randomForest}
 #'
-#' @return An object of class randomForest
+#' @return An object of class randomForest.
 #'
-#' @seealso \code{\link[randomForest]{randomForest}}, \code{\link{importance_rf}}
+#' @seealso \code{\link[randomForest]{randomForest}}, 
+#' \code{\link{importance_rf}}
 #'
 #' @examples
 #' rf <- fit_rf(example_set, y = "Group")
@@ -32,7 +35,7 @@ fit_rf <- function(object, y, all_features = FALSE,
     stop("Package \"randomForest\" needed for this function to work.",
          " Please install it.", call. = FALSE)
   }
-  .add_citation("randomFOrest package was used to fit random forest models:",
+  .add_citation("randomForest package was used to fit random forest models:",
                 citation("randomForest"))
 
   object <- drop_flagged(object, all_features = all_features)
@@ -51,7 +54,7 @@ fit_rf <- function(object, y, all_features = FALSE,
 #'
 #' @param rf An object of class randomForest
 #'
-#' @return data frame of feature importance
+#' @return A data frame of feature importance.
 #'
 #' @seealso \code{\link[randomForest]{randomForest}}, \code{\link{fit_rf}}
 #'
@@ -75,8 +78,8 @@ importance_rf <- function(rf) {
 #' A helper function for extracting predictor matrix with covariates
 #'
 #' @param object a MetaboSet object
-#' @param covariates character, column names of pData to use as covariates in the model, in addition to
-#' molecular features
+#' @param covariates character, column names of pData to use as covariates in 
+#' the model, in addition to molecular features
 #' @return A data frame with predictors, including covariates.
 #' @noRd
 .get_x <- function(object, covariates) {
@@ -121,14 +124,17 @@ importance_rf <- function(rf) {
 
 #' PLS
 #'
-#' Simple wrappers for fitting a PLS model using pls function of the mixOmics package.
-#' The object can then be passed to many of the mixOmics functions for prediction,
-#' performance evaluation etc. Also plot a scores plot of the first two components.
+#' Simple wrappers for fitting a PLS model using pls function of the mixOmics 
+#' package. The object can then be passed to many of the mixOmics functions for 
+#' prediction, performance evaluation etc. Also plot a scores plot of the first 
+#' two components.
 #' \itemize{
-#' \item{\code{mixomics_pls} A simple PLS model with set number of components and all features}
+#' \item{\code{mixomics_pls} A simple PLS model with set number of components 
+#' and all features}
 #' \item{\code{mixomics_pls_optimize} Test different numbers of components,
 #' choose the one with minimal mean square error}
-#' \item{\code{mixomics_spls_optimize} sPLS model: Test different numbers of components and features,
+#' \item{\code{mixomics_spls_optimize} sPLS model: Test different numbers of 
+#' components and features,
 #' choose the one with minimal mean square error}
 #' }
 #'
@@ -136,20 +142,26 @@ importance_rf <- function(rf) {
 #' @param y character vector, column names of the grouping variable to predict
 #' @param ncomp number of X components
 #' @param folds the number of folds to use in k-fold cross validation
-#' @param nrepeat the number of times to repeat the cross validation. Lower this for faster testing.
-#' @param plot_scores logical, if TRUE, a scatter plot with the first two PLS-components as x and y-axis will
-#' be drawn, colored by the y-variable. Only really makes sense if y is a single variable
-#' @param all_features logical, should all features be included in the model? if FALSE, flagged features are left out
-#' @param covariates character, column names of pData to use as covariates in the model, in addition to
+#' @param nrepeat the number of times to repeat the cross validation. Lower 
+#' this for faster testing.
+#' @param plot_scores logical, if TRUE, a scatter plot with the first two PLS-
+#' components as x and y-axis will be drawn, colored by the y-variable. 
+#' Only really makes sense if y is a single variable
+#' @param all_features logical, should all features be included in the model? 
+#' if FALSE, flagged features are left out
+#' @param covariates character, column names of pData to use as covariates in 
+#' the model, in addition to
 #' molecular features
 #' @param n_features the number of features to try for each component
-#' @param ... any parameters passed to \code{mixOmics::pls} or \code{mixOmics::spls}
+#' @param ... any parameters passed to \code{mixOmics::pls} or 
+#' \code{mixOmics::spls}
 #'
-#' @return an object of class "mixo_pls" or "mixo_spls"
+#' @return An object of class "mixo_pls" or "mixo_spls".
 #'
 #' @examples
 #' pls_res <- mixomics_pls(merged_sample, y = "Injection_order", ncomp = 3)
-#' pls_opt <- mixomics_pls_optimize(merged_sample, y = "Injection_order", ncomp = 3)
+#' pls_opt <- mixomics_pls_optimize(merged_sample, 
+#'   y = "Injection_order", ncomp = 3)
 #' pls_res <- mixomics_spls_optimize(merged_sample,
 #'   y = "Injection_order", ncomp = 3,
 #'   n_features <- c(1:10, 12, 15, 20)
@@ -188,7 +200,8 @@ mixomics_pls <- function(object, y, ncomp, plot_scores = TRUE,
 #'
 #' @export
 mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50,
-                                  plot_scores = TRUE, all_features = FALSE, covariates = NULL, ...) {
+                                  plot_scores = TRUE, all_features = FALSE,
+                                  covariates = NULL, ...) {
   if (!requireNamespace("mixOmics", quietly = TRUE)) {
     stop("Package \"mixOmics\" needed for this function to work.", 
          " Please install it.", call. = FALSE)
@@ -229,12 +242,8 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50,
     scale_x_continuous(breaks = seq_len(ncomp)) +
     theme(panel.grid.minor.x = element_blank())
   
-  if (requireNamespace("cowplot", quietly = TRUE)) {
-    plot(cowplot::plot_grid(p1, p2, nrow = 1))
-  } else {
-    plot(p1)
-    plot(p2)
-  }
+  plot(cowplot::plot_grid(p1, p2, nrow = 1))
+
 
 
   # Find the optimal number of components
@@ -252,7 +261,6 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50,
 
 #' @rdname pls
 #'
-#' @importFrom graphics title
 #' @export
 mixomics_spls_optimize <- function(object, y, ncomp, n_features =
                                    c(seq_len(10), seq(20, 300, 10)), 
@@ -309,14 +317,16 @@ mixomics_spls_optimize <- function(object, y, ncomp, n_features =
 
 #' PLS-DA
 #'
-#' A simple wrapper for fitting a PLS-DA model using plsda function of the mixOmics package.
-#' The object can then be passed to many of the mixOmics functions for prediction,
-#' performance evaluation etc.
+#' A simple wrapper for fitting a PLS-DA model using plsda function of the 
+#' mixOmics package. The object can then be passed to many of the mixOmics 
+#' functions for prediction, performance evaluation etc.
 #' \itemize{
-#' \item{\code{mixomics_plsda} A simple PLS-DA model with set number of components and all features}
+#' \item{\code{mixomics_plsda} A simple PLS-DA model with set number of 
+#' components and all features}
 #' \item{\code{mixomics_plsda_optimize} Test different numbers of components,
 #' choose the one with minimal balanced error rate}
-#' \item{\code{mixomics_splsda_optimize} sPLS-DA model: Test different numbers of components and features,
+#' \item{\code{mixomics_splsda_optimize} sPLS-DA model: Test different numbers 
+#' of components and features,
 #' choose the one with minimal balanced error rate}
 #' }
 #'
@@ -324,18 +334,23 @@ mixomics_spls_optimize <- function(object, y, ncomp, n_features =
 #' @param y character, column name of the grouping variable to predict
 #' @param ncomp the number of X components
 #' @param folds the number of folds to use in k-fold cross validation
-#' @param nrepeat the number of times to repeat the cross validation. Lower this for faster testing.
+#' @param nrepeat the number of times to repeat the cross validation. Lower 
+#' this for faster testing.
 #' @param n_features the number of features to try for each component
-#' @param dist the distance metric to use, one of "max.dist", "mahalanobis.dist", "centroids.dist".
+#' @param dist the distance metric to use, one of "max.dist", 
+#' "mahalanobis.dist", "centroids.dist".
 #' use \code{\link{mixomics_plsda_optimize}} to find the best distance metric
-#' @param plot_scores logical, if TRUE, a scatter plot with the first two PLS-components as x and y-axis will
-#' be drawn, with both prediction surface and ellipses
-#' @param all_features logical, should all features be included in the model? if FALSE, flagged features are left out
-#' @param covariates character, column names of pData to use as covariates in the model, in addition to
+#' @param plot_scores logical, if TRUE, a scatter plot with the first two PLS-
+#' components as x and y-axis will be drawn, with both prediction surface and 
+#' ellipses
+#' @param all_features logical, should all features be included in the model? 
+#' if FALSE, flagged features are left out
+#' @param covariates character, column names of pData to use as covariates in 
+#' the model, in addition to
 #' molecular features
 #' @param ... any parameters passed to \code{mixOmics::plsda}
 #'
-#' @return an object of class "mixo_plsda"
+#' @return An object of class "mixo_plsda".
 #'
 #' @examples
 #' noqc <- drop_qcs(merged_sample)
@@ -404,7 +419,7 @@ mixomics_plsda_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50,
 
   plot(perf_plsda, col = mixOmics::color.mixo(seq_len(3)), 
        sd = TRUE, legend.position = "horizontal")
-  title("Performance of PLS-DA models")
+  graphics::title("Performance of PLS-DA models")
   # Find the distance metric with minimum BER
   ber <- perf_plsda$error.rate$BER
   inds <- which(ber == min(ber), arr.ind = TRUE)[1, ]
@@ -478,43 +493,51 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
 
 #' MUVR
 #'
-#' A wrapper around the MUVR algorithm from the MUVR package. For more information
-#' about the algorithm, visit https://gitlab.com/CarlBrunius/MUVR.
+#' A wrapper around the MUVR algorithm from the MUVR package. For more 
+#' information about the algorithm, visit https://gitlab.com/CarlBrunius/MUVR.
 #'
 #' @param object a MetaboSet object
 #' @param y character, column name in pData of the target variable to predict
-#' @param id character, column name in pData of the subject ID variable in case of repeated measurements
-#' @param multi_level logical, whether multi-level modeling should be applied, see Details
-#' @param multi_level_var character, column name in pData of the variable for splitting the data in multi-level modeling
-#' @param all_features logical, should all features be included in the model? if FALSE, flagged features are left out
-#' @param covariates,static_covariates character, column names of pData to use as covariates in the model,
-#' in addition to molecular features. For multi-level moddels, the change in \code{covariates} is computed, while
-#' \code{static_covariates} are taken from the first time point. \code{static_covariates} are ignored for
-#' non-multi-level models.
+#' @param id character, column name in pData of the subject ID variable in case 
+#' of repeated measurements
+#' @param multi_level logical, whether multi-level modeling should be applied, 
+#' see Details
+#' @param multi_level_var character, column name in pData of the variable for 
+#' splitting the data in multi-level modeling
+#' @param all_features logical, should all features be included in the model? 
+#' if FALSE, flagged features are left out
+#' @param covariates,static_covariates character, column names of pData to use 
+#' as covariates in the model, in addition to molecular features. 
+#' For multi-level moddels, the change in \code{covariates} is computed, while
+#' \code{static_covariates} are taken from the first time point. 
+#' \code{static_covariates} are ignored for non-multi-level models.
 #' @param nRep Number of repetitions of double CV, parameter of MUVR
 #' @param nOuter Number of outer CV loop segments, parameter of MUVR
 #' @param nInner Number of inner CV loop segments, parameter of MUVR
-#' @param varRatio Ratio of variables to include in subsequent inner loop iteration,
-#'  parameter of MUVR
+#' @param varRatio Ratio of variables to include in subsequent inner loop 
+#' iteration, parameter of MUVR
 #' @param method Multivariate method. Supports 'PLS' and 'RF', parameter of MUVR
 #' @param ... other parameters to \code{MUVR::MUVR}
 #'
-#' @details For example, sex should be entered as a static covariate, since the change in sex
-#' is zero for all individuals, so computing the change and using that as a covariate does not make sense.
+#' @return A MUVR object. (make this more descriptive)
+#'
+#' @details For example, sex should be entered as a static covariate, since the 
+#' change in sex is zero for all individuals, so computing the change and using 
+#' that as a covariate does not make sense.
+#'
 #'
 #' @examples
-#' \dontrun{
 #' # Simple model, only 1 repetition for a quick example
-#' rf_model <- muvr_analysis(drop_qcs(merged_sample), y = "Group", nRep = 1, method = "RF")
+#' rf_model <- muvr_analysis(drop_qcs(merged_sample), 
+#'   y = "Group", nRep = 1, method = "RF")
 #'
 #' # PLS on multilevel variable
-#' pls_model <- muvr_analysis(drop_qcs(example_set),
-#'   multi_level = TRUE,
-#'   id = "Subject_ID", multi_level_var = "Time"
+#' pls_model <- muvr_analysis(drop_qcs(example_set), multi_level = TRUE, 
+#' id = "Subject_ID", multi_level_var = "Time", method = "RF"
 #' )
-#' }
 #'
-#' @seealso \code{\link[MUVR]{MUVR}}
+#'
+#' @seealso \code{\link[MUVR2]{MUVR2}}
 #'
 #' @export
 muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
@@ -522,14 +545,14 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
                           static_covariates = NULL, all_features = FALSE,
                           nRep = 5, nOuter = 6, nInner = nOuter - 1,
                           varRatio = 0.75, method = c("PLS", "RF"), ...) {
-  if (!requireNamespace("MUVR", quietly = TRUE)) {
-    stop("Package \"MUVR\" needed for this function to work.", 
+  if (!requireNamespace("MUVR2", quietly = TRUE)) {
+    stop("Package \"MUVR2\" needed for this function to work.", 
          " Please install it from https://gitlab.com/CarlBrunius/MUVR",
          call. = FALSE)
   }
-  .add_citation(paste("MUVR package was used to fit multivariate models",
+  .add_citation(paste("MUVR2 package was used to fit multivariate models",
                       "with variable selection:"),
-                citation("MUVR"))
+                citation("MUVR2"))
 
   # MUVR can only use numeric input
   classes <- vapply(pData(object)[, c(covariates, static_covariates)], 
@@ -615,17 +638,20 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
 
 #' Perform PERMANOVA
 #'
-#' Performs permutational multivariate analysis of variance. Uses package called PERMANOVA.
+#' Performs permutational multivariate analysis of variance. Uses package 
+#' called PERMANOVA.
 #'
 #' @param object a MetaboSet object
 #' @param group character, name of the column to compare
 #' @param all_features should all features be included?
-#' @param transform Transformation to use in \code{IniTransform}. By default uses "Standardize columns".
-#' @param coef Coefficient to calculate continuous distances in \code{DistContinuous}.
+#' @param transform Transformation to use in \code{IniTransform}. By default 
+#' uses "Standardize columns".
+#' @param coef Coefficient to calculate continuous distances in 
+#' \code{DistContinuous}.
 #' By default uses Pythagorean distances.
 #' @param ... other parameters to \code{\link[PERMANOVA]{PERMANOVA}}
 #'
-#' @return PERMANOVA object
+#' @return A PERMANOVA object.
 #'
 #' @examples
 #' permanova_res <- perform_permanova(drop_qcs(example_set), group = "Group")
@@ -638,6 +664,11 @@ perform_permanova <- function(object, group, all_features = FALSE,
     stop("Package \"PERMANOVA\" needed for this function to work.", 
          " Please install it.", call. = FALSE)
   }
+  
+  .add_citation(paste("PERMANOVA was used for permutational multivariate", 
+                      "analysis of variance:"),
+                citation("PERMANOVA"))
+
   if (!is.factor(pData(object)[, group])) {
     stop("Group column is not a factor.")
   }

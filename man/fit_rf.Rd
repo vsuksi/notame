@@ -16,26 +16,28 @@ fit_rf(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{y}{character, column name of phenoData giving the dependent variable of the model}
+\item{y}{character, column name of phenoData giving the dependent variable 
+of the model}
 
-\item{all_features}{logical, should all features be included in the model? if FALSE, flagged features are left out}
+\item{all_features}{logical, should all features be included in the model? 
+if FALSE, flagged features are left out}
 
-\item{covariates}{character, column names of pData to use as covariates in the model, in addition to
-molecular features}
+\item{covariates}{character, column names of pData to use as covariates in 
+the model, in addition to molecular features}
 
 \item{importance}{Should importance of features be assessed?}
 
 \item{...}{other parameters passed to \code{randomForest::randomForest}}
 }
 \value{
-An object of class randomForest
+An object of class randomForest.
 }
 \description{
-Fits a random forest, where given response column in pheno data is predicted using the features. Can be used
-both for classification and regression. For more information,
-see the documentation of \code{randomForest::randomForest}.
-After fitting the random forest, use rf_importance as a shortcut for getting the feature importance
- in random forest prediction.
+Fits a random forest, where given response column in pheno data is predicted 
+using the features. Can be used both for classification and regression. For 
+more information, see the documentation of \code{randomForest::randomForest}.
+After fitting the random forest, use rf_importance as a shortcut for getting 
+the feature importance in random forest prediction.
 }
 \examples{
 rf <- fit_rf(example_set, y = "Group")
@@ -44,5 +46,6 @@ importance_rf(rf)
 
 }
 \seealso{
-\code{\link[randomForest]{randomForest}}, \code{\link{importance_rf}}
+\code{\link[randomForest]{randomForest}}, 
+\code{\link{importance_rf}}
 }

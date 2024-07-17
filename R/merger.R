@@ -1,10 +1,11 @@
 # Check that objects have same special columns
 #
-# Used to check that the special columns of pheno data parts of MetaboSet objects
-# match when merging, called by check_match
+# Used to check that the special columns of pheno data parts of MetaboSet 
+# objects match when merging, called by check_match
 #
 # @param x,y MetaboSet objects
-# @param fun the function to apply, usually one of group_col, time_col or subject_col
+# @param fun the function to apply, usually one of group_col, time_col or 
+# subject_col
 .check_column_match <- function(x, y, fun, name) {
   check <- fun(x) == fun(y)
   if (is.na(check)) {
@@ -23,7 +24,8 @@
 
 # Check that two MetaboSet object can be combined
 #
-# Checks many matching criteria, basically pheno data needs to have similar special columns,
+# Checks many matching criteria, basically pheno data needs to have similar 
+# special columns,
 # the number of samples needs to be the same and feature data need to have the
 # same columns names. Throws an error if any of the criteria is not fulfilled.
 #
@@ -161,19 +163,20 @@
 
 #' Merge MetaboSet objects together
 #'
-#' Merges two or more MetaboSet objects together. Can be used to merge analytical modes or batches.
+#' Merges two or more MetaboSet objects together. Can be used to merge 
+#' analytical modes or batches.
 #'
 #'
 #' @param ... MetaboSet objects or a list of Metaboset objects
 #' @param merge what to merge? features is used for combining analytical modes,
 #' samples is used for batches
 #'
-#' @return A merged MetaboSet object
+#' @return A merged MetaboSet object.
 #'
-#' @details When merging samples, sample IDs that beging with "QC" or "Ref" are combined so that they have
-#' running numbers on them. This means that if both bathces have samples called "QC_1",
-#' this will not result in an error,
-#' but the sample IDs will be adjusted so that they are unique
+#' @details When merging samples, sample IDs that beging with "QC" or "Ref" are 
+#' combined so that they have running numbers on them. This means that if both 
+#' batches have samples called "QC_1", this will not result in an error,
+#' but the sample IDs will be adjusted so that they are unique.
 #'
 #' @examples
 #' # Merge analytical modes
@@ -289,11 +292,12 @@ merge_metabosets <- function(..., merge = c("features", "samples")) {
 
 #' DEPRECATED: Merge MetaboSet objects of batches together
 #'
-#' NOTE: This function is deprecated, use merge_metabosets(..., merge = "samples") instead.
+#' NOTE: This function is deprecated, use merge_metabosets(..., merge = 
+#' '"samples") instead.
 #'
 #' @param ... MetaboSet objects or a list of Metaboset objects
 #'
-#' @return A merged MetaboSet object
+#' @return A merged MetaboSet object.
 #'
 #' @examples
 #' batch1 <- merged_sample[, merged_sample$Batch == 1]

@@ -12,7 +12,7 @@ fold_change(object, group = group_col(object))
 \item{group}{character, name of the group column}
 }
 \value{
-data frame with fold changes for each feature
+A data frame with fold changes for each feature.
 }
 \description{
 Computes fold change between each group for each feature.

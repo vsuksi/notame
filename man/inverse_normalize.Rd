@@ -10,7 +10,7 @@ inverse_normalize(object)
 \item{object}{a MetaboSet object}
 }
 \value{
-MetaboSet object as the one supplied, with normalized features
+A MetaboSet object as the one supplied, with normalized features.
 }
 \description{
 Applies inverse rank normalization to all features to approximate

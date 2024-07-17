@@ -58,14 +58,16 @@ manhattan_plot(
 )
 }
 \arguments{
-\item{object}{a MetaboSet object or a data frame. If x is a MetaboSet object, fData(x) is used.
-If x is a data frame, it is used as is.}
+\item{object}{a MetaboSet object or a data frame. If x is a MetaboSet 
+object, fData(x) is used. If x is a data frame, it is used as is.}
 
 \item{x, p}{the column names of x-axis and p-values}
 
-\item{effect}{column name of effect size (should have negative and positive values).}
+\item{effect}{column name of effect size (should have negative and positive 
+values).}
 
-\item{p_fdr}{column name of FDR corrected p-values, used to draw a line showing the fdr-corrected significance level}
+\item{p_fdr}{column name of FDR corrected p-values, used to draw a line 
+showing the fdr-corrected significance level}
 
 \item{color}{column name used to color the plots}
 
@@ -73,7 +75,8 @@ If x is a data frame, it is used as is.}
 
 \item{fdr_limit}{the significance level used in the experiment}
 
-\item{x_lim, y_lim}{numerical vectors of length 2 for manually setting the axis limits}
+\item{x_lim, y_lim}{numerical vectors of length 2 for manually setting the 
+axis limits}
 
 \item{color_scale}{the color scale as returned by a ggplot function}
 
@@ -84,17 +87,19 @@ such as shape and alpha values. New aesthetics can
 also be passed using \code{mapping = aes(...)}.}
 }
 \value{
-a ggplot object
+A ggplot object.
 }
 \description{
-Draws a (directed) Manhattan plot of p-values and versus e.g. retention time or mass-to-charge ratio.
-If effect size and direction is supplied, the -log10(p-value) on the y-axis will be multiplied
-by the direction (sign) of the effect, so part of the points will "drop" from the p = 1 (-log10(p) = 0) line.
-This results in a so-called directed Manhattan plot.
+Draws a (directed) Manhattan plot of p-values and versus e.g. retention time 
+or mass-to-charge ratio. If effect size and direction is supplied, the -
+log10(p-value) on the y-axis will be multiplied by the direction (sign) of 
+the effect, so part of the points will "drop" from the p = 1 (-log10(p) = 0) 
+line. This results in a so-called directed Manhattan plot.
 }
 \examples{
 # naturally, this looks messy as there are not enough p-values
-lm_results <- perform_lm(drop_qcs(merged_sample), formula_char = "Feature ~ Group")
+lm_results <- perform_lm(drop_qcs(merged_sample), 
+  formula_char = "Feature ~ Group")
 lm_data <- dplyr::left_join(fData(merged_sample), lm_results)
 # Traditional Manhattan plot from data frame
 manhattan_plot(lm_data,

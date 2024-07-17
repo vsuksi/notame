@@ -2,7 +2,8 @@
 % Please edit documentation in R/feature_clustering.R
 \name{find_connections}
 \alias{find_connections}
-\title{Find out which features are correlated within a specified retention time window}
+\title{Find out which features are correlated within a specified retention time 
+window}
 \usage{
 find_connections(
   data,
@@ -15,23 +16,28 @@ find_connections(
 )
 }
 \arguments{
-\item{data}{data frame with the abundances of features, with features as columns}
+\item{data}{data frame with the abundances of features, with features as 
+columns}
 
 \item{features}{data frame with feature information, fData(object)}
 
-\item{corr_thresh}{numeric, the threshold of correlation to use in linking features}
+\item{corr_thresh}{numeric, the threshold of correlation to use in linking 
+features}
 
-\item{rt_window}{numeric, the retention time window to use in linking features. NOTE you
-need to use the same unit as in the retention time column}
+\item{rt_window}{numeric, the retention time window to use in linking 
+features. NOTE: you need to use the same unit as in the retention time column}
 
-\item{name_col}{character, name of the column in features that contains feature names}
+\item{name_col}{character, name of the column in features that contains 
+feature names}
 
-\item{mz_col}{character, name of the column in features that contains mass-to-charge ratios}
+\item{mz_col}{character, name of the column in features that contains mass-
+to-charge ratios}
 
-\item{rt_col}{character, name of the column in features that contains retention times}
+\item{rt_col}{character, name of the column in features that contains 
+retention times}
 }
 \value{
-a data frame of pairs of signals that are linked together
+A data frame of pairs of signals that are linked together:
 \itemize{
 \item x & y: indexes and names of the signals
 \item cor: correlation coefficient
@@ -39,10 +45,10 @@ a data frame of pairs of signals that are linked together
 }
 }
 \description{
-A part of the peak clustering algorithm. Iterates over all possible pairs of features
-and records a connection between them if a) they have a Pearson correlation coefficient
-higher than \code{corr_thresh} and b) their retention time difference is less than
-\code{rt_window}
+A part of the peak clustering algorithm. Iterates over all possible pairs of 
+features and records a connection between them if a) they have a Pearson 
+correlation coefficient higher than \code{corr_thresh} and b) their 
+retention time difference is less than \code{rt_window}.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}

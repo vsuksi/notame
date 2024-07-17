@@ -5,15 +5,17 @@
 #' @param object a MetaboSet object
 #' @param batch the column name for batch labels
 #' @param replicates list of numeric vectors, indexes of replicates
-#' @param k The number of factors of unwanted variation to be estimated from the data.
+#' @param k The number of factors of unwanted variation to be estimated from 
+#' the data.
 #' @param ... other parameters passed to RUVSeq::RUVs
 #'
-#' @return a MetaboSet object with the normalized data
+#' @return A MetaboSet object with the normalized data.
 #'
 #' @examples
 #' # Batch correction
 #' replicates <- list(which(merged_sample$QC == "QC"))
-#' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
+#' batch_corrected <- ruvs_qc(merged_sample, 
+#'   batch = "Batch", replicates = replicates)
 #' # Evaluate batch correction
 #' pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 #' pca_bhattacharyya_dist(batch_corrected, batch = "Batch")
@@ -48,28 +50,30 @@ ruvs_qc <- function(object, batch, replicates, k = 3, ...) {
 #' Bhattacharyya distance between bathces in PCA space
 #'
 #' Computes Bhattacharyya distance between all pairs of batches after
-#' projecting the samples into PCA space with pcaMethods::pca
+#' projecting the samples into PCA space with pcaMethods::pca. 
 #'
 #' @param object a MetaboSet object
 #' @param batch column name of pData givinh the batch labels
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before imputation.
-#' @param center logical, should the data be centered prior to PCA? (usually yes)
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
+#' @param all_features logical, should all features be used? If FALSE
+#' (the default), flagged features are removed before imputation.
+#' @param center logical, should the data be centered prior to PCA?
+#' (usually yes)
+#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit
+#' variance
 #' @param nPcs the number of principal components to use
 #' @param ... other parameters to pcaMethods::pca
 #'
-#' @return matrix of Bhattacharyya distances between batches
+#' @return A matrix of Bhattacharyya distances between batches.
 #'
 #' @examples
 #' # Batch correction
 #' replicates <- list(which(merged_sample$QC == "QC"))
-#' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
+#' batch_corrected <- ruvs_qc(merged_sample, 
+#'   batch = "Batch", replicates = replicates)
 #' # Evaluate batch correction
 #' pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 #' pca_bhattacharyya_dist(batch_corrected, batch = "Batch")
 #'
-#' @importFrom stats cov
 #' @export
 pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE, 
                                    center = TRUE, scale = "uv", nPcs = 3, ...){ 
@@ -98,7 +102,7 @@ pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE,
   }
   # Compute means and covariance matrices for Bhattacharyya distance
   muarray <- vapply(batches, colMeans, double(nPcs))
-  sigmaarray <- array(vapply(batches, cov, double(nPcs * nPcs)), 
+  sigmaarray <- array(vapply(batches, stats::cov, double(nPcs * nPcs)), 
                       dim = c(nPcs, nPcs, length(batches)))
   # Compute Bhattacharyya distance
   fpc::bhattacharyya.matrix(muarray, sigmaarray, ipairs = "all",
@@ -150,12 +154,13 @@ pca_bhattacharyya_dist <- function(object, batch, all_features = FALSE,
 #' @param object a MetaboSet object
 #' @param group column name of pData givinh the group labels
 #'
-#' @return data frame with one row per feature with the repeatability measure
+#' @return A data frame with one row per feature with the repeatability measure.
 #'
 #' @examples
 #' # Batch correction
 #' replicates <- list(which(merged_sample$QC == "QC"))
-#' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
+#' batch_corrected <- ruvs_qc(merged_sample, 
+#'   batch = "Batch", replicates = replicates)
 #' # Evaluate batch correction
 #' rep_orig <- perform_repeatability(merged_sample, group = "Group")
 #' mean(rep_orig$Repeatability, na.rm = TRUE)
@@ -179,22 +184,39 @@ perform_repeatability <- function(object, group) {
 
 #' Align features between batches
 #'
-#' Aligns features with m/z or retention time shift between batches using alignBatches from batchCorr package.
-#' See more details in the help file and the original paper.
+#' Aligns features with m/z or retention time shift between batches using
+#' alignBatches from batchCorr package. See more details in the original paper.
 #'
 #' @param object_na a MetaboSet object with missing values as NA
 #' @param object_fill a similar MetaboSet object with imputed values
-#' (used to compute distances between features, can contain missing values as well)
+#' (used to compute distances between features, can contain missing values as 
+#' well)
 #' @param batch character, column name of pData with batch labels
 #' @param mz,rt column names of m/z and retention time columns in fData
-#' @param mzdiff,rtdiff the windows for m/z and retention time for aligning features
-#' @param plot_folder path to the location where the plots should be saved, if NULL, no plots are saved
+#' @param mzdiff,rtdiff the windows for m/z and retention time for aligning 
+#' features
+#' @param plot_folder path to the location where the plots should be saved, if 
+#' NULL, no plots are saved
 #'
-#' @return a MetaboSet object with the aligned features
+#' @return A MetaboSet object with the aligned features.
 #'
+#' @examples
+#' \dontshow{.old_wd <- setwd(tempdir())}
+#' # Initialize objects
+#' merged_sample_fill <- merged_sample
+#' merged_sample_na <- merged_sample
+#' # Introduce over 80% missing values in QC samples per batch of two features 
+#' # so they are considered "missing", with orthogonal batch presence
+#' exprs(merged_sample_na)[2, c(1, 14, 27, 40, 53)] <- NA
+#' exprs(merged_sample_na)[
+#'   3, c(79, 92, 105, 118, 131, 144, 157, 170, 183, 196, 209)] <- NA
+#' batch_aligned <- align_batches(merged_sample_na, merged_sample_fill, 
+#'   batch = "Batch", mz = "Average_Mz", rt = "Average_Rt_min_", 
+#'   mzdiff = 0.002, rtdiff = 15, plot_folder = "~")
+#' \dontshow{setwd(.old_wd)}
 #' @export
 align_batches <- function(object_na, object_fill, batch, mz, rt,
-                          mzdiff, rtdiff, plot_folder = NULL) {
+                          mzdiff = 0.002, rtdiff = 15, plot_folder = NULL) {
   if (!requireNamespace("batchCorr", quietly = TRUE)) {
     stop("Package \"batchCorr\" needed for this function to work.",
          " Please install it from https://gitlab.com/CarlBrunius/batchCorr.",
@@ -233,27 +255,28 @@ align_batches <- function(object_na, object_fill, batch, mz, rt,
 
 #' Normalize batches
 #'
-#' Normalize bathces by either reference samples of population median.
-#' Uses normalizeBatches function from the batchCorr package
+#' Between-batch normalization by either reference samples of population median.
+#' Uses normalizeBatches function from the batchCorr package.
 #'
 #' @param object a MetaboSet object
-#' @param batch,group character, column names of pData with batch labels and group labels
-#' @param ref_label the label of the reference group i.e. the group that is constant through batches
+#' @param batch,group character, column names of pData with batch labels and 
+#' group labels
+#' @param ref_label the label of the reference group i.e. the group that is 
+#' constant through batches
 #' @param population Identifier of population samples in group column
 #' (all (default) or any type of samples present in group)
 #' @param ... additional parameters passed to batchCorr::normalizeBatches
 #'
-#' @return list, the object with normalized features and information on which
-#' features were corrected by ref samples in each batch.
+#' @return  A MetaboSet object the one supplied with normalized features
 #'
 #' @examples
 #' # Batch correction
-#' \dontrun{
-#' batch_corrected <- normalize_batches(merged_sample, batch = "Batch", group = "QC", ref_label = "QC")
+#' batch_normalized <- normalize_batches(merged_sample,
+#'   batch = "Batch", group = "QC", ref_label = "QC")
 #' # Evaluate batch correction
 #' pca_bhattacharyya_dist(merged_sample, batch = "Batch")
-#' pca_bhattacharyya_dist(batch_corrected, batch = "Batch")
-#' }
+#' pca_bhattacharyya_dist(batch_normalized, batch = "Batch")
+#' 
 #' @export
 normalize_batches <- function(object, batch, group, ref_label, 
                               population = "all", ...) {
@@ -290,12 +313,14 @@ normalize_batches <- function(object, batch, group, ref_label,
 #' NOTE: if you change the shape variable, be sure to set a shape scale as well,
 #' the default scale only has 2 values, so it can only accomodate 2 shapes.
 #'
-#' @param orig,corrected MetaboSet objects before and after batch effect correction
+#' @param orig,corrected MetaboSet objects before and after batch effect 
+#' correction
 #' @param file path to the PDF file where the plots will be saved
 #' @param width,height width and height of the plots in inches
 #' @param batch,color,shape column names of pData for batch labels,
 #' and column used for coloring and shaping points (by default batch and QC)
-#' @param color_scale,shape_scale scales for color and scale as returned by ggplot functions.
+#' @param color_scale,shape_scale scales for color and scale as returned by 
+#' ggplot functions.
 #'
 #' @return None, the function is invoked for its plot-saving side effect.
 #'
@@ -303,8 +328,9 @@ normalize_batches <- function(object, batch, group, ref_label,
 #' \dontshow{.old_wd <- setwd(tempdir())}
 #' # Batch correction
 #' replicates <- list(which(merged_sample$QC == "QC"))
-#' batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
-#' # Plots of each features
+#' batch_corrected <- ruvs_qc(merged_sample, 
+#'   batch = "Batch", replicates = replicates)
+#' # Plots of each feature
 #' save_batch_plots(
 #'   orig = merged_sample[1:10], corrected = batch_corrected[1:10],
 #'   file = "batch_plots.pdf"
@@ -368,12 +394,12 @@ save_batch_plots <- function(orig, corrected, file, width = 14, height = 10,
     p
   }
   # Save plots with original and corrected data to pdf
-  pdf(file, width = width, height = height)
+  grDevices::pdf(file, width = width, height = height)
   for (feature in featureNames(orig)) {
     p1 <- batch_plot_helper(data_orig, feature, batch_means_orig)
     p2 <- batch_plot_helper(data_corr, feature, batch_means_corr)
     p <- cowplot::plot_grid(p1, p2, nrow = 2)
     plot(p)
   }
-  dev.off()
+  grDevices::dev.off()
 }

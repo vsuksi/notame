@@ -24,17 +24,20 @@ fix_MSMS(
 \item{deci_num}{maximum number of decimals to m/z value (Recommended: >2)}
 }
 \value{
-MetaboSet object as the one supplied, with publication-ready MS/MS peak information
+A MetaboSet object as the one supplied, with publication-ready MS/MS 
+peak information.
 }
 \description{
 Change the MS/MS output from MS-DIAL format to publication-ready format.
-Original spectra is sorted according to abundance percentage and clarified. See the example below.
+Original spectra is sorted according to abundance percentage and clarified. 
+See the example below.
 }
 \details{
 Original MS/MS spectra from MS-DIAL:
 m/z:Raw Abundance
 
-23.193:254 26.13899:5 27.50986:25 55.01603:82 70.1914:16 73.03017:941 73.07685:13 73.13951:120
+23.193:254 26.13899:5 27.50986:25 55.01603:82 70.1914:16 73.03017:941 
+73.07685:13 73.13951:120
 
 Spectra after transformation:
 m/z  (Abundance)
@@ -43,10 +46,12 @@ m/z  (Abundance)
 }
 \examples{
 # Spectra before fixing
-fData(merged_sample)$MS_MS_spectrum[!is.na(fData(merged_sample)$MS_MS_spectrum)]
+fData(merged_sample)$MS_MS_spectrum[
+  !is.na(fData(merged_sample)$MS_MS_spectrum)]
 # Fixing spectra with default settings
 fixed_MSMS_peaks <- fix_MSMS(merged_sample)
 # Spectra after fixing
-fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean[!is.na(fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean)]
+fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean[
+  !is.na(fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean)]
 
 }

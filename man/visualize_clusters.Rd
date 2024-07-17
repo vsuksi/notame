@@ -17,27 +17,32 @@ visualize_clusters(
 )
 }
 \arguments{
-\item{data}{data frame with the abundances of features, with features as columns}
+\item{data}{data frame with the abundances of features, with features as 
+columns}
 
 \item{features}{data frame with feature information, fData(object)}
 
 \item{clusters}{a list of clusters as returned by find_clusters}
 
-\item{min_size}{the minimum number of features a cluster needs to have to be plotted}
+\item{min_size}{the minimum number of features a cluster needs to have to be 
+plotted}
 
-\item{rt_window}{numeric, the retention time window to use in linking features. NOTE you
-need to use the same unit as in the retention time column}
+\item{rt_window}{numeric, the retention time window to use in linking 
+features. NOTE you need to use the same unit as in the retention time column}
 
-\item{name_col}{character, name of the column in features that contains feature names}
+\item{name_col}{character, name of the column in features that contains 
+feature names}
 
-\item{mz_col}{character, name of the column in features that contains mass-to-charge ratios}
+\item{mz_col}{character, name of the column in features that contains
+mass-to-charge ratios}
 
-\item{rt_col}{character, name of the column in features that contains retention times}
+\item{rt_col}{character, name of the column in features that contains 
+retention times}
 
 \item{file_path}{the prefix to the files to be plotted}
 }
 \value{
-a data frame of pairs of signals that are linked together
+A data frame of pairs of signals that are linked together:
 \itemize{
 \item x & y: indexes and names of the signals
 \item cor: correlation coefficient
@@ -45,7 +50,8 @@ a data frame of pairs of signals that are linked together
 }
 }
 \description{
-Draws multiple visualizations of each cluster, creating a separate file for each cluster.
+Draws multiple visualizations of each cluster, creating a separate file for
+each cluster.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}

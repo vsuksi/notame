@@ -21,13 +21,15 @@ save_dc_plots(
 \arguments{
 \item{orig}{a MetaboSet object, before drift correction}
 
-\item{dc}{a MetaboSet object, after drift correction as returned by correct_drift}
+\item{dc}{a MetaboSet object, after drift correction as returned by 
+correct_drift}
 
 \item{predicted}{a matrix of predicted values, as returned by dc_cubic_spline}
 
 \item{file}{path to the PDF file where the plots should be saved}
 
-\item{log_transform}{logical, was the drift correction done on log-transformed data?}
+\item{log_transform}{logical, was the drift correction done on log-
+transformed data?}
 
 \item{width, height}{width and height of the plots in inches}
 
@@ -43,14 +45,15 @@ save_dc_plots(
 None, the function is invoked for its plot-saving side effect.
 }
 \description{
-Plots the data before and after drift correction, with the regression line drawn with
-the original data. If the drift correction was done on log-transformed data, then
-plots of both the original and log-transformed data before and after correction are drawn.
-The plot shows 2 standard deviation spread for both QC samples and regular samples.
+Plots the data before and after drift correction, with the regression line 
+drawn with the original data. If the drift correction was done on 
+log-transformed data, then plots of both the original and log-transformed 
+data before and after correction are drawn.
+The plot shows 2 standard deviation spread for both QC samples and regular 
+samples.
 }
 \details{
-If \code{shape} is set to \code{NULL} (the default), the column used for color
-is also used for shape
+By default, the column used for color is also used for shape.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}

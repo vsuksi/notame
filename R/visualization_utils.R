@@ -30,8 +30,6 @@
 #' \code{\link[grDevices]{png}},
 #' \code{\link[grDevices]{tiff}}
 #'
-#' @importFrom grDevices pdf svg png tiff
-#' @importFrom utils tail
 #' @export
 save_plot <- function(p, file, ...) {
   # Create folder automatically
@@ -40,28 +38,22 @@ save_plot <- function(p, file, ...) {
     dir.create(folder, recursive = TRUE)
   }
 
-  format <- tail(unlist(strsplit(basename(file), split = "\\.")), 1)
+  format <- utils::tail(unlist(strsplit(basename(file), split = "\\.")), 1)
   switch(format,
-    "emf" = {
-      if (!requireNamespace("devEMF", quietly = TRUE)) {
-        stop("Package devEMF needed for this function to work.",
-             "Please install it.", call. = FALSE)
-      }
-      devEMF::emf(file, ...)
-    },
-    "pdf" = pdf(file, ...),
-    "svg" = svg(file, ...),
-    "png" = png(file, ...),
-    "tiff" = tiff(file, ...),
+    "emf" = devEMF::emf(file, ...),
+    "pdf" = grDevices::pdf(file, ...),
+    "svg" = grDevices::svg(file, ...),
+    "png" = grDevices::png(file, ...),
+    "tiff" = grDevices::tiff(file, ...),
     stop("File format '", format, "' is not valid, saving failed"))
   tryCatch(
     {
       plot(p)
-      dev.off()
+      grDevices::dev.off()
       log_text(paste("Saved to:", file))
     },
     error = function(e) {
-      dev.off()
+      grDevices::dev.off()
       stop(e$message, call. = FALSE)
     }
   )
@@ -134,59 +126,74 @@ save_plot <- function(p, file, ...) {
 
 #' Write all relevant visualizations to pdf
 #'
-#' A wrapper around all the major visualization functions, used for visualizing data between
-#' major steps of data preprocessing. Saves all visualizations as PDFs with a set prefix on filenames.
+#' A wrapper around all the major visualization functions, used for visualizing 
+#' data between major steps of data preprocessing. Saves all visualizations as 
+#' PDFs with a set prefix on filenames.
 #'
 #' @param object A MetaboSet object
 #' @param prefix character, a file path prefix added to the file paths
-#' @param format character, format in which the plots should be saved, DOES NOT support raster formats
+#' @param format character, format in which the plots should be saved, DOES NOT 
+#' support raster formats
 #' @param perplexity perplexity for t-SNE plots
-#' @param merge logical, whether the files should be merged to a single PDF, see Details
-#' @param remove_singles logical, whether to remove single plot files after merging.
-#' Only used if \code{merge = TRUE}
+#' @param merge logical, whether the files should be merged to a single PDF, 
+#' see Details
+#' @param remove_singles logical, whether to remove single plot files after 
+#' merging. Only used if \code{merge = TRUE}
 #'
 #' @return None, the function is invoked for its plot-saving side effect.
 #'
 #' @details If \code{merge} is \code{TRUE} and \code{format} id \code{pdf},
-#' then a file containing all the visualizations named \code{prefix.pdf} will be created.
-#' NOTE: on Windows this requires installation of pdftk (\url{https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/})
-#' and on Linux you need to have pdfunite installed.
-#' On MacOS, no external software is needed. Note that at least on Windows, prefix should be a path from the root,
-#' so that the underlying system command will find the files.
+#' then a file containing all the visualizations named \code{prefix.pdf} will 
+#' be created. NOTE: on Windows this requires installation of pdftk 
+#' (\url{https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/})
+#' and on Linux you need to have pdfunite installed. On MacOS, no external 
+#' software is needed. Note that at least on Windows, prefix should be a path 
+#' from the root, so that the underlying system command will find the files.
 #' The type of visualizations to be saved depends on the type of object.
 #' Here is a comprehensive list of the visualizations:
 #' \itemize{
 #' \item Distribution of quality metrics and flags \code{\link{plot_quality}}
-#' \item Boxplots of each sample in injection order \code{\link{plot_sample_boxplots}}
-#' \item PCA scores plot of samples colored by injection order \code{\link{plot_pca}}
-#' \item t-SNE plot of samples colored by injection order \code{\link{plot_tsne}}
-#' \item If the object has over 60 samples, hexbin versions of the PCA and t-SNE plots above
+#' \item Boxplots of each sample in injection order 
+#' \code{\link{plot_sample_boxplots}}
+#' \item PCA scores plot of samples colored by injection order 
+#' \code{\link{plot_pca}}
+#' \item t-SNE plot of samples colored by injection order 
+#' \code{\link{plot_tsne}}
+#' \item If the object has over 60 samples, hexbin versions of the PCA and t-
+#' SNE plots above
 #' \code{\link{plot_pca_hexbin}}, \code{\link{plot_tsne_hexbin}}
-#' \item Dendrogram of samples ordered by hierarchical clustering, sample labels colored by group if present
+#' \item Dendrogram of samples ordered by hierarchical clustering, sample 
+#' labels colored by group if present
 #' \code{\link{plot_dendrogram}}
-#' \item heat map of intersample distances, ordered by hierarchical clustering \code{\link{plot_sample_heatmap}}
+#' \item heat map of intersample distances, ordered by hierarchical clustering 
+#' \code{\link{plot_sample_heatmap}}
 #' \item If the object has QC samples: \itemize{
-#' \item Density function of the intersample distances in both QCs and biological samples
-#' \code{\link{plot_dist_density}}
-#' \item Histograms of p-values from linear regression of features against injection order
-#' in both QCs and biological samples \code{\link{plot_p_histogram}}}
+#' \item Density function of the intersample distances in both QCs and 
+#' biological samples \code{\link{plot_dist_density}}
+#' \item Histograms of p-values from linear regression of features against 
+#' injection order in both QCs and biological samples 
+#' \code{\link{plot_p_histogram}}}
 #' \item If the object has a group column: \itemize{
-#' \item PCA and tSNE plots with points shaped and colored by group \code{\link{plot_pca}}, \code{\link{plot_tsne}}
+#' \item PCA and tSNE plots with points shaped and colored by group 
+#' \code{\link{plot_pca}}, \code{\link{plot_tsne}}
 #' }
 #' \item If the object has a time column: \itemize{
-#' \item PCA and tSNE plots with points shaped and colored by time \code{\link{plot_pca}}, \code{\link{plot_tsne}}
-#' \item Dendrogram of samples ordered by hierarchical clustering, sample labels colored by time point
-#' \code{\link{plot_dendrogram}}
+#' \item PCA and tSNE plots with points shaped and colored by time 
+#' '\code{\link{plot_pca}}, \code{\link{plot_tsne}}
+#' \item Dendrogram of samples ordered by hierarchical clustering, sample 
+#' labels colored by time point \code{\link{plot_dendrogram}}
 #' }
 #' \item If the object has a group column OR a time column: \itemize{
-#' \item Boxplots of samples ordered and colored by group and/or time \code{\link{plot_sample_boxplots}}
+#' \item Boxplots of samples ordered and colored by group and/or time 
+#' \code{\link{plot_sample_boxplots}}
 #' }
 #' \item If the object has a group column AND a time column: \itemize{
 #' \item PCA and tSNE plots with points shaped by group and colored by time
 #' \code{\link{plot_pca}}, \code{\link{plot_tsne}}
 #' }
 #' \item If the object has a time column AND a subject column: \itemize{
-#' \item PCA and tSNE plots with arrows connecting the samples of each subject in time point order
+#' \item PCA and tSNE plots with arrows connecting the samples of each subject 
+#' in time point order
 #' \code{\link{plot_pca_arrows}}, \code{\link{plot_tsne_arrows}}
 #' }
 #' }

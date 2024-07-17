@@ -16,42 +16,43 @@ perform_lmer(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{formula_char}{character, the formula to be used in the linear model (see Details)}
+\item{formula_char}{character, the formula to be used in the linear model 
+(see Details)}
 
 \item{all_features}{should all features be included in FDR correction?}
 
-\item{ci_method}{The method for calculating the confidence intervals, see documentation
-of confint below}
+\item{ci_method}{The method for calculating the confidence intervals, see 
+documentation of confint below}
 
-\item{test_random}{logical, whether tests for the significance of the random effects
-should be performed}
+\item{test_random}{logical, whether tests for the significance of the random 
+effects should be performed}
 
 \item{...}{additional parameters passed to lmer}
 }
 \value{
-a data frame with one row per feature, with all the
-relevant statistics of the linear mixed model as columns
+A data frame with one row per feature, with all the
+relevant statistics of the linear mixed model as columns.
 }
 \description{
 Fits a linear mixed model separately for each feature. Returns all relevant
 statistics.
-\strong{CITATION:} When using this function, cite \code{lme4} and \code{lmerTest} packages
 }
 \details{
 The model is fit on combined_data(object). Thus, column names
-in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-must be used to signal the role of the features in the formula. "Feature" will be replaced
-by the actual Feature IDs during model fitting, see the example
+in pData(object) can be specified. To make the formulas flexible, the word 
+"Feature" must be used to signal the role of the features in the formula. 
+"Feature" will be replaced by the actual Feature IDs during model fitting, 
+see the example.
 }
 \examples{
 # A simple example without QC samples
-# Features predicted by Group and Time as fixed effects with Subject ID as a random effect
+# Features predicted by Group and Time as fixed effects with Subject ID as a 
+# random effect
 lmer_results <- perform_lmer(drop_qcs(example_set),
   formula_char = "Feature ~ Group + Time + (1 | Subject_ID)",
   ci_method = "Wald"
 )
 }
 \seealso{
-\code{\link[lmerTest]{lmer}} for model specification and
-\code{\link[lme4]{confint.merMod}} for the computation of confidence intervals
+\code{\link[lmerTest]{lmer}} for model specification
 }

@@ -20,17 +20,44 @@ flag_contaminants(
 \item{blank_label}{character, the label for blank samples in blank_col}
 
 \item{flag_thresh}{numeric, the ratio threshold for flagging contaminants.
-If the median of blanks > flag_thresh * median of biological samples, the feature gets flagged.}
+If the median of blanks > flag_thresh * median of biological samples, the 
+feature gets flagged.}
 
-\item{flag_label}{character, the label used when flagging contaminants. Can be changed if
-sample processing contaminants and carryover contaminants are flagged separately.}
+\item{flag_label}{character, the label used when flagging contaminants. Can 
+be changed if sample processing contaminants and carryover contaminants are 
+flagged separately.}
 }
 \value{
-MetaboSet object with contaminant features flagged.
+A MetaboSet object with contaminant features flagged.
 }
 \description{
-Flags contaminant features by comparing the median values of blanks and biological samples.
-Biological sampels are defined as samples that are not marked as blanks and are not QCs.
-If the median of blanks > the median of biological samples times a set ratio, the feature is
-flagged as contaminant
+Flags contaminant features by comparing the median values of blanks and 
+biological samples. Biological sampels are defined as samples that are not 
+marked as blanks and are not QCs. If the median of blanks > the median of 
+biological samples times a set ratio, the feature is flagged as contaminant.
+}
+\examples{
+# Make a blank sample which has one (first) feature exceeding the threshold
+## Abundance matrix
+exprs <- matrix(c(155, rep(0, 19)), ncol = 1, nrow = 20, 
+                dimnames = list(NULL, "Demo_31"))
+exprs <- cbind(exprs(example_set), exprs)
+## Sample metadata
+pheno_data <- pData(example_set)[1, ]
+rownames(pheno_data) <- "Demo_31"
+pheno_data$Sample_ID <- "Demo_31"
+pheno_data$Injection_order <- 31
+pheno_data[c("Subject_ID", "Group", "QC", "Time")] <- "Blank"
+pheno_data <- rbind(pData(example_set), pheno_data)
+## Feature metadata
+feature_data <- fData(example_set)
+# Construct MetaboSet object with blank sample
+ex_set <- construct_metabosets(exprs = exprs, 
+                               pheno_data = pheno_data,
+                               feature_data = feature_data,
+                               split_data = FALSE)
+# Flag contaminant(s)
+contaminants_flagged <- flag_contaminants(ex_set, blank_col = "QC", 
+                                         blank_label = "Blank")
+
 }

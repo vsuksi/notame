@@ -18,14 +18,15 @@ perform_wilcoxon_signed_rank(object, group, id, all_features = FALSE, ...)
 \item{...}{other parameters to \code{\link{wilcox.test}}}
 }
 \value{
-data frame with the results
+A data frame with the results.
 }
 \description{
-Performs Wilcoxon signed rank test
+Performs Wilcoxon signed rank test.
 Uses base R function \code{wilcox.test} with \code{paired = TRUE}.
 }
 \examples{
-perform_wilcoxon_signed_rank(drop_qcs(example_set), group = "Time", id = "Subject_ID")
+perform_wilcoxon_signed_rank(drop_qcs(example_set), 
+  group = "Time", id = "Subject_ID")
 
 }
 \seealso{

@@ -16,9 +16,11 @@ clean_stats_results(
 \arguments{
 \item{df}{data frame, statistics results}
 
-\item{remove}{list, should contain strings that are matching to unwanted columns}
+\item{remove}{list, should contain strings that are matching to unwanted 
+columns}
 
-\item{rename}{named list, names should contain matches that are replaced with values}
+\item{rename}{named list, names should contain matches that are replaced 
+with values}
 
 \item{summary}{logical, should summary columns be added}
 
@@ -27,7 +29,7 @@ clean_stats_results(
 \item{fdr}{logical, should summary be done with fdr-fixed values}
 }
 \value{
-a data frame with removed and/or renamed columns.
+A data frame with removed and/or renamed columns.
 }
 \description{
 Uses regexp to remove unnecessary columns from statistics results data frame.
@@ -35,7 +37,8 @@ Can also rename columns effectively.
 }
 \examples{
 # Simple manipulation to linear model results
-lm_results <- perform_lm(drop_qcs(example_set), formula_char = "Feature ~ Group + Time")
+lm_results <- perform_lm(drop_qcs(example_set), 
+  formula_char = "Feature ~ Group + Time")
 lm_results <- clean_stats_results(lm_results,
   rename = c("GroupB" = "GroupB_vs_A", "Time2" = "Time2_vs_1")
 )

@@ -27,11 +27,13 @@ save_beeswarm_plots(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default), flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
 \item{save}{logical, if false, the plots are not saved but returned as a list}
 
-\item{file_path}{character, a file path for PDF or prefix added to the file paths for other formats}
+\item{file_path}{character, a file path for PDF or prefix added to the file 
+paths for other formats}
 
 \item{format}{character, format in which the plots should be saved}
 
@@ -39,7 +41,8 @@ save_beeswarm_plots(
 
 \item{add_boxplots}{logical, should boxplots be added to the figure?}
 
-\item{title, subtitle}{column names from fData to use as plot title/filename and subtitle.
+\item{title, subtitle}{column names from fData to use as plot title/filename 
+and subtitle.
 Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{color}{character, name of the column to be used for coloring}
@@ -52,14 +55,16 @@ Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{size}{numeric, size of points}
 
-\item{title_line_length}{integer, maximum length of the title line in characters, passed to stringr::str_wrap}
+\item{title_line_length}{integer, maximum length of the title line in 
+characters, passed to stringr::str_wrap}
 
 \item{theme}{a ggplot theme to be added to the plot}
 
 \item{...}{other arguments to graphic device functions, like width and height}
 }
 \value{
-By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}.
+By default, the function is invoked for its plot-saving side effect. 
+The function returns a list of plots when \code{save = FALSE}.
 }
 \description{
 Draws a beeswarm plot of feature abundances in each group.

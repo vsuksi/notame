@@ -9,13 +9,13 @@ impute_rf(object, all_features = FALSE, ...)
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before imputation.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before imputation.}
 
 \item{...}{passed to MissForest function}
 }
 \value{
-MetaboSet object as the one supplied, with missing values imputed.
+A MetaboSet object as the one supplied, with missing values imputed.
 }
 \description{
 Impute the missing values in the exprs part of the object using a
@@ -25,7 +25,6 @@ It is recommended to set the seed number for reproducibility
 This a wrapper around \code{missForest::missForest}.
 Use parallelize = "variables" to run in parallel for faster testing.
 NOTE: running in parallel prevents user from setting a seed number.
-\strong{CITATION:} When using this function, cite the \code{missForest} package
 }
 \examples{
 missing <- mark_nas(example_set, 0)
@@ -34,5 +33,6 @@ imputed <- impute_rf(missing)
 
 }
 \seealso{
-\code{\link[missForest]{missForest}} for detail about the algorithm and the parameters
+\code{\link[missForest]{missForest}} for detail about the algorithm 
+and the parameters
 }

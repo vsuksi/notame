@@ -39,7 +39,7 @@ test_that("Flagging works as expected", {
   mrg <- merge_exprs(example_set, single_change)
   expect_equal(exprs(mrg)[2, 1], 1111)
 
-  block_change <- matrix(runif(9),
+  block_change <- matrix(stats::runif(9),
     nrow = 3, ncol = 3,
     dimnames = list(
       rownames(exprs(example_set))[4:6],
@@ -49,7 +49,7 @@ test_that("Flagging works as expected", {
   mrg2 <- merge_exprs(example_set, block_change)
   expect_true(all(exprs(mrg2)[4:6, 5:7] == block_change))
 
-  scattered_change <- matrix(runif(9),
+  scattered_change <- matrix(stats::runif(9),
     nrow = 3, ncol = 3,
     dimnames = list(
       rownames(exprs(example_set))[c(1, 5, 7)],
@@ -59,10 +59,10 @@ test_that("Flagging works as expected", {
   mrg3 <- merge_exprs(example_set, scattered_change)
   expect_true(all(exprs(mrg3)[c(1, 5, 7), c(2, 5, 8)] == scattered_change))
 
-  wrong_names <- matrix(runif(9), nrow = 3)
+  wrong_names <- matrix(stats::runif(9), nrow = 3)
   expect_error(merge_exprs(example_set, wrong_names), "Column names")
 
-  wrong_names2 <- matrix(runif(9),
+  wrong_names2 <- matrix(stats::runif(9),
     nrow = 3,
     dimnames = list(
       letters[1:3],

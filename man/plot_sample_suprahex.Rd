@@ -43,8 +43,8 @@ plot_sample_suprahex(
 None, the function is invoked for its plotting side effect.
 }
 \description{
-Plots supraHex plots of each sample using functions from the supraHex package.
-See the supraHex paper and package vignette for more information.
+Plots supraHex plots of each sample using functions from the supraHex 
+package. See the supraHex paper and package vignette for more information.
 }
 \examples{
 plot_sample_suprahex(merged_sample[, 1:20],

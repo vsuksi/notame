@@ -9,13 +9,14 @@ plot_quality(object, all_features = FALSE, plot_flags = TRUE)
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
-\item{plot_flags}{logical, should the distribution of flags be added as a barplot?}
+\item{plot_flags}{logical, should the distribution of flags be added as a 
+barplot?}
 }
 \value{
-a ggplot object
+A ggplot object.
 }
 \description{
 Plots distribution of each quality metric, and a distribution of the flags.

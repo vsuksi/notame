@@ -3,7 +3,7 @@
 \name{time_col}
 \alias{time_col}
 \alias{time_col<-}
-\title{These generic functions access and set the special column for time point}
+\title{Get and set the name of the special column for time points}
 \usage{
 time_col(object)
 
@@ -12,15 +12,16 @@ time_col(object) <- value
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{value}{string, name of column to be designated for holding time point}
+\item{value}{string, name of column to be designated for holding time points}
 }
 \value{
 Character, name of time variable.
 
-For the endomorphism, an object with the time variable set to the specified variable.
+For the endomorphism, an object with the time variable set to the 
+specified variable.
 }
 \description{
-These generic functions access and set the special column for time point
+Get and set the name of the special column for time points
 }
 \examples{
 # Get name of time variable

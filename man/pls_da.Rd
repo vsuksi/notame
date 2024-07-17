@@ -50,37 +50,44 @@ mixomics_splsda_optimize(
 
 \item{ncomp}{the number of X components}
 
-\item{plot_scores}{logical, if TRUE, a scatter plot with the first two PLS-components as x and y-axis will
-be drawn, with both prediction surface and ellipses}
+\item{plot_scores}{logical, if TRUE, a scatter plot with the first two PLS-
+components as x and y-axis will be drawn, with both prediction surface and 
+ellipses}
 
-\item{all_features}{logical, should all features be included in the model? if FALSE, flagged features are left out}
+\item{all_features}{logical, should all features be included in the model? 
+if FALSE, flagged features are left out}
 
-\item{covariates}{character, column names of pData to use as covariates in the model, in addition to
+\item{covariates}{character, column names of pData to use as covariates in 
+the model, in addition to
 molecular features}
 
 \item{...}{any parameters passed to \code{mixOmics::plsda}}
 
 \item{folds}{the number of folds to use in k-fold cross validation}
 
-\item{nrepeat}{the number of times to repeat the cross validation. Lower this for faster testing.}
+\item{nrepeat}{the number of times to repeat the cross validation. Lower 
+this for faster testing.}
 
-\item{dist}{the distance metric to use, one of "max.dist", "mahalanobis.dist", "centroids.dist".
+\item{dist}{the distance metric to use, one of "max.dist", 
+"mahalanobis.dist", "centroids.dist".
 use \code{\link{mixomics_plsda_optimize}} to find the best distance metric}
 
 \item{n_features}{the number of features to try for each component}
 }
 \value{
-an object of class "mixo_plsda"
+An object of class "mixo_plsda".
 }
 \description{
-A simple wrapper for fitting a PLS-DA model using plsda function of the mixOmics package.
-The object can then be passed to many of the mixOmics functions for prediction,
-performance evaluation etc.
+A simple wrapper for fitting a PLS-DA model using plsda function of the 
+mixOmics package. The object can then be passed to many of the mixOmics 
+functions for prediction, performance evaluation etc.
 \itemize{
-\item{\code{mixomics_plsda} A simple PLS-DA model with set number of components and all features}
+\item{\code{mixomics_plsda} A simple PLS-DA model with set number of 
+components and all features}
 \item{\code{mixomics_plsda_optimize} Test different numbers of components,
 choose the one with minimal balanced error rate}
-\item{\code{mixomics_splsda_optimize} sPLS-DA model: Test different numbers of components and features,
+\item{\code{mixomics_splsda_optimize} sPLS-DA model: Test different numbers 
+of components and features,
 choose the one with minimal balanced error rate}
 }
 }

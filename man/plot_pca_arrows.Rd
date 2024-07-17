@@ -28,12 +28,14 @@ plot_pca_arrows(
 
 \item{pcs}{numeric vector of length 2, the principal components to plot}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
-\item{center}{logical, should the data be centered prior to PCA? (usually yes)}
+\item{center}{logical, should the data be centered prior to PCA? (usually 
+yes)}
 
-\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+variance}
 
 \item{color}{character, name of the column used for coloring the arrows}
 
@@ -41,9 +43,11 @@ flagged features are removed before visualization.}
 
 \item{subject}{character, name of the column containing subject identifiers}
 
-\item{alpha}{numeric, value for the alpha parameter of the arrows (transparency)}
+\item{alpha}{numeric, value for the alpha parameter of the arrows 
+(transparency)}
 
-\item{arrow_style}{a description of arrow heads, the size and angle can be modified, see \code{?arrow}}
+\item{arrow_style}{a description of arrow heads, the size and angle can be 
+modified, see \code{?arrow}}
 
 \item{title, subtitle}{the titles of the plot}
 
@@ -56,11 +60,11 @@ flagged features are removed before visualization.}
 \item{...}{additional arguments passed to pcaMethods::pca}
 }
 \value{
-a ggplot object.
+A ggplot object.
 }
 \description{
-Plots changes in PCA space according to time. All the observations of a single subject are connected
-by an arrow ending at the last observation.
+Plots changes in PCA space according to time. All the observations of a 
+single subject are connected by an arrow ending at the last observation.
 }
 \examples{
 plot_pca_arrows(drop_qcs(example_set))

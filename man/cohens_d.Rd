@@ -16,12 +16,12 @@ cohens_d(object, group = group_col(object), id = NULL, time = NULL)
 \item{time}{character, name of the time column}
 }
 \value{
-data frame with Cohen's d for each feature
+A data frame with Cohen's d for each feature.
 }
 \description{
 Computes Cohen's D for each feature. If time and ID are supplied,
 change between two time points is computed for each subject,
-and Cohen's d is computed from the changes
+and Cohen's d is computed from the changes.
 }
 \examples{
 d_results <- cohens_d(drop_qcs(example_set))

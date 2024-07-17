@@ -40,38 +40,38 @@
 \S4method{join_pData}{MetaboSet,data.frame}(object, dframe)
 }
 \arguments{
-\item{object}{a MetaboSet object}
+\item{object}{A MetaboSet object.}
 
-\item{value}{string, character vector for \code{\link{flag}}}
+\item{value}{string, name of column to be designated for holding group labels}
 
 \item{dframe}{a data frame with the new information}
 }
 \description{
 MetaboSet is the main class used to represent data in the notame package.
-It is built upon the \code{\link[Biobase]{ExpressionSet}} class from the Biobase
-package. For more information, read the MetaboSet utility vignette.
-In addition to the slots inherited from \code{\link[Biobase]{ExpressionSet}},
-\code{MetaboSet} has three slots of its own. The extra three slots hold special
-column names that are stored purely for convenience, as many functions use these as
-defaults.
+It is built upon the \code{\link[Biobase]{ExpressionSet}} class from the 
+Biobase package. In addition to the slots inherited from 
+\code{\link[Biobase]{ExpressionSet}}, \code{MetaboSet} has three slots of 
+its own. The extra three slots hold special column names that are stored 
+purely for convenience, as many functions use these as defaults.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{combined_data(MetaboSet)}: sample information and features combined to a single data frame, one row per sample
+\item \code{combined_data(MetaboSet)}: sample information and features combined to a single 
+data frame, one row per sample.
 
-\item \code{group_col(MetaboSet)}: access name of column for group labels
+\item \code{group_col(MetaboSet)}: get name of column for group labels
 
 \item \code{group_col(MetaboSet) <- value}: set name of column for group labels
 
-\item \code{time_col(MetaboSet)}: access name of column for time point
+\item \code{time_col(MetaboSet)}: get name of column for time points
 
-\item \code{time_col(MetaboSet) <- value}: set name of column for time point
+\item \code{time_col(MetaboSet) <- value}: set name of column for time points
 
-\item \code{subject_col(MetaboSet)}: access name of column for subject subject identifiers
+\item \code{subject_col(MetaboSet)}: get name of column for subject subject identifiers
 
 \item \code{subject_col(MetaboSet) <- value}: set name of column for subject identifiers
 
-\item \code{flag(MetaboSet)}: access flags
+\item \code{flag(MetaboSet)}: get flags
 
 \item \code{flag(MetaboSet) <- value}: set flags
 

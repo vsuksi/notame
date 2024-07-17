@@ -1,15 +1,18 @@
 #' Draw dendrograms
 #'
-#' Draws a dendrogram of a hierarchical clustering applied to the samples of an experiment
+#' Draws a dendrogram of a hierarchical clustering applied to the samples of an 
+#' experiment.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param color character, name of the column used for coloring the sample labels
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param color character, name of the column used for coloring the sample 
+#' labels
 #' @param dist_method distance method used in clustering, see ?dist
 #' @param clust_method method used in clustering, see ?hclust
 #' @param center logical, should the data be centered?
-#' @param scale scaling used, as in \code{pcaMethods::prep}. Default is "uv" for unit variance
+#' @param scale scaling used, as in \code{pcaMethods::prep}. Default is "uv" 
+#'for unit variance
 #' @param title The plot title
 #' @param subtitle The plot subtitle
 #' @param color_scale the color scale as returned by a ggplot function.
@@ -21,7 +24,6 @@
 #'
 #' @seealso \code{\link{dist}} \code{\link{hclust}}
 #'
-#' @importFrom stats as.dendrogram
 #' @export
 plot_dendrogram <- function(object, all_features = FALSE, 
                             color = group_col(object), 
@@ -34,10 +36,6 @@ plot_dendrogram <- function(object, all_features = FALSE,
     stop("Package \'pcaMethods\' needed for this function to work.", 
          " Please install it.", call. = FALSE)
   }
-  if (!requireNamespace("ggdendro", quietly = TRUE)) {
-    stop("Package \'ggdendro\' needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
   color <- color %||% NULL
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
@@ -47,9 +45,9 @@ plot_dendrogram <- function(object, all_features = FALSE,
 
   object <- pcaMethods::prep(object, center = center, scale = scale)
 
-  d_data <- dist(t(exprs(object)), method = dist_method) %>%
-    hclust(method = clust_method) %>%
-    as.dendrogram() %>%
+  d_data <- stats::dist(t(exprs(object)), method = dist_method) %>%
+    stats::hclust(method = clust_method) %>%
+    stats::as.dendrogram() %>%
     ggdendro::dendro_data()
 
   labels <- ggdendro::label(d_data) %>%
@@ -76,21 +74,26 @@ plot_dendrogram <- function(object, all_features = FALSE,
 #' the samples are ordered by hierarchical clustering.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
 #' @param dist_method distance method used in clustering, see \code{\link{dist}}
-#' @param clust_method clustering method used in clustering, see \code{\link{hclust}}
+#' @param clust_method clustering method used in clustering, see 
+#' \code{\link{hclust}}
 #' @param center logical, should the data  be centered?
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
-#' @param group_bar logical, should a bar showing the groups be drawn under the heat map?
+#' @param scale scaling used, as in pcaMethods::prep. 
+#' Default is "uv" for unit variance
+#' @param group_bar logical, should a bar showing the groups be drawn under the 
+#' heat map?
 #' @param group character, name of the column used for coloring the group bar
 #' @param title The plot title
 #' @param subtitle The plot subtitle
-#' @param fill_scale_con Continuous fill scale for the heatmap as returned by a ggplot function
-#' @param fill_scale_dis Discrete fill scale for the group bar as returned by a ggplot function
+#' @param fill_scale_con Continuous fill scale for the heatmap as returned by a 
+#' ggplot function
+#' @param fill_scale_dis Discrete fill scale for the group bar as returned by a 
+#' ggplot function
 #'
-#' @return a ggplot object. If \code{group_bar} is \code{TRUE}, the plot will consist of multiple
-#' parts and is harder to modify.
+#' @return A ggplot object. If \code{group_bar} is \code{TRUE}, the plot will 
+#' consist of multiple parts and is harder to modify.
 #'
 #' @examples
 #' plot_sample_heatmap(merged_sample)
@@ -112,10 +115,6 @@ plot_sample_heatmap <- function(object, all_features = FALSE,
     stop("Package \'pcaMethods\' needed for this function to work.",
          " Please install it.", call. = FALSE)
   }
-  if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \'cowplot\' needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
   # Drop flagged compounds if not told otherwise
   object <- drop_flagged(object, all_features)
 
@@ -126,9 +125,9 @@ plot_sample_heatmap <- function(object, all_features = FALSE,
   object <- pcaMethods::prep(object, center = center, scale = scale)
 
   # Distances
-  distances <- dist(t(exprs(object)), method = dist_method)
+  distances <- stats::dist(t(exprs(object)), method = dist_method)
   # Hierarchical clustering for ordering
-  hc <- hclust(distances, method = clust_method)
+  hc <- stats::hclust(distances, method = clust_method)
   hc_order <- hc$labels[hc$order]
 
   # From wide to long format for ggplot

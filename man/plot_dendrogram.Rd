@@ -20,10 +20,11 @@ plot_dendrogram(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
-\item{color}{character, name of the column used for coloring the sample labels}
+\item{color}{character, name of the column used for coloring the sample 
+labels}
 
 \item{dist_method}{distance method used in clustering, see ?dist}
 
@@ -31,7 +32,8 @@ flagged features are removed before visualization.}
 
 \item{center}{logical, should the data be centered?}
 
-\item{scale}{scaling used, as in \code{pcaMethods::prep}. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in \code{pcaMethods::prep}. Default is "uv" 
+for unit variance}
 
 \item{title}{The plot title}
 
@@ -43,7 +45,8 @@ flagged features are removed before visualization.}
 A ggplot object.
 }
 \description{
-Draws a dendrogram of a hierarchical clustering applied to the samples of an experiment
+Draws a dendrogram of a hierarchical clustering applied to the samples of an 
+experiment.
 }
 \examples{
 plot_dendrogram(merged_sample)

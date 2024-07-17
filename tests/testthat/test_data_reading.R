@@ -220,19 +220,19 @@ test_that("Creating dummy injection order works as expected", {
   expect_equal(merged$Injection_order, -seq_along(merged$Sample_ID))
   # Original IOs
   expect_equal(
-    sort(as.numeric(na.omit(merged$HILIC_neg_Injection_order))),
+    sort(as.numeric(stats::na.omit(merged$HILIC_neg_Injection_order))),
     modes$HILIC_neg$Injection_order
   )
   expect_equal(
-    sort(as.numeric(na.omit(merged$HILIC_pos_Injection_order))),
+    sort(as.numeric(stats::na.omit(merged$HILIC_pos_Injection_order))),
     modes$HILIC_pos$Injection_order
   )
   expect_equal(
-    sort(as.numeric(na.omit(merged$RP_neg_Injection_order))),
+    sort(as.numeric(stats::na.omit(merged$RP_neg_Injection_order))),
     modes$RP_neg$Injection_order
   )
   expect_equal(
-    sort(as.numeric(na.omit(merged$RP_pos_Injection_order))),
+    sort(as.numeric(stats::na.omit(merged$RP_pos_Injection_order))),
     modes$RP_pos$Injection_order
   )
 })

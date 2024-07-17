@@ -18,63 +18,78 @@ visualizations(
 
 \item{prefix}{character, a file path prefix added to the file paths}
 
-\item{format}{character, format in which the plots should be saved, DOES NOT support raster formats}
+\item{format}{character, format in which the plots should be saved, DOES NOT 
+support raster formats}
 
 \item{perplexity}{perplexity for t-SNE plots}
 
-\item{merge}{logical, whether the files should be merged to a single PDF, see Details}
+\item{merge}{logical, whether the files should be merged to a single PDF, 
+see Details}
 
-\item{remove_singles}{logical, whether to remove single plot files after merging.
-Only used if \code{merge = TRUE}}
+\item{remove_singles}{logical, whether to remove single plot files after 
+merging. Only used if \code{merge = TRUE}}
 }
 \value{
 None, the function is invoked for its plot-saving side effect.
 }
 \description{
-A wrapper around all the major visualization functions, used for visualizing data between
-major steps of data preprocessing. Saves all visualizations as PDFs with a set prefix on filenames.
+A wrapper around all the major visualization functions, used for visualizing 
+data between major steps of data preprocessing. Saves all visualizations as 
+PDFs with a set prefix on filenames.
 }
 \details{
 If \code{merge} is \code{TRUE} and \code{format} id \code{pdf},
-then a file containing all the visualizations named \code{prefix.pdf} will be created.
-NOTE: on Windows this requires installation of pdftk (\url{https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/})
-and on Linux you need to have pdfunite installed.
-On MacOS, no external software is needed. Note that at least on Windows, prefix should be a path from the root,
-so that the underlying system command will find the files.
+then a file containing all the visualizations named \code{prefix.pdf} will 
+be created. NOTE: on Windows this requires installation of pdftk 
+(\url{https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/})
+and on Linux you need to have pdfunite installed. On MacOS, no external 
+software is needed. Note that at least on Windows, prefix should be a path 
+from the root, so that the underlying system command will find the files.
 The type of visualizations to be saved depends on the type of object.
 Here is a comprehensive list of the visualizations:
 \itemize{
 \item Distribution of quality metrics and flags \code{\link{plot_quality}}
-\item Boxplots of each sample in injection order \code{\link{plot_sample_boxplots}}
-\item PCA scores plot of samples colored by injection order \code{\link{plot_pca}}
-\item t-SNE plot of samples colored by injection order \code{\link{plot_tsne}}
-\item If the object has over 60 samples, hexbin versions of the PCA and t-SNE plots above
+\item Boxplots of each sample in injection order 
+\code{\link{plot_sample_boxplots}}
+\item PCA scores plot of samples colored by injection order 
+\code{\link{plot_pca}}
+\item t-SNE plot of samples colored by injection order 
+\code{\link{plot_tsne}}
+\item If the object has over 60 samples, hexbin versions of the PCA and t-
+SNE plots above
 \code{\link{plot_pca_hexbin}}, \code{\link{plot_tsne_hexbin}}
-\item Dendrogram of samples ordered by hierarchical clustering, sample labels colored by group if present
+\item Dendrogram of samples ordered by hierarchical clustering, sample 
+labels colored by group if present
 \code{\link{plot_dendrogram}}
-\item heat map of intersample distances, ordered by hierarchical clustering \code{\link{plot_sample_heatmap}}
+\item heat map of intersample distances, ordered by hierarchical clustering 
+\code{\link{plot_sample_heatmap}}
 \item If the object has QC samples: \itemize{
-\item Density function of the intersample distances in both QCs and biological samples
-\code{\link{plot_dist_density}}
-\item Histograms of p-values from linear regression of features against injection order
-in both QCs and biological samples \code{\link{plot_p_histogram}}}
+\item Density function of the intersample distances in both QCs and 
+biological samples \code{\link{plot_dist_density}}
+\item Histograms of p-values from linear regression of features against 
+injection order in both QCs and biological samples 
+\code{\link{plot_p_histogram}}}
 \item If the object has a group column: \itemize{
-\item PCA and tSNE plots with points shaped and colored by group \code{\link{plot_pca}}, \code{\link{plot_tsne}}
+\item PCA and tSNE plots with points shaped and colored by group 
+\code{\link{plot_pca}}, \code{\link{plot_tsne}}
 }
 \item If the object has a time column: \itemize{
-\item PCA and tSNE plots with points shaped and colored by time \code{\link{plot_pca}}, \code{\link{plot_tsne}}
-\item Dendrogram of samples ordered by hierarchical clustering, sample labels colored by time point
-\code{\link{plot_dendrogram}}
+\item PCA and tSNE plots with points shaped and colored by time 
+'\code{\link{plot_pca}}, \code{\link{plot_tsne}}
+\item Dendrogram of samples ordered by hierarchical clustering, sample 
+labels colored by time point \code{\link{plot_dendrogram}}
 }
 \item If the object has a group column OR a time column: \itemize{
-\item Boxplots of samples ordered and colored by group and/or time \code{\link{plot_sample_boxplots}}
+\item Boxplots of samples ordered and colored by group and/or time 
+\code{\link{plot_sample_boxplots}}
 }
 \item If the object has a group column AND a time column: \itemize{
 \item PCA and tSNE plots with points shaped by group and colored by time
 \code{\link{plot_pca}}, \code{\link{plot_tsne}}
 }
 \item If the object has a time column AND a subject column: \itemize{
-\item PCA and tSNE plots with arrows connecting the samples of each subject in time point order
+\item PCA and tSNE plots with arrows connecting the samples of each subject 
+in time point order
 \code{\link{plot_pca_arrows}}, \code{\link{plot_tsne_arrows}}
 }
 }

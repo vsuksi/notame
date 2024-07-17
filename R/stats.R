@@ -21,18 +21,20 @@
 #' as well as 25% and 75% quantiles (Q25 & Q75).
 #'
 #' @param object a MetaboSet object
-#' @param grouping_cols character vector, the columns by which grouping should be done. Use \code{NA}
+#' @param grouping_cols character vector, the columns by which grouping should 
+#' be done. Use \code{NA}
 #' to compute statistics without grouping.
 #'
 #' @examples
 #' # Group by "Group"
 #' sum_stats <- summary_statistics(example_set)
 #' # Group by Group and Time
-#' sum_stats <- summary_statistics(example_set, grouping_cols = c("Group", "Time"))
+#' sum_stats <- summary_statistics(example_set, 
+#'   grouping_cols = c("Group", "Time"))
 #' # No Grouping
 #' sum_stats <- summary_statistics(example_set, grouping_cols = NA)
 #'
-#' @return a data frame with the summary statistics
+#' @return A data frame with the summary statistics.
 #'
 #' @export
 summary_statistics <- function(object, grouping_cols = NA) {
@@ -93,17 +95,20 @@ summary_statistics <- function(object, grouping_cols = NA) {
 #' Can also rename columns effectively.
 #'
 #' @param df data frame, statistics results
-#' @param remove list, should contain strings that are matching to unwanted columns
-#' @param rename named list, names should contain matches that are replaced with values
+#' @param remove list, should contain strings that are matching to unwanted 
+#' columns
+#' @param rename named list, names should contain matches that are replaced 
+#' with values
 #' @param summary logical, should summary columns be added
 #' @param p_limit numeric, limit for p-values to be counted
 #' @param fdr logical, should summary be done with fdr-fixed values
 #'
-#' @return a data frame with removed and/or renamed columns.
+#' @return A data frame with removed and/or renamed columns.
 #'
 #' @examples
 #' # Simple manipulation to linear model results
-#' lm_results <- perform_lm(drop_qcs(example_set), formula_char = "Feature ~ Group + Time")
+#' lm_results <- perform_lm(drop_qcs(example_set), 
+#'   formula_char = "Feature ~ Group + Time")
 #' lm_results <- clean_stats_results(lm_results,
 #'   rename = c("GroupB" = "GroupB_vs_A", "Time2" = "Time2_vs_1")
 #' )
@@ -207,7 +212,7 @@ clean_stats_results <- function(df, remove = c("Intercept", "CI95", "Std_error",
   if (is.null(id)) {
     stop("Please specify id column.", call. = FALSE)
   }
-  time_combos <- combn(levels(pData(object)[, time]), 2)
+  time_combos <- utils::combn(levels(pData(object)[, time]), 2)
   for (i in seq_len(ncol(group_combos))) {
     for (j in seq_len(ncol(time_combos))) {
       object_split <- object[, which(
@@ -255,14 +260,14 @@ clean_stats_results <- function(df, remove = c("Intercept", "CI95", "Std_error",
 #'
 #' Computes Cohen's D for each feature. If time and ID are supplied,
 #' change between two time points is computed for each subject,
-#' and Cohen's d is computed from the changes
+#' and Cohen's d is computed from the changes.
 #'
 #' @param object a MetaboSet object
 #' @param id character, name of the subject ID column
 #' @param group character, name of the group column
 #' @param time character, name of the time column
 #'
-#' @return data frame with Cohen's d for each feature
+#' @return A data frame with Cohen's d for each feature.
 #'
 #' @examples
 #' d_results <- cohens_d(drop_qcs(example_set))
@@ -270,7 +275,6 @@ clean_stats_results <- function(df, remove = c("Intercept", "CI95", "Std_error",
 #'   time = "Time", id = "Subject_ID"
 #' )
 #'
-#' @importFrom utils combn
 #' @export
 cohens_d <- function(object, group = group_col(object),
                      id = NULL, time = NULL) {
@@ -287,7 +291,7 @@ cohens_d <- function(object, group = group_col(object),
       stop("Column ", column, " should have at least two levels!")
     }
   }
-  group_combos <- combn(levels(pData(object)[, group]), 2)
+  group_combos <- utils::combn(levels(pData(object)[, group]), 2)
 
   if (is.null(time)) {
     for (i in seq_len(ncol(group_combos))) {
@@ -330,7 +334,7 @@ cohens_d <- function(object, group = group_col(object),
 #' @param object a MetaboSet object
 #' @param group character, name of the group column
 #'
-#' @return data frame with fold changes for each feature
+#' @return A data frame with fold changes for each feature.
 #'
 #' @examples
 #' # Between groups
@@ -343,7 +347,7 @@ fold_change <- function(object, group = group_col(object)) {
   log_text("Starting to compute fold changes.")
 
   data <- combined_data(object)
-  groups <- combn(levels(data[, group]), 2)
+  groups <- utils::combn(levels(data[, group]), 2)
   features <- Biobase::featureNames(object)
   # Calculate fold changes between groupings
   results_df <- BiocParallel::bplapply(features, FUN = .calc_fold_change,
@@ -374,7 +378,7 @@ fold_change <- function(object, group = group_col(object)) {
   tryCatch(
     {
       if (is.null(id)) {
-        cor_tmp <- cor.test(data1[, x_tmp], data2[, y_tmp], ...)
+        cor_tmp <- stats::cor.test(data1[, x_tmp], data2[, y_tmp], ...)
       } else {
         id_tmp <- data1[, id]
         cor_tmp <- data.frame(id_var = id_tmp, x_var = data1[, x_tmp],
@@ -424,37 +428,43 @@ fold_change <- function(object, group = group_col(object)) {
 
 #' Perform correlation tests
 #'
-#' Performs a correlation test between two sets of variables. All the variables must be either
-#' feature names or column names of pheno data (sample information).
+#' Performs a correlation test between two sets of variables. All the variables 
+#' must be either feature names or column names of pheno data (sample 
+#' information).
 #' There are two ways to use this function:
 #' either provide a set of variables as \code{x}, and all correlations between
-#' those variables are computed. Or
-#' provide two distinct sets of variables \code{x, y} and correlations between each x variable
+#' those variables are computed. Or provide two distinct sets of variables 
+#' \code{x, y} and correlations between each x variable
 #' and each y variable are computed.
 #'
 #' @param object a MetaboSet object
 #' @param x character vector, names of variables to be correlated
-#' @param y character vector, either identical to x (the default) or a distinct set of variables
-#' to be correlated agains x
-#' @param id character, column name for subject IDs. If provided, the correlation will be computed
-#' using the rmcorr package
-#' @param object2 optional second MeatboSet object. If provided, x variables will be taken from object and
-#' y variables will be taken from object2. Both objects should have the same number of samples.
-#' @param fdr logical, whether p-values from the correlation test should be adjusted with FDR correction
+#' @param y character vector, either identical to x (the default) or a distinct 
+#' set of variables to be correlated against x
+#' @param id character, column name for subject IDs. If provided, the 
+#' correlation will be computed using the rmcorr package
+#' @param object2 optional second MetaboSet object. If provided, x variables 
+#' will be taken from object and y variables will be taken from object2. Both 
+#' objects should have the same number of samples.
+#' @param fdr logical, whether p-values from the correlation test should be 
+#' adjusted with FDR correction
 #' @param all_pairs logical, whether all pairs between x and y should be tested.
-#' If FALSE, x and y give the exact pairs of variables to test, and should have the same length.
-#' @param duplicates logical, whether correlations should be dublicated. If \code{TRUE}, each correlation
-#' will be included in the results twice, where the order of the variables (which is x and which is y)
-#' is changed. Can be useful for e.g. plotting a heatmap of the results, see examples of
+#' If FALSE, x and y give the exact pairs of variables to test, and should have 
+#' the same length.
+#' @param duplicates logical, whether correlations should be duplicated. If 
+#' \code{TRUE}, each correlation will be included in the results twice, where 
+#' the order of the variables '(which is x and which is y) is changed. Can be 
+#' useful for e.g. plotting a heatmap of the results, see examples of
 #' \code{\link{plot_effect_heatmap}}
 #' @param ... other parameters passed to \code{\link{cor.test}}, such as method
 #'
-#' @return a data frame with the results of correlation tests: the pair of variables,
-#' correlation coefficient and p-value
+#' @return A data frame with the results of correlation tests: the pair of 
+#' variables, correlation coefficient and p-value.
 #'
 #' @examples
 #' # Correlations between all features
-#' correlations <- perform_correlation_tests(example_set, x = featureNames(example_set))
+#' correlations <- perform_correlation_tests(example_set, 
+#'   x = featureNames(example_set))
 #'
 #' # Spearman Correlations between features and sample information variables
 #' # Drop QCs and convert time to numeric
@@ -474,7 +484,6 @@ fold_change <- function(object, group = group_col(object)) {
 #' )
 #' @seealso \code{\link{cor.test}}, \code{\link[rmcorr]{rmcorr}}
 #'
-#' @importFrom stats cor.test
 #' @export
 perform_correlation_tests <- function(object, x, y = x, id = NULL, 
                                       object2 = NULL, fdr = TRUE, 
@@ -520,17 +529,19 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL,
   }
   
   if (all_pairs) {
-    # If the same variable is present in x and y, the correlation would be computed
-    # twice. This makes sure only unique combinations of variables are treated.
+    # If the same variable is present in x and y, the correlation would be 
+    # computed twice. This makes sure only unique combinations are treated.
     if (identical(x, y)) {
-      var_pairs <- combn(x, 2) %>%
+      var_pairs <- utils::combn(x, 2) %>%
         t() %>%
         data.frame(stringsAsFactors = FALSE)
       colnames(var_pairs) <- c("x", "y")
       # Add correlations of all variables with themselves (useful for plotting)
-      var_pairs <- rbind(var_pairs, data.frame(x = x, y = x, stringsAsFactors = FALSE))
+      var_pairs <- rbind(var_pairs, data.frame(x = x, y = x, 
+                                               stringsAsFactors = FALSE))
     } else if (is.null(object2) && length(intersect(x, y))) {
-      stop("Currently only identical x & y or completely separate x & y are supported for one object")
+      stop("Currently only identical x & y or completely separate x & y are", 
+           " supported for one object")
     } else {
       var_pairs <- expand.grid(x, y, stringsAsFactors = FALSE)
       colnames(var_pairs) <- c("x", "y")
@@ -568,14 +579,15 @@ perform_correlation_tests <- function(object, x, y = x, id = NULL,
 #'
 #' Compute area under curve (AUC) for each subject and feature.
 #' Creates a pseudo MetaboSet object, where the "samples" are subjects
-#' (or subject/group combinations in case the same subjects are submitted to different treatments)
-#' and the "abundances" are AUCs. This object can then be used to compute results of e.g. t-tests of
-#' AUCs between groups.
+#' (or subject/group combinations in case the same subjects are submitted to 
+#' different treatments) and the "abundances" are AUCs. This object can then be 
+#' used to compute results of e.g. t-tests of AUCs between groups.
 #'
 #' @param object a MetaboSet object
-#' @param time,subject,group column names of pData(object), holding time, subject and group labels
+#' @param time,subject,group column names of pData(object), holding time, 
+#' subject and group labels
 #'
-#' @return a pseudo MetaboSet object with the AUCs
+#' @return A pseudo MetaboSet object with the AUCs.
 #'
 #' @examples
 #' # Drop QC samples before computing AUCs
@@ -624,14 +636,13 @@ perform_auc <- function(object, time = time_col(object),
 }
 
 # Helper function for FDR correction
-#' @importFrom stats p.adjust
 .adjust_p_values <- function(x, flags) {
   p_cols <- colnames(x)[grepl("_P$", colnames(x))]
   for (p_col in p_cols) {
     p_values <- x[, p_col, drop = TRUE]
     p_values[!is.na(flags)] <- NA
     x <- tibble::add_column(.data = x,
-                            FDR = p.adjust(p_values, method = "BH"),
+                            FDR = stats::p.adjust(p_values, method = "BH"),
                             .after = p_col)
     p_idx <- which(colnames(x) == p_col)
     colnames(x)[p_idx + 1] <- paste0(p_col, "_FDR")
@@ -663,7 +674,7 @@ perform_auc <- function(object, time = time_col(object),
   tmp_formula <- gsub("Feature", feature, formula_char)
   # Run test
   result_row <- result_fun(feature = feature, 
-                           formula = as.formula(tmp_formula), 
+                           formula = stats::as.formula(tmp_formula), 
                            data = data, ...)
   # In case Feature is used as predictor, make the column names match
   if (!is.null(result_row)) {
@@ -674,7 +685,6 @@ perform_auc <- function(object, time = time_col(object),
 
 
 # Helper function for running a variety of simple statistical tests
-#' @importFrom stats as.formula
 .perform_test <- function(object, formula_char, result_fun, all_features, 
                          fdr = TRUE, packages = NULL, ...) {
   data <- combined_data(object)
@@ -710,26 +720,28 @@ perform_auc <- function(object, time = time_col(object),
 #' statistics.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' @param all_features should all features be included in FDR correction?
 #' @param ... additional parameters passed to lm
 #'
-#' @return a data frame with one row per feature, with all the
-#' relevant statistics of the linear model as columns
+#' @return A data frame with one row per feature, with all the
+#' relevant statistics of the linear model as columns.
 #'
 #' @details The linear model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting, see the example
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature" must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting, 
+#' see the example.
 #'
 #' @examples
 #' # A simple example without QC samples
 #' # Features predicted by Group and Time
-#' lm_results <- perform_lm(drop_qcs(example_set), formula_char = "Feature ~ Group + Time")
+#' lm_results <- perform_lm(drop_qcs(example_set), 
+#'   formula_char = "Feature ~ Group + Time")
 #'
 #' @seealso \code{\link[stats]{lm}}
 #'
-#' @importFrom stats confint
 #' @export
 perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
   log_text("Starting linear regression.")
@@ -739,7 +751,7 @@ perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
     fit <- NULL
     tryCatch(
       {
-        fit <- lm(formula, data = data, ...)
+        fit <- stats::lm(formula, data = data, ...)
       },
       error = function(e) message(feature, ": ", e$message))
     if (is.null(fit) || sum(!is.na(data[, feature])) < 2) {
@@ -747,7 +759,7 @@ perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
     } else {
       # Gather coefficients and CIs to one data frame row
       coefs <- summary(fit)$coefficients
-      confints <- confint(fit, level = 0.95)
+      confints <- stats::confint(fit, level = 0.95)
       coefs <- data.frame(Variable = rownames(coefs), coefs, 
                           stringsAsFactors = FALSE)
       confints <- data.frame(Variable = rownames(confints), confints,
@@ -790,27 +802,30 @@ perform_lm <- function(object, formula_char, all_features = FALSE, ...) {
 #' Returns all relevant statistics.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' @param all_features should all features be included in FDR correction?
 #' @param lm_args list of arguments to lm, list names should be parameter names
-#' @param anova_args list of arguments to anova, list names should be parameter names
+#' @param anova_args list of arguments to anova, list names should be parameter 
+#' names
 #'
-#' @return a data frame with one row per feature, with all the
-#' relevant statistics of the linear model as columns
+#' @return A data frame with one row per feature, with all the
+#' relevant statistics of the linear model as columns.
 #'
 #' @details The linear model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting, see the example
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature" must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting, 
+#' see the example.
 #'
 #' @examples
 #' # A simple example without QC samples
 #' # Features predicted by Group and Time
-#' lm_anova_results <- perform_lm_anova(drop_qcs(example_set), formula_char = "Feature ~ Group + Time")
+#' lm_anova_results <- perform_lm_anova(drop_qcs(example_set), 
+#'   formula_char = "Feature ~ Group + Time")
 #'
 #' @seealso \code{\link[stats]{lm}}
 #'
-#' @importFrom stats anova
 #' @export
 perform_lm_anova <- function(object, formula_char, all_features = FALSE,
                              lm_args = NULL, anova_args = NULL) {
@@ -821,8 +836,10 @@ perform_lm_anova <- function(object, formula_char, all_features = FALSE,
     fit <- NULL
     tryCatch(
       {
-        fit <- do.call(lm, c(list(formula = formula, data = data), lm_args))
-        anova_res <- do.call(anova, c(list(object = fit), anova_args))
+        fit <- do.call(stats::lm, 
+                       c(list(formula = formula, data = data),
+                       lm_args))
+        anova_res <- do.call(stats::anova, c(list(object = fit), anova_args))
       },
       error = function(e) message(feature, ": ", e$message))
     if (is.null(anova_res) || sum(!is.na(data[, feature])) < 2) {
@@ -852,21 +869,23 @@ perform_lm_anova <- function(object, formula_char, all_features = FALSE,
 
 #' Logistic regression
 #'
-#' Fits a logistic regression model separately for each feature. Returns all relevant
-#' statistics.
+#' Fits a logistic regression model separately for each feature. Returns all 
+#' relevant statistics.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' @param all_features should all features be included in FDR correction?
 #' @param ... additional parameters passed to glm
 #'
-#' @return a data frame with one row per feature, with all the
-#' relevant statistics of the linear model as columns
+#' @return A data frame with one row per feature, with all the
+#' relevant statistics of the linear model as columns.
 #'
-#' @details The logistic regression model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting, see the example
+#' @details The logistic regression model is fit on combined_data(object). 
+#' Thus, column names in pData(object) can be specified. To make the formulas 
+#' flexible, the word "Feature" must be used to signal the role of the features 
+#' in the formula. "Feature" will be replaced by the actual Feature IDs during 
+#' model fitting, see the example.
 #'
 #' @examples
 #' # A simple example without QC samples
@@ -877,8 +896,6 @@ perform_lm_anova <- function(object, formula_char, all_features = FALSE,
 #'
 #' @seealso \code{\link[stats]{glm}}
 #'
-#' @importFrom stats binomial glm
-#'
 #' @export
 perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
   log_text("Starting logistic regression")
@@ -888,7 +905,7 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
     fit <- NULL
     tryCatch(
       {
-        fit <- glm(formula, data = data, family = binomial(), ...)
+        fit <- stats::glm(formula, data = data, family = stats::binomial(), ...)
       },
       error = function(e) message(feature, ": ", e$message))
     if (is.null(fit) || sum(!is.na(data[, feature])) < 2) {
@@ -897,7 +914,7 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
       # Gather coefficients and CIs to one data frame row
       coefs <- summary(fit)$coefficients
       confints <- withCallingHandlers(
-        expr = confint(fit, level = 0.95, trace = FALSE),
+        expr = stats::confint(fit, level = 0.95, trace = FALSE),
         message = function(m) tryInvokeRestart("muffleMessage"))
       coefs <- data.frame(Variable = rownames(coefs), coefs, 
                           stringsAsFactors = FALSE)
@@ -966,7 +983,7 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
                            "X2.5.." = NA, "X97.5.." = NA)
     tryCatch(
       {
-        confints <- confint(fit, nsim = 1000, method = ci_method, 
+        confints <- stats::confint(fit, nsim = 1000, method = ci_method, 
                             oldNames = FALSE)
         confints <- data.frame(Variable = rownames(confints), confints,
                                stringsAsFactors = FALSE)
@@ -1032,35 +1049,35 @@ perform_logistic <- function(object, formula_char, all_features = FALSE, ...) {
 #'
 #' Fits a linear mixed model separately for each feature. Returns all relevant
 #' statistics.
-#' \strong{CITATION:} When using this function, cite \code{lme4} and \code{lmerTest} packages
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' @param all_features should all features be included in FDR correction?
-#' @param ci_method The method for calculating the confidence intervals, see documentation
-#' of confint below
-#' @param test_random logical, whether tests for the significance of the random effects
-#' should be performed
+#' @param ci_method The method for calculating the confidence intervals, see 
+#' documentation of confint below
+#' @param test_random logical, whether tests for the significance of the random 
+#' effects should be performed
 #' @param ... additional parameters passed to lmer
 #'
-#' @return a data frame with one row per feature, with all the
-#' relevant statistics of the linear mixed model as columns
+#' @return A data frame with one row per feature, with all the
+#' relevant statistics of the linear mixed model as columns.
 #'
 #' @details The model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting, see the example
-#'
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature" must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting, 
+#' see the example.
 #'
 #' @examples
 #' # A simple example without QC samples
-#' # Features predicted by Group and Time as fixed effects with Subject ID as a random effect
+#' # Features predicted by Group and Time as fixed effects with Subject ID as a 
+#' # random effect
 #' lmer_results <- perform_lmer(drop_qcs(example_set),
 #'   formula_char = "Feature ~ Group + Time + (1 | Subject_ID)",
 #'   ci_method = "Wald"
 #' )
-#' @seealso \code{\link[lmerTest]{lmer}} for model specification and
-#' \code{\link[lme4]{confint.merMod}} for the computation of confidence intervals
+#' @seealso \code{\link[lmerTest]{lmer}} for model specification 
 #'
 #' @export
 perform_lmer <- function(object, formula_char, all_features = FALSE,
@@ -1076,8 +1093,6 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
     stop("Package \'MuMIn\' needed for this function to work.", 
          " Please install it.", call. = FALSE)
   }
-  .add_citation("lme4 package was used to fit linear mixed models:",
-                citation("lme4"))
   .add_citation(paste0("lmerTest package was used for statistical tests in", 
                        " linear mixed models:"), 
                 citation("lmerTest"))
@@ -1121,29 +1136,30 @@ perform_lmer <- function(object, formula_char, all_features = FALSE,
 
 #' Test homoscedasticity
 #'
-#' Performs Bartlett's, Levene's and Fligner-Killeen tests for equality of variances
-#' \strong{CITATION:} When using this function, cite the \code{car} package, which
-#' provides the function for Levene's test. (The other tests are included in base R).
+#' Performs Bartlett's, Levene's and Fligner-Killeen tests for equality of 
+#' variances.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' Defaults to "Feature ~ group_col(object)
 #' @param all_features should all features be included in FDR correction?
 #'
 #' @details The model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting. For example, if testing for equality of
-#' variances in study groups, use "Feature ~ Group".
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature" must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting. 
+#' For example, if testing for equality of variances in study groups, use 
+#' "Feature ~ Group".
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @examples
 #' perform_homoscedasticity_tests(example_set, formula_char = "Feature ~ Group")
 #'
-#' @seealso \code{\link{bartlett.test}}, \code{\link[car]{leveneTest}}, \code{\link{fligner.test}}
+#' @seealso \code{\link{bartlett.test}}, \code{\link[car]{leveneTest}}, 
+#' \code{\link{fligner.test}}
 #'
-#' @importFrom stats bartlett.test fligner.test
 #' @export
 perform_homoscedasticity_tests <- function(object, formula_char, 
                                            all_features = FALSE) {
@@ -1160,9 +1176,9 @@ perform_homoscedasticity_tests <- function(object, formula_char,
     result_row <- NULL
     tryCatch(
       {
-        bartlett <- bartlett.test(formula = formula, data = data)
+        bartlett <- stats::bartlett.test(formula = formula, data = data)
         levene <- car::leveneTest(y = formula, data = data)
-        fligner <- fligner.test(formula = formula, data = data)
+        fligner <- stats::fligner.test(formula = formula, data = data)
 
         result_row <- data.frame(Feature_ID = feature, 
                                  Bartlett_P = bartlett$p.value,
@@ -1183,27 +1199,28 @@ perform_homoscedasticity_tests <- function(object, formula_char,
 
 #' Perform Kruskal-Wallis Rank Sum Tests
 #'
-#' Performs Kruskal-Wallis Rank Sum Test for equality
+#' Performs Kruskal-Wallis Rank Sum Test for equality.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' Defaults to "Feature ~ group_col(object)
 #' @param all_features should all features be included in FDR correction?
 #'
 #' @details The model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting. For example, if testing for equality of
-#' means in study groups, use "Feature ~ Group".
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature" must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting. 
+#' For example, if testing for equality of means in study groups, use 
+#' "Feature ~ Group".
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @seealso \code{\link{kruskal.test}}
 #'
 #' @examples
 #' perform_kruskal_wallis(example_set, formula_char = "Feature ~ Group")
 #'
-#' @importFrom stats kruskal.test
 #' @export
 perform_kruskal_wallis <- function(object, formula_char, all_features = FALSE) {
   log_text("Starting Kruskal_wallis tests.")
@@ -1212,7 +1229,7 @@ perform_kruskal_wallis <- function(object, formula_char, all_features = FALSE) {
     result_row <- NULL
     tryCatch(
       {
-        kruskal <- kruskal.test(formula = formula, data = data)
+        kruskal <- stats::kruskal.test(formula = formula, data = data)
         result_row <- data.frame(Feature_ID = feature,
                                  Kruskal_P = kruskal$p.value,
                                  stringsAsFactors = FALSE)
@@ -1232,30 +1249,31 @@ perform_kruskal_wallis <- function(object, formula_char, all_features = FALSE) {
 
 #' Perform ANOVA
 #'
-#' Performs ANOVA with Welch's correction as default, to deal with heterogeneity of variances.
+#' Performs ANOVA with Welch's correction as default, to deal with 
+#' heterogeneity of variances.
 #' Can also perform classic ANOVA with assumption of equal variances.
 #' Uses base R function \code{oneway.test}.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
-#' Defaults to "Feature ~ group_col(object)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details).
 #' @param all_features should all features be included in FDR correction?
 #' @param ... other parameters to \code{\link{oneway.test}}
 #'
 #' @details The model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting. For example, if testing for equality of
-#' means in study groups, use "Feature ~ Group".
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature" must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting. 
+#' For example, if testing for equality of means in study groups, use 
+#' "Feature ~ Group".
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @seealso \code{\link{oneway.test}}
 #'
 #' @examples
 #' perform_oneway_anova(example_set, formula_char = "Feature ~ Group")
 #'
-#' @importFrom stats oneway.test
 #' @export
 perform_oneway_anova <- function(object, formula_char, 
                                  all_features = FALSE, ...) {
@@ -1265,7 +1283,7 @@ perform_oneway_anova <- function(object, formula_char,
     result_row <- NULL
     tryCatch(
       {
-        anova_res <- oneway.test(formula = formula, data = data, ...)
+        anova_res <- stats::oneway.test(formula = formula, data = data, ...)
         result_row <- data.frame(Feature_ID = feature,
                                  ANOVA_P = anova_res$p.value,
                                  stringsAsFactors = FALSE)
@@ -1284,28 +1302,30 @@ perform_oneway_anova <- function(object, formula_char,
 
 #' Perform t-tests
 #'
-#' Performs t-tests, the R default is Welch's t-test (unequal variances), use var.equal = TRUE
-#' for Student's t-test
+#' Performs t-tests, the R default is Welch's t-test (unequal variances), use 
+#' var.equal = TRUE for Student's t-test.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' @param all_features should all features be included in FDR correction?
 #' @param ... additional parameters to t.test
 #'
 #' @details The model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting. For example, if testing for equality of
-#' means in study groups, use "Feature ~ Group".
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature" must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting. 
+#' For example, if testing for equality of means in study groups, use 
+#' "Feature ~ Group".
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @examples
-#' t_test_results <- perform_t_test(drop_qcs(merged_sample), formula_char = "Feature ~ Group")
+#' t_test_results <- perform_t_test(drop_qcs(merged_sample), 
+#'   formula_char = "Feature ~ Group")
 #'
 #' @seealso \code{\link{t.test}}
 #'
-#' @importFrom stats t.test
 #' @export
 perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
   message("Remember that t.test returns difference between group means",
@@ -1324,7 +1344,7 @@ perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
     result_row <- NULL
     tryCatch(
       {
-        t_res <- t.test(formula = formula, data = data, ...)
+        t_res <- stats::t.test(formula = formula, data = data, ...)
         conf_level <- attr(t_res$conf.int, "conf.level") * 100
         result_row <- data.frame(
           Feature_ID = feature,
@@ -1364,10 +1384,11 @@ perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
   result_row <- NULL
   tryCatch({
     if (test == "t_test") {
-      res <- t.test(group1[, feature], group2[, feature], paired = TRUE, ...)
+      res <- stats::t.test(group1[, feature], group2[, feature], 
+                           paired = TRUE, ...)
     } else if (test == "Wilcox") {
-      res <- wilcox.test(group1[, feature], group2[, feature],
-                         paired = TRUE, conf.int = TRUE, ...)
+      res <- stats::wilcox.test(group1[, feature], group2[, feature],
+                                paired = TRUE, conf.int = TRUE, ...)
     }
 
     conf_level <- attr(res$conf.int, "conf.level") * 100
@@ -1453,10 +1474,11 @@ perform_t_test <- function(object, formula_char, all_features = FALSE, ...) {
 #' @param all_features should all features be included in FDR correction?
 #' @param ... additional parameters to t.test
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @examples
-#' paired_t_results <- perform_paired_t_test(drop_qcs(example_set), group = "Time", id = "Subject_ID")
+#' paired_t_results <- perform_paired_t_test(drop_qcs(example_set), 
+#'   group = "Time", id = "Subject_ID")
 #'
 #' @seealso \code{\link{t.test}}
 #'
@@ -1475,7 +1497,7 @@ perform_paired_t_test <- function(object, group, id,
 .help_pairwise_test <- function(object, fun, group_, ...) {
   df <- NULL
   groups <- levels(pData(object)[, group_])
-  combinations <- combn(groups, 2)
+  combinations <- utils::combn(groups, 2)
   for (i in seq_len(ncol(combinations))) {
     group1 <- as.character(combinations[1, i])
     group2 <- as.character(combinations[2, i])
@@ -1493,23 +1515,27 @@ perform_paired_t_test <- function(object, group, id,
 #'
 #' Performs pairwise t-tests between all study groups.
 #' Use \code{is_paired} for pairwise paired t-tests.
-#' NOTE! Does not use formula interface
+#' NOTE! Does not use formula interface.
 #'
 #' @param object a MetaboSet object
 #' @param group character, column name of phenoData giving the groups
 #' @param is_paired logical, use pairwise paired t-test
-#' @param id character, name of the subject identification column for paired version
+#' @param id character, name of the subject identification column for paired 
+#' version
 #' @param all_features should all features be included in FDR correction?
-#' @param ... other parameters passed to perform_t_test, and eventually to base R t.test
+#' @param ... other parameters passed to perform_t_test, and eventually to base 
+#' R t.test
 #'
-#' @details P-values of each comparison are corrected separately from each other.
+#' @details P-values of each comparison are corrected separately from each 
+#' other.
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @examples
 #' # Including QCs as a study group for example
 #' t_test_results <- perform_pairwise_t_test(merged_sample, group = "Group")
-#' # Using paired mode (pairs with QC are skipped as there are no common IDs in 'example_set')
+#' # Using paired mode (pairs with QC are skipped as there are no common IDs in 
+#' # 'example_set')
 #' t_test_results <- perform_pairwise_t_test(example_set, group = "Time",
 #'   is_paired = TRUE, id = "Subject_ID")
 #'
@@ -1553,22 +1579,23 @@ perform_pairwise_t_test <- function(object, group = group_col(object),
 
 #' Perform Mann-Whitney u test
 #'
-#' Performs Mann-Whitney u test
+#' Performs Mann-Whitney u test.
 #' Uses base R function \code{wilcox.test}.
 #'
 #' @param object a MetaboSet object
-#' @param formula_char character, the formula to be used in the linear model (see Details)
-#' Defaults to "Feature ~ group_col(object)
+#' @param formula_char character, the formula to be used in the linear model 
+#' (see Details)
 #' @param all_features should all features be included in FDR correction?
 #' @param ... other parameters to \code{\link{wilcox.test}}
 #'
 #' @details The model is fit on combined_data(object). Thus, column names
-#' in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-#' must be used to signal the role of the features in the formula. "Feature" will be replaced
-#' by the actual Feature IDs during model fitting. For example, if testing for equality of
-#' medians in study groups, use "Feature ~ Group".
+#' in pData(object) can be specified. To make the formulas flexible, the word 
+#' "Feature"  must be used to signal the role of the features in the formula. 
+#' "Feature" will be replaced by the actual Feature IDs during model fitting. 
+#' For example, if testing for equality of medians in study groups, use 
+#' "Feature ~ Group".
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @seealso \code{\link{wilcox.test}}
 #'
@@ -1586,7 +1613,7 @@ perform_mann_whitney <- function(object, formula_char,
     result_row <- NULL
     tryCatch(
       {
-        mw_res <- wilcox.test(formula = formula, data = data, 
+        mw_res <- stats::wilcox.test(formula = formula, data = data, 
                               conf.int = TRUE, ...)
 
         conf_level <- attr(mw_res$conf.int, "conf.level") * 100
@@ -1615,7 +1642,7 @@ perform_mann_whitney <- function(object, formula_char,
 
 #' Perform Wilcoxon signed rank test
 #'
-#' Performs Wilcoxon signed rank test
+#' Performs Wilcoxon signed rank test.
 #' Uses base R function \code{wilcox.test} with \code{paired = TRUE}.
 #'
 #' @param object a MetaboSet object
@@ -1624,14 +1651,14 @@ perform_mann_whitney <- function(object, formula_char,
 #' @param all_features should all features be included in FDR correction?
 #' @param ... other parameters to \code{\link{wilcox.test}}
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @seealso \code{\link{wilcox.test}}
 #'
 #' @examples
-#' perform_wilcoxon_signed_rank(drop_qcs(example_set), group = "Time", id = "Subject_ID")
+#' perform_wilcoxon_signed_rank(drop_qcs(example_set), 
+#'   group = "Time", id = "Subject_ID")
 #'
-#' @importFrom stats wilcox.test
 #' @export
 perform_wilcoxon_signed_rank <- function(object, group, id, 
                                          all_features = FALSE, ...) {
@@ -1639,28 +1666,32 @@ perform_wilcoxon_signed_rank <- function(object, group, id,
                     all_features = all_features, ...)
 }
 
-#' Perform pairwise  non-parametric tests
+#' Perform pairwise non-parametric tests
 #'
 #' Performs pairwise non-parametric tests between all study groups.
 #' Use \code{is_paired = FALSE} for Mann-Whitney u-tests
 #' Use \code{is_paired = TRUE} for Wilcoxon signed rank tests.
-#' NOTE! Does not use formula interface
+#' NOTE! Does not use formula interface.
 #'
 #' @param object a MetaboSet object
 #' @param group character, column name of phenoData giving the groups
 #' @param is_paired logical, use pairwise tests
-#' @param id character, name of the subject identification column for paired version
+#' @param id character, name of the subject identification column for paired 
+#' version
 #' @param all_features should all features be included in FDR correction?
 #' @param ... other parameters passed to test functions
 #'
-#' @details P-values of each comparison are corrected separately from each other.
+#' @details P-values of each comparison are corrected separately from each 
+#' other.
 #'
-#' @return data frame with the results
+#' @return A data frame with the results.
 #'
 #' @examples
 #' # Including QCs as a study group for example
-#' mann_whitney_results <- perform_pairwise_non_parametric(merged_sample, group = "Group")
-#' # Using paired mode (pairs with QC are skipped as there are no common IDs in 'example_set')
+#' mann_whitney_results <- perform_pairwise_non_parametric(merged_sample, 
+#'   group = "Group")
+#' # Using paired mode (pairs with QC are skipped as there are no common IDs in 
+#' # 'example_set')
 #' wilcoxon_signed_results <- perform_pairwise_non_parametric(example_set,
 #'   group = "Time",
 #'   is_paired = TRUE,

@@ -10,10 +10,12 @@ assess_quality(object)
 \item{object}{a MetaboSet object}
 }
 \value{
-a MetaboSet object with quality metrics in fData.
+A MetaboSet object with quality metrics in fData.
 }
 \description{
-Assess quality information of features
+Assess features using the quality metrics defined in (Broadhurst 
+2018). The quality metrics are described in Details section of 
+\code{flag_quality}
 }
 \examples{
 ex_set <- assess_quality(merged_sample)

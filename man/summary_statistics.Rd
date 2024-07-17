@@ -9,11 +9,12 @@ summary_statistics(object, grouping_cols = NA)
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{grouping_cols}{character vector, the columns by which grouping should be done. Use \code{NA}
+\item{grouping_cols}{character vector, the columns by which grouping should 
+be done. Use \code{NA}
 to compute statistics without grouping.}
 }
 \value{
-a data frame with the summary statistics
+A data frame with the summary statistics.
 }
 \description{
 Computes summary statistics for each feature, possibly grouped by a factor.
@@ -25,7 +26,8 @@ as well as 25% and 75% quantiles (Q25 & Q75).
 # Group by "Group"
 sum_stats <- summary_statistics(example_set)
 # Group by Group and Time
-sum_stats <- summary_statistics(example_set, grouping_cols = c("Group", "Time"))
+sum_stats <- summary_statistics(example_set, 
+  grouping_cols = c("Group", "Time"))
 # No Grouping
 sum_stats <- summary_statistics(example_set, grouping_cols = NA)
 

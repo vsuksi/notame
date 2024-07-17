@@ -10,8 +10,8 @@ align_batches(
   batch,
   mz,
   rt,
-  mzdiff,
-  rtdiff,
+  mzdiff = 0.002,
+  rtdiff = 15,
   plot_folder = NULL
 )
 }
@@ -19,20 +19,38 @@ align_batches(
 \item{object_na}{a MetaboSet object with missing values as NA}
 
 \item{object_fill}{a similar MetaboSet object with imputed values
-(used to compute distances between features, can contain missing values as well)}
+(used to compute distances between features, can contain missing values as 
+well)}
 
 \item{batch}{character, column name of pData with batch labels}
 
 \item{mz, rt}{column names of m/z and retention time columns in fData}
 
-\item{mzdiff, rtdiff}{the windows for m/z and retention time for aligning features}
+\item{mzdiff, rtdiff}{the windows for m/z and retention time for aligning 
+features}
 
-\item{plot_folder}{path to the location where the plots should be saved, if NULL, no plots are saved}
+\item{plot_folder}{path to the location where the plots should be saved, if 
+NULL, no plots are saved}
 }
 \value{
-a MetaboSet object with the aligned features
+A MetaboSet object with the aligned features.
 }
 \description{
-Aligns features with m/z or retention time shift between batches using alignBatches from batchCorr package.
-See more details in the help file and the original paper.
+Aligns features with m/z or retention time shift between batches using
+alignBatches from batchCorr package. See more details in the original paper.
+}
+\examples{
+\dontshow{.old_wd <- setwd(tempdir())}
+# Initialize objects
+merged_sample_fill <- merged_sample
+merged_sample_na <- merged_sample
+# Introduce over 80\% missing values in QC samples per batch of two features 
+# so they are considered "missing", with orthogonal batch presence
+exprs(merged_sample_na)[2, c(1, 14, 27, 40, 53)] <- NA
+exprs(merged_sample_na)[
+  3, c(79, 92, 105, 118, 131, 144, 157, 170, 183, 196, 209)] <- NA
+batch_aligned <- align_batches(merged_sample_na, merged_sample_fill, 
+  batch = "Batch", mz = "Average_Mz", rt = "Average_Rt_min_", 
+  mzdiff = 0.002, rtdiff = 15, plot_folder = "~")
+\dontshow{setwd(.old_wd)}
 }

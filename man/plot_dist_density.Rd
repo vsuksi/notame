@@ -19,28 +19,31 @@ plot_dist_density(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? 
+If FALSE (the default), flagged features are removed before visualization.}
 
 \item{dist_method}{method for calculating the distances, passed to dist}
 
 \item{center}{logical, should the data be centered?}
 
-\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in pcaMethods::prep. 
+Default is "uv" for unit variance}
 
-\item{color_scale}{a scale for the color of the edge of density curves, as returned by a ggplot function}
+\item{color_scale}{a scale for the color of the edge of density curves, as 
+returned by a ggplot function}
 
-\item{fill_scale}{a scale for the fill of the density curves, as returned by a ggplot function}
+\item{fill_scale}{a scale for the fill of the density curves, as returned by 
+a ggplot function}
 
 \item{title}{the plot title}
 
 \item{subtitle}{the plot subtitle}
 }
 \value{
-a ggplot object
+A ggplot object.
 }
 \description{
-Plot density of distances between samples in QC samples and actual samples
+Plot density of distances between samples in QC samples and actual samples.
 }
 \examples{
 plot_dist_density(merged_sample)

@@ -24,12 +24,14 @@ plot_pca_loadings(
 
 \item{pcs}{numeric vector of length 2, the principal components to plot}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
-\item{center}{logical, should the data be centered prior to PCA? (usually yes)}
+\item{center}{logical, should the data be centered prior to PCA? (usually 
+yes)}
 
-\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+variance}
 
 \item{n_features}{numeric vector of length two, number of top feature to plot
 for each principal component}
@@ -45,12 +47,11 @@ for each principal component}
 \item{...}{additional arguments passed to pcaMethods::pca}
 }
 \value{
-a ggplot object.
+A ggplot object.
 }
 \description{
 Computes PCA using one of the methods provided in the Bioconductor package
-pcaMethods and plots the loadings of first principal components
-\strong{CITATION:} When using this function, cite the \code{pcaMethods} package
+pcaMethods and plots the loadings of first principal components.
 }
 \examples{
 plot_pca_loadings(merged_sample, n_features = c(2, 4))

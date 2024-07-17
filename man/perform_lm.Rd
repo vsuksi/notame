@@ -9,15 +9,16 @@ perform_lm(object, formula_char, all_features = FALSE, ...)
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{formula_char}{character, the formula to be used in the linear model (see Details)}
+\item{formula_char}{character, the formula to be used in the linear model 
+(see Details)}
 
 \item{all_features}{should all features be included in FDR correction?}
 
 \item{...}{additional parameters passed to lm}
 }
 \value{
-a data frame with one row per feature, with all the
-relevant statistics of the linear model as columns
+A data frame with one row per feature, with all the
+relevant statistics of the linear model as columns.
 }
 \description{
 Fits a linear model separately for each feature. Returns all relevant
@@ -25,14 +26,16 @@ statistics.
 }
 \details{
 The linear model is fit on combined_data(object). Thus, column names
-in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-must be used to signal the role of the features in the formula. "Feature" will be replaced
-by the actual Feature IDs during model fitting, see the example
+in pData(object) can be specified. To make the formulas flexible, the word 
+"Feature" must be used to signal the role of the features in the formula. 
+"Feature" will be replaced by the actual Feature IDs during model fitting, 
+see the example.
 }
 \examples{
 # A simple example without QC samples
 # Features predicted by Group and Time
-lm_results <- perform_lm(drop_qcs(example_set), formula_char = "Feature ~ Group + Time")
+lm_results <- perform_lm(drop_qcs(example_set), 
+  formula_char = "Feature ~ Group + Time")
 
 }
 \seealso{

@@ -22,18 +22,21 @@ plot_sample_heatmap(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
 \item{dist_method}{distance method used in clustering, see \code{\link{dist}}}
 
-\item{clust_method}{clustering method used in clustering, see \code{\link{hclust}}}
+\item{clust_method}{clustering method used in clustering, see 
+\code{\link{hclust}}}
 
 \item{center}{logical, should the data  be centered?}
 
-\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in pcaMethods::prep. 
+Default is "uv" for unit variance}
 
-\item{group_bar}{logical, should a bar showing the groups be drawn under the heat map?}
+\item{group_bar}{logical, should a bar showing the groups be drawn under the 
+heat map?}
 
 \item{group}{character, name of the column used for coloring the group bar}
 
@@ -41,13 +44,15 @@ flagged features are removed before visualization.}
 
 \item{subtitle}{The plot subtitle}
 
-\item{fill_scale_con}{Continuous fill scale for the heatmap as returned by a ggplot function}
+\item{fill_scale_con}{Continuous fill scale for the heatmap as returned by a 
+ggplot function}
 
-\item{fill_scale_dis}{Discrete fill scale for the group bar as returned by a ggplot function}
+\item{fill_scale_dis}{Discrete fill scale for the group bar as returned by a 
+ggplot function}
 }
 \value{
-a ggplot object. If \code{group_bar} is \code{TRUE}, the plot will consist of multiple
-parts and is harder to modify.
+A ggplot object. If \code{group_bar} is \code{TRUE}, the plot will 
+consist of multiple parts and is harder to modify.
 }
 \description{
 Draws a heatmap of the distances between the samples of an experiment,

@@ -15,17 +15,19 @@ perform_lm_anova(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{formula_char}{character, the formula to be used in the linear model (see Details)}
+\item{formula_char}{character, the formula to be used in the linear model 
+(see Details)}
 
 \item{all_features}{should all features be included in FDR correction?}
 
 \item{lm_args}{list of arguments to lm, list names should be parameter names}
 
-\item{anova_args}{list of arguments to anova, list names should be parameter names}
+\item{anova_args}{list of arguments to anova, list names should be parameter 
+names}
 }
 \value{
-a data frame with one row per feature, with all the
-relevant statistics of the linear model as columns
+A data frame with one row per feature, with all the
+relevant statistics of the linear model as columns.
 }
 \description{
 Fits a linear model separately for each feature and compute an ANOVA table.
@@ -33,14 +35,16 @@ Returns all relevant statistics.
 }
 \details{
 The linear model is fit on combined_data(object). Thus, column names
-in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-must be used to signal the role of the features in the formula. "Feature" will be replaced
-by the actual Feature IDs during model fitting, see the example
+in pData(object) can be specified. To make the formulas flexible, the word 
+"Feature" must be used to signal the role of the features in the formula. 
+"Feature" will be replaced by the actual Feature IDs during model fitting, 
+see the example.
 }
 \examples{
 # A simple example without QC samples
 # Features predicted by Group and Time
-lm_anova_results <- perform_lm_anova(drop_qcs(example_set), formula_char = "Feature ~ Group + Time")
+lm_anova_results <- perform_lm_anova(drop_qcs(example_set), 
+  formula_char = "Feature ~ Group + Time")
 
 }
 \seealso{

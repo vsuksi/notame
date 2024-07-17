@@ -31,10 +31,11 @@ finite_quantile(x, ...)
 \item{...}{other parameters passed to underlying function}
 }
 \value{
-a named, numeric vector with the summary statistic in question.
+A named, numeric vector with the summary statistic in question.
 }
 \description{
-These functions first remove non-finite and missing values, then compute the summary statistic in question.
+These functions first remove non-finite and missing values, then compute the 
+summary statistic in question.
 They are helper functions used for computing quality measurements.
 }
 \examples{

@@ -70,12 +70,13 @@ volcano_plot(
 )
 }
 \arguments{
-\item{object}{a MetaboSet object or a data frame. If x is a MetaboSet object, fData(x) is used.
-If x is a data frame, it is used as is.}
+\item{object}{a MetaboSet object or a data frame. If x is a MetaboSet 
+object, fData(x) is used. If x is a data frame, it is used as is.}
 
 \item{x, p}{the column names of effect size (x-axis) and p-values}
 
-\item{p_fdr}{column name of FDR corrected p-values, used to draw a line showing the fdr-corrected significance level}
+\item{p_fdr}{column name of FDR corrected p-values, used to draw a line 
+showing the fdr-corrected significance level}
 
 \item{color}{column name used to color the plots}
 
@@ -85,14 +86,17 @@ If x is a data frame, it is used as is.}
 
 \item{log2_x}{logical, whether effect size should be plotted on a log2 axis.}
 
-\item{center_x_axis}{logical, whether x-axis should be centered. If \code{TRUE}, the "zero-effect" will
-be on the middle of the plot. The "zero effect" is 0 if \code{log2_x = FALSE} and 1 if  \code{log2_x = TRUE}}
+\item{center_x_axis}{logical, whether x-axis should be centered. If 
+\code{TRUE}, the "zero-effect" will be on the middle of the plot. The 
+"zero effect" is 0 if \code{log2_x = FALSE} and 1 if \code{log2_x = TRUE}}
 
-\item{x_lim}{numerical vector of length 2 for manually setting the x-axis limits}
+\item{x_lim}{numerical vector of length 2 for manually setting the x-axis 
+limits}
 
 \item{label}{column name used to label the plots}
 
-\item{label_limit}{numeric, p-value which is used to limit label plotting. Defaults to 0.05.}
+\item{label_limit}{numeric, p-value which is used to limit label plotting. 
+Defaults to 0.05.}
 
 \item{color_scale}{the color scale as returned by a ggplot function}
 
@@ -107,14 +111,15 @@ such as shape and alpha values. New aesthetics can
 also be passed using \code{mapping = aes(...)}.}
 }
 \value{
-a ggplot object
+A ggplot object.
 }
 \description{
 Draws a volcano plot of effect size and p-values.
 }
 \examples{
 # naturally, this looks messy as there are not enough p-values
-lm_results <- perform_lm(drop_qcs(merged_sample), formula_char = "Feature ~ Group")
+lm_results <- perform_lm(drop_qcs(merged_sample), 
+  formula_char = "Feature ~ Group")
 volcano_plot(lm_results,
   x = "GroupB_Estimate",
   p = "GroupB_P", p_fdr = "GroupB_P_FDR",

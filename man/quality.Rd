@@ -10,7 +10,7 @@ quality(object)
 \item{object}{a MetaboSet object}
 }
 \value{
-a data frame with quality metrics for each feature.
+A data frame with quality metrics for each feature.
 }
 \description{
 Extract quality information of features

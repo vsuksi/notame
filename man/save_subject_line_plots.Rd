@@ -33,7 +33,8 @@ If FALSE (the default), flagged features are removed before visualization.}
 
 \item{save}{logical, if false, the plots are not saved but returned as a list}
 
-\item{file_path}{character, a file path for PDF or prefix added to the file paths for other formats}
+\item{file_path}{character, a file path for PDF or prefix added to the file 
+paths for other formats}
 
 \item{format}{character, format in which the plots should be saved}
 
@@ -41,14 +42,16 @@ If FALSE (the default), flagged features are removed before visualization.}
 
 \item{id}{character, name of the column containing subject IDs}
 
-\item{title, subtitle}{column names from fData to use as plot title/filename and subtitle.
+\item{title, subtitle}{column names from fData to use as plot title/filename 
+and subtitle.
 Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{color}{character, the column name to color the lines by (optional)}
 
 \item{color_scale}{the color scale as returned by a ggplot function}
 
-\item{facet}{character, the column name to facet by (optional, usually same as color)}
+\item{facet}{character, the column name to facet by (optional, usually same 
+as color)}
 
 \item{text_base_size}{integer, base size for text in figures}
 
@@ -56,14 +59,16 @@ Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{mean_line_width}{numeric, width of the mean line}
 
-\item{title_line_length}{integer, maximum length of the title line in characters, passed to stringr::str_wrap}
+\item{title_line_length}{integer, maximum length of the title line in 
+characters, passed to stringr::str_wrap}
 
 \item{theme}{a ggplot theme to be added to the plot}
 
 \item{...}{other arguments to graphic device functions, like width and height}
 }
 \value{
-By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}.
+By default, the function is invoked for its plot-saving side effect. 
+The function returns a list of plots when \code{save = FALSE}.
 }
 \description{
 Plots the change in the feature abundances as a function of e.g. time.

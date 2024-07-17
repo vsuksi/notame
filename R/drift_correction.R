@@ -15,12 +15,12 @@
       predicted = matrix(NA_real_, nrow = 1, ncol = n, dimnames = dnames)))
   }
   # Spline regression
-  fit <- smooth.spline(x = qc_order[qc_detected], 
-                       y = qc_data[feature, qc_detected], 
-                       all.knots = TRUE, spar = spar, 
-                       control.spar = 
-                       list("low" = spar_lower, "high" = spar_upper))
-  predicted <- predict(fit, full_order)$y
+  fit <- stats::smooth.spline(x = qc_order[qc_detected], 
+                              y = qc_data[feature, qc_detected], 
+                              all.knots = TRUE, spar = spar, 
+                              control.spar = 
+                              list("low" = spar_lower, "high" = spar_upper))
+  predicted <- stats::predict(fit, full_order)$y
   # Substraction in log space, division in original space
   if (log_transform) {
     corrected <- full_data[feature, ] + 
@@ -36,40 +36,46 @@
 
 #' Fit a cubic spline to correct drift
 #'
-#' Corrects the drift in the features by applying smoothed cubic spline regression
-#' to each feature separately.
+#' Corrects the drift in the features by applying smoothed cubic spline 
+#' regression to each feature separately.
 #'
 #' @param object a MetaboSet object
-#' @param log_transform logical, should drift correction be done on log-transformed values? See Details
+#' @param log_transform logical, should drift correction be done on 
+#' log-transformed values? See Details
 #' @param spar smoothing parameter
-#' @param spar_lower,spar_upper lower and upper limits for the smoothing parameter
+#' @param spar_lower,spar_upper lower and upper limits for the smoothing 
+#' parameter
 #'
-#' @return list with object = MetaboSet object as the one supplied, with drift corrected features
-#' and predicted = matrix of the predicted values by the cubic spline (used in visualization)
+#' @return A list with object = MetaboSet object as the one supplied, 
+#' with drift corrected features and predicted = matrix of the predicted values 
+#' by the cubic spline (used in visualization).
 #'
-#' @details If \code{log_transform = TRUE}, the correction will be done on log-transformed values.
-#' The correction formula depends on whether the correction is run on original values or log-transformed values.
-#' In log-space: \eqn{corrected = original + mean of QCs - prediction by cubic spline}.
-#' In original space: \eqn{corrected = original * prediction for first QC / prediction for current point}.
-#' We recommend doing the correction in the log-space since the log-transfomred data better follows the
-#' assumptions of cubic spline regression. The drift correction in the original space also sometimes results
-#' in negative values, and results in rejection of the drift corrrection procedure.
+#' @details If \code{log_transform = TRUE}, the correction will be done on 
+#' log-transformed values.
+#' The correction formula depends on whether the correction is run on original 
+#' values or log-transformed values.
+#' In log-space: \eqn{corrected = original + mean of QCs - 
+#' prediction by cubic spline}.
+#' In original space: \eqn{corrected = original * prediction for first QC / 
+#' prediction for current point}.
+#' We recommend doing the correction in the log-space since the log-transformed 
+#' data better follows the assumptions of cubic spline regression. The drift 
+#' correction in the original space also sometimes results in negative values, 
+#' and results in rejection of the drift corrrection procedure.
 #'
-#' If \code{spar} is set to \code{NULL} (the default), the smoothing parameter will
-#' be separately chosen for each feature from the range [\code{spar_lower, spar_upper}]
-#' using cross validation.
+#' If \code{spar} is set to \code{NULL} (the default), the smoothing parameter 
+#' will be separately chosen for each feature from the range 
+#' [\code{spar_lower, spar_upper}] using cross validation.
 #'
 #' @examples
 #' dc <- dc_cubic_spline(merged_sample)
 #' corrected <- dc$object
 #'
-#' @seealso  \code{\link[stats]{smooth.spline}} for details about the regression,
-#' \code{\link{inspect_dc}} for analysing the drift correction results,
-#' \code{\link{save_dc_plots}} for plotting the drift correction process for each feature
+#' @seealso  \code{\link[stats]{smooth.spline}} for details about the 
+#' regression, \code{\link{inspect_dc}} for analysing the drift correction 
+#' results, \code{\link{save_dc_plots}} for plotting the drift correction 
+#' process for each feature
 #'
-#' @importFrom Biobase exprs exprs<-
-#'
-#' @importFrom stats predict smooth.spline
 #' @export
 dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL,
                             spar_lower = 0.5, spar_upper = 1.5) {
@@ -150,28 +156,32 @@ dc_cubic_spline <- function(object, log_transform = TRUE, spar = NULL,
 #' Flag the results of drift correction
 #'
 #' Determines whether the drift correction worked.
-#' The primary reason is to search for features where there were too many missing values in the QCs,
-#' so it was not possible to run drift correction. If the drift correction is run on the original
-#' values (not log-transformed), then there is also a need to check that the correction did not result
-#' in any negative values. This can sometimes happen if the prediction curve takes an extreme shape.
-#' If quality is monitored,
-#' a quality condition is checked for each feature. If the condition is fulfilled,
-#' the drift corrected feature is retained,
-#' otherwise the original feature is retained and the drift corrected feature is discarded.
-#' The result of this operation is recorded in the feature data.
+#' The primary reason is to search for features where there were too many 
+#' missing values in the QCs, so it was not possible to run drift correction. 
+#' If the drift correction is run on the original values (not log-transformed), 
+#' then there is also a need to check that the correction did not result
+#' in any negative values. This can sometimes happen if the prediction curve 
+#' takes an extreme shape.
+#'
+#' If quality is monitored, a quality condition is checked for each feature. 
+#' If the condition is fulfilled, the drift corrected feature is retained,
+#' otherwise the original feature is retained and the drift corrected feature 
+#' is discarded. The result of this operation is recorded in the feature data.
 #'
 #' @param orig a MetaboSet object, before drift correction
 #' @param dc a MetaboSet object, after drift correction
 #' @param check_quality logical, whether quality should be monitored.
 #' @param condition a character specifying the condition, see Details
 #'
-#' @return MeatboSet object
+#' @return A MetaboSet object.
 #'
-#' @details The \code{condition} parameter should be a character giving a condition compatible
-#' with dplyr::filter. The condition is applied on the \strong{changes} in the quality metrics
-#' RSD, RSD_r, D_ratio and D_ratio_r. For example, the default is "RSD_r < 0 and D_ratio_r < 0",
-#' meaning that both RSD_r and D_ratio_r need to decrease in the drift correction, otherwise the
-#' drift corrected feature is discarded and the original is retained.
+#' @details The \code{condition} parameter should be a character giving a 
+#' condition compatible with dplyr::filter. The condition is applied on the 
+#' \strong{changes} in the quality metrics RSD, RSD_r, D_ratio and D_ratio_r. 
+#' For example, the default is "RSD_r < 0 and D_ratio_r < 0",
+#' meaning that both RSD_r and D_ratio_r need to decrease in the drift 
+#' correction, otherwise the  drift corrected feature is discarded and the 
+#' original is retained.
 #'
 #' @seealso \code{\link{correct_drift}}, \code{\link{save_dc_plots}}
 #'
@@ -225,16 +235,20 @@ inspect_dc <- function(orig, dc, check_quality,
 
 #' Drift correction plots
 #'
-#' Plots the data before and after drift correction, with the regression line drawn with
-#' the original data. If the drift correction was done on log-transformed data, then
-#' plots of both the original and log-transformed data before and after correction are drawn.
-#' The plot shows 2 standard deviation spread for both QC samples and regular samples.
+#' Plots the data before and after drift correction, with the regression line 
+#' drawn with the original data. If the drift correction was done on 
+#' log-transformed data, then plots of both the original and log-transformed 
+#' data before and after correction are drawn.
+#' The plot shows 2 standard deviation spread for both QC samples and regular 
+#' samples.
 #'
 #' @param orig a MetaboSet object, before drift correction
-#' @param dc a MetaboSet object, after drift correction as returned by correct_drift
+#' @param dc a MetaboSet object, after drift correction as returned by 
+#' correct_drift
 #' @param predicted a matrix of predicted values, as returned by dc_cubic_spline
 #' @param file path to the PDF file where the plots should be saved
-#' @param log_transform logical, was the drift correction done on log-transformed data?
+#' @param log_transform logical, was the drift correction done on log-
+#' transformed data?
 #' @param width,height width and height of the plots in inches
 #' @param color character, name of the column used for coloring the points
 #' @param shape character, name of the column used for shape
@@ -243,8 +257,7 @@ inspect_dc <- function(orig, dc, check_quality,
 #'
 #' @return None, the function is invoked for its plot-saving side effect.
 #'
-#' @details If \code{shape} is set to \code{NULL} (the default), the column used for color
-#' is also used for shape
+#' @details By default, the column used for color is also used for shape.
 #'
 #' @seealso \code{\link{correct_drift}}, \code{\link{inspect_dc}}
 #'
@@ -268,10 +281,6 @@ save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE,
                           shape = color, 
                           color_scale = getOption("notame.color_scale_dis"),
                           shape_scale = scale_shape_manual(values = c(15, 16))){
-  if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \'cowplot\' needed for this function to work.",
-         " Please install it.",   call. = FALSE)
-  }
 
   # Create a helper function for plotting
   dc_plot_helper <- function(data, fname, title = NULL) {
@@ -313,7 +322,7 @@ save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE,
   predictions <- as.data.frame(t(predicted))
   predictions$Injection_order <- orig_data$Injection_order
 
-  pdf(file, width = width, height = height)
+  grDevices::pdf(file, width = width, height = height)
 
   for (fname in Biobase::featureNames(dc)) {
     p2 <- dc_plot_helper(data = dc_data, fname = fname, title = "After")
@@ -335,55 +344,69 @@ save_dc_plots <- function(orig, dc, predicted, file, log_transform = TRUE,
     }
     plot(p)
   }
-  dev.off()
+  grDevices::dev.off()
   log_text(paste("\nSaved drift correction plots to:", file))
 }
 
 #' Correct drift using cubic spline
 #'
 #' A wrapper function for applying cubic spline drift correction and saving
-#' before and after plots
+#' before and after plots.
 #'
 #' @param object a MetaboSet object
-#' @param log_transform logical, should drift correction be done on log-transformed values? See Details
+#' @param log_transform logical, should drift correction be done on 
+#' log-transformed values? See Details
 #' @param spar smoothing parameter
-#' @param spar_lower,spar_upper lower and upper limits for the smoothing parameter
+#' @param spar_lower,spar_upper lower and upper limits for the smoothing 
+#' parameter
 #' @param check_quality logical, whether quality should be monitored.
-#' @param condition a character specifying the condition used to decide whether drift correction
+#' @param condition a character specifying the condition used to decide whether 
+#' drift correction
 #' works adequately, see Details
 #' @param plotting logical, whether plots should be drawn
 #' @param file path to the PDF file where the plots should be saved
 #' @param width,height width and height of the plots in inches
 #' @param color character, name of the column used for coloring the points
 #' @param shape character, name of the column used for shape
-#' @param color_scale,shape_scale the color and shape scales as returned by a ggplot function
+#' @param color_scale,shape_scale the color and shape scales as returned by a 
+#' ggplot function
 #'
-#' @return MetaboSet object as the one supplied, with drift corrected features
+#' @return A MetaboSet object as the one supplied, with drift corrected 
+#' features.
 #'
-#' @details If \code{log_transform = TRUE}, the correction will be done on log-transformed values.
-#' The correction formula depends on whether the correction is run on original values or log-transformed values.
-#' In log-space: \eqn{corrected = original + mean of QCs - prediction by cubic spline}.
-#' In original space: \eqn{corrected = original * prediction for first QC / prediction for current point}.
-#' We recommend doing the correction in the log-space since the log-transfomred data better follows the
-#' assumptions of cubic spline regression. The drift correction in the original space also sometimes results
-#' in negative values, and results in rejection of the drift corrrection procedure.
-#' If \code{spar} is set to \code{NULL} (the default), the smoothing parameter will
-#' be separately chosen for each feature from the range [\code{spar_lower, spar_upper}]
-#' using cross validation. If  \code{check_quality = TRUE},
-#' the \code{condition} parameter should be a character giving a condition compatible
-#' with dplyr::filter. The condition is applied on the \strong{changes} in the quality metrics
-#' RSD, RSD_r, D_ratio and D_ratio_r. For example, the default is "RSD_r < 0 and D_ratio_r < 0",
-#' meaning that both RSD_r and D_ratio_r need to decrease in the drift correction, otherwise the
-#' drift corrected feature is discarded and the original is retained.
-#' If \code{shape} is set to \code{NULL} (the default), the column used for color
-#' is also used for shape
+#' @details If \code{log_transform = TRUE}, the correction will be done on 
+#' log-transformed values.
+#' The correction formula depends on whether the correction is run on original 
+#' values or log-transformed values.
+#' In log-space: \eqn{corrected = original + mean of QCs - prediction by cubic 
+#' spline}.
+#' In original space: \eqn{corrected = original * prediction for first QC / 
+#' prediction for current point}.
+#' We recommend doing the correction in the log-space since the log-transfomred 
+#' data better follows the assumptions of cubic spline regression. The drift 
+#' correction in the original space also sometimes results
+#' in negative values, and results in rejection of the drift corrrection 
+#' procedure.
+#' If \code{spar} is set to \code{NULL} (the default), the smoothing parameter 
+#' will be separately chosen for each feature from the range
+#' [\code{spar_lower, spar_upper}] using cross validation. 
+#' If  \code{check_quality = TRUE}, the \code{condition} parameter should be a 
+#' character giving a condition compatible with dplyr::filter. 
+#' The condition is applied on the \strong{changes} in the quality metrics
+#' RSD, RSD_r, D_ratio and D_ratio_r. For example, the default is "RSD_r < 0 
+#' and D_ratio_r < 0", meaning that both RSD_r and D_ratio_r need to decrease 
+#' in the drift correction, otherwise the drift corrected feature is discarded 
+#' and the original is retained.
+#' By default, the column used for color is also used for shape.
 #'
 #' @examples
 #' corrected <- correct_drift(merged_sample)
 #'
-#' @seealso  \code{\link{dc_cubic_spline}}, \code{\link[stats]{smooth.spline}} for details about the regression,
+#' @seealso  \code{\link{dc_cubic_spline}}, \code{\link[stats]{smooth.spline}} 
+#' for details about the regression,
 #' \code{\link{inspect_dc}} for analysing the drift correction results,
-#' \code{\link{save_dc_plots}} for plotting the drift correction process for each feature
+#' \code{\link{save_dc_plots}} for plotting the drift correction process for 
+#' each feature
 #'
 #'
 #' @export

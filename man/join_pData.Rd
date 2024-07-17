@@ -12,7 +12,7 @@ join_pData(object, dframe)
 \item{dframe}{a data frame with the new information}
 }
 \value{
-a MetaboSet object with the new information added to pData(object)
+A MetaboSet object with the new information added to pData(object).
 }
 \description{
 Join a new data frame of information to pheno data of a MetaboSet object.
@@ -20,7 +20,7 @@ Join a new data frame of information to pheno data of a MetaboSet object.
 \examples{
 new_info <- data.frame(
   Sample_ID = sampleNames(example_set),
-  BMI = runif(ncol(example_set), 22, 26)
+  BMI = stats::runif(ncol(example_set), 22, 26)
 )
 with_new_info <- join_pData(example_set, new_info)
 colnames(pData(with_new_info))

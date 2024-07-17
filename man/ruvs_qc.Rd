@@ -13,12 +13,13 @@ ruvs_qc(object, batch, replicates, k = 3, ...)
 
 \item{replicates}{list of numeric vectors, indexes of replicates}
 
-\item{k}{The number of factors of unwanted variation to be estimated from the data.}
+\item{k}{The number of factors of unwanted variation to be estimated from 
+the data.}
 
 \item{...}{other parameters passed to RUVSeq::RUVs}
 }
 \value{
-a MetaboSet object with the normalized data
+A MetaboSet object with the normalized data.
 }
 \description{
 An interface for the RUVs method in RUVSeq package.
@@ -26,7 +27,8 @@ An interface for the RUVs method in RUVSeq package.
 \examples{
 # Batch correction
 replicates <- list(which(merged_sample$QC == "QC"))
-batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
+batch_corrected <- ruvs_qc(merged_sample, 
+  batch = "Batch", replicates = replicates)
 # Evaluate batch correction
 pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 pca_bhattacharyya_dist(batch_corrected, batch = "Batch")

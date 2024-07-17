@@ -15,5 +15,6 @@
 A Metaboset object with modified assay.
 }
 \description{
-Applies the base R function scale to transposed exprs matrix. See ?scale for details
+Applies the base R function scale to transposed exprs matrix. See ?scale for 
+details.
 }

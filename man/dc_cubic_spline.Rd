@@ -15,32 +15,40 @@ dc_cubic_spline(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{log_transform}{logical, should drift correction be done on log-transformed values? See Details}
+\item{log_transform}{logical, should drift correction be done on 
+log-transformed values? See Details}
 
 \item{spar}{smoothing parameter}
 
-\item{spar_lower, spar_upper}{lower and upper limits for the smoothing parameter}
+\item{spar_lower, spar_upper}{lower and upper limits for the smoothing 
+parameter}
 }
 \value{
-list with object = MetaboSet object as the one supplied, with drift corrected features
-and predicted = matrix of the predicted values by the cubic spline (used in visualization)
+A list with object = MetaboSet object as the one supplied, 
+with drift corrected features and predicted = matrix of the predicted values 
+by the cubic spline (used in visualization).
 }
 \description{
-Corrects the drift in the features by applying smoothed cubic spline regression
-to each feature separately.
+Corrects the drift in the features by applying smoothed cubic spline 
+regression to each feature separately.
 }
 \details{
-If \code{log_transform = TRUE}, the correction will be done on log-transformed values.
-The correction formula depends on whether the correction is run on original values or log-transformed values.
-In log-space: \eqn{corrected = original + mean of QCs - prediction by cubic spline}.
-In original space: \eqn{corrected = original * prediction for first QC / prediction for current point}.
-We recommend doing the correction in the log-space since the log-transfomred data better follows the
-assumptions of cubic spline regression. The drift correction in the original space also sometimes results
-in negative values, and results in rejection of the drift corrrection procedure.
+If \code{log_transform = TRUE}, the correction will be done on 
+log-transformed values.
+The correction formula depends on whether the correction is run on original 
+values or log-transformed values.
+In log-space: \eqn{corrected = original + mean of QCs - 
+prediction by cubic spline}.
+In original space: \eqn{corrected = original * prediction for first QC / 
+prediction for current point}.
+We recommend doing the correction in the log-space since the log-transformed 
+data better follows the assumptions of cubic spline regression. The drift 
+correction in the original space also sometimes results in negative values, 
+and results in rejection of the drift corrrection procedure.
 
-If \code{spar} is set to \code{NULL} (the default), the smoothing parameter will
-be separately chosen for each feature from the range [\code{spar_lower, spar_upper}]
-using cross validation.
+If \code{spar} is set to \code{NULL} (the default), the smoothing parameter 
+will be separately chosen for each feature from the range 
+[\code{spar_lower, spar_upper}] using cross validation.
 }
 \examples{
 dc <- dc_cubic_spline(merged_sample)
@@ -48,7 +56,8 @@ corrected <- dc$object
 
 }
 \seealso{
-\code{\link[stats]{smooth.spline}} for details about the regression,
-\code{\link{inspect_dc}} for analysing the drift correction results,
-\code{\link{save_dc_plots}} for plotting the drift correction process for each feature
+\code{\link[stats]{smooth.spline}} for details about the 
+regression, \code{\link{inspect_dc}} for analysing the drift correction 
+results, \code{\link{save_dc_plots}} for plotting the drift correction 
+process for each feature
 }

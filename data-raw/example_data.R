@@ -8,8 +8,8 @@ n_features <- 20
 feature_data <- data.frame(
   Split = "HILIC_pos",
   Alignment = seq_len(n_features),
-  Mass = runif(n_features, 100, 500),
-  RetentionTime = runif(n_features, 0.5, 8),
+  Mass = stats::runif(n_features, 100, 500),
+  RetentionTime = stats::runif(n_features, 0.5, 8),
   Column = "HILIC", Mode = "pos",
   stringsAsFactors = FALSE
 )
@@ -54,14 +54,15 @@ rownames(pheno_data) <- pheno_data$Sample_ID
 # Assay data
 
 # Random means for each feature
-means <- runif(n_features, 3000, 33000)
+means <- stats::runif(n_features, 3000, 33000)
 
 # Normally distributed data around the mean
 assay_data <- t(sapply(means, function(x) {
   rnorm(n_samples, x, 0.3 * x)
 }))
 # Add drift effect to the data
-coefs <- runif(n_samples, 0.4, 0.9) * sample(c(-1, 1), n_samples, replace = TRUE)
+coefs <- stats::runif(n_samples, 0.4, 0.9) * 
+  sample(c(-1, 1), n_samples, replace = TRUE)
 
 # Randomly choose linear or logarithmic trend
 for (i in seq_len(nrow(assay_data))) {

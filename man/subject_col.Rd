@@ -3,7 +3,7 @@
 \name{subject_col}
 \alias{subject_col}
 \alias{subject_col<-}
-\title{These generic functions access and set the special column for subject identifiers}
+\title{Get and set the name of special column for subject identifiers}
 \usage{
 subject_col(object)
 
@@ -12,15 +12,17 @@ subject_col(object) <- value
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{value}{string, name of column to be designated for holding subject identifiers}
+\item{value}{string, name of column to be designated for holding subject 
+identifiers}
 }
 \value{
 Character, the name of the subject variable.
 
-For the endomorphism, an object with the subject variable set to the specified variable.
+For the endomorphism, an object with the subject variable set to the 
+specified variable.
 }
 \description{
-These generic functions access and set the special column for subject identifiers
+Get and set the name of special column for subject identifiers
 }
 \examples{
 # Get name of subject variable

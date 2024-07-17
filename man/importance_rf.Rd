@@ -10,7 +10,7 @@ importance_rf(rf)
 \item{rf}{An object of class randomForest}
 }
 \value{
-data frame of feature importance
+A data frame of feature importance.
 }
 \description{
 Extracts feature importance in random forest in a nice format.

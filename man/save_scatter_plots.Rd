@@ -31,7 +31,8 @@ save_scatter_plots(
 
 \item{save}{logical, if false, the plots are not saved but returned as a list}
 
-\item{file_path}{character, a file path for PDF or prefix added to the file paths for other formats}
+\item{file_path}{character, a file path for PDF or prefix added to the file 
+paths for other formats}
 
 \item{format}{character, format in which the plots should be saved}
 
@@ -40,12 +41,14 @@ save_scatter_plots(
 
 \item{color}{character, name of the column to be used for coloring}
 
-\item{color_scale}{the color scale as returned by a ggplot function.
-Set to NA to choose the appropriate scale based on the class of the coloring variable.}
+\item{color_scale}{the color scale as returned by a ggplot function. 
+Set to NA to choose the appropriate scale based on the class of the coloring 
+variable.}
 
 \item{shape}{character, name of the column used for shape}
 
-\item{title, subtitle}{column names from fData to use as plot title/filename and subtitle.
+\item{title, subtitle}{column names from fData to use as plot title/filename 
+and subtitle.
 Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{shape_scale}{the shape scale as returned by a ggplot function}
@@ -54,14 +57,16 @@ Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{point_size}{numeric, size of the points}
 
-\item{title_line_length}{integer, maximum length of the title line in characters, passed to stringr::str_wrap}
+\item{title_line_length}{integer, maximum length of the title line in 
+characters, passed to stringr::str_wrap}
 
 \item{theme}{a ggplot theme to be added to the plot}
 
 \item{...}{other arguments to graphic device functions, like width and height}
 }
 \value{
-By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}.
+By default, the function is invoked for its plot-saving side effect. 
+The function returns a list of plots when \code{save = FALSE}.
 }
 \description{
 Draws a scatterplots with a feature on y-axis and another variable on x-axis.

@@ -45,14 +45,18 @@ mz_rt_plot(
 )
 }
 \arguments{
-\item{object}{a MetaboSet object or a data frame. If x is a MetaboSet object, fData(x) is used.
+\item{object}{a MetaboSet object or a data frame. If x is a MetaboSet 
+object, fData(x) is used.
 If x is a data frame, it is used as is.}
 
-\item{p_col}{the column name containing p-values. This is used to scale the size of the points.}
+\item{p_col}{the column name containing p-values. This is used to scale the 
+size of the points.}
 
-\item{p_limit}{numeric, limits plotted features by p-values. If NULL, plots all features.}
+\item{p_limit}{numeric, limits plotted features by p-values. If NULL, plots 
+all features.}
 
-\item{mz_col, rt_col}{the column names for m/z and retention time. If NULL, automatic detection is attempted.}
+\item{mz_col, rt_col}{the column names for m/z and retention time. If NULL, 
+automatic detection is attempted.}
 
 \item{color}{the column name used to color the points}
 
@@ -60,23 +64,25 @@ If x is a data frame, it is used as is.}
 
 \item{subtitle}{The plot subtitle}
 
-\item{color_scale}{color scale as returned by a ggplot function. Defaults to current continuous color scale.}
+\item{color_scale}{color scale as returned by a ggplot function. Defaults to 
+current continuous color scale.}
 
 \item{...}{parameters passed to \code{\link[ggplot2]{geom_point}},
 such as shape and alpha values. New aesthetics can
 also be passed using \code{mapping = aes(...)}.}
 
-\item{all_features}{logical, should all features be retained? Should be used only if x is a MetaboSet object.}
+\item{all_features}{logical, should all features be retained? Should be used 
+only if x is a MetaboSet object.}
 }
 \value{
-a ggplot object
+A ggplot object.
 }
 \description{
-Plots a scatter plot of results of statistical tests, where each point represents a feature.
-The plot has retention time on x-axis, m/z on y-axis and the size of the points is scaled based on p-value
+Plots a scatter plot of results of statistical tests, where each point 
+represents a feature. The plot has retention time on x-axis, m/z on y-axis 
+and the size of the points is scaled based on p-value
 }
 \examples{
-
 # Compute results from a linear model
 lm_results <- perform_lm(merged_sample, formula_char = "Feature ~ Group")
 with_results <- join_fData(merged_sample, lm_results)

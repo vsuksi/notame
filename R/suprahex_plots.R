@@ -1,7 +1,7 @@
 #' Suprahex plots
 #'
-#' Plots supraHex plots of each sample using functions from the supraHex package.
-#' See the supraHex paper and package vignette for more information.
+#' Plots supraHex plots of each sample using functions from the supraHex 
+#' package. See the supraHex paper and package vignette for more information.
 #'
 #' @param object a MetaboSet object
 #' @param all_features if FALSE, flagged features are droppped

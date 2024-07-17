@@ -11,18 +11,19 @@ pull_clusters(data, features, name_col)
 
 \item{features}{data frame holding the feature information}
 
-\item{name_col}{name_col character, name of the column in features that contains feature names}
+\item{name_col}{name_col character, name of the column in features that
+contains feature names}
 }
 \value{
-a list of two items:
+A list of two items:
 \itemize{
 \item cdata: a new data frame with the combined LC-MS data
 \item cfeatures: data frame, feature information per cluster
 }
 }
 \description{
-For each cluster, the LC-MS data of the feature with largest median peak area is retained,
-all the features inside every cluster are recorded
+For each cluster, the LC-MS data of the feature with largest median peak 
+area is retained, all the features inside every cluster are recorded.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}

@@ -9,30 +9,32 @@ perform_homoscedasticity_tests(object, formula_char, all_features = FALSE)
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{formula_char}{character, the formula to be used in the linear model (see Details)
+\item{formula_char}{character, the formula to be used in the linear model 
+(see Details)
 Defaults to "Feature ~ group_col(object)}
 
 \item{all_features}{should all features be included in FDR correction?}
 }
 \value{
-data frame with the results
+A data frame with the results.
 }
 \description{
-Performs Bartlett's, Levene's and Fligner-Killeen tests for equality of variances
-\strong{CITATION:} When using this function, cite the \code{car} package, which
-provides the function for Levene's test. (The other tests are included in base R).
+Performs Bartlett's, Levene's and Fligner-Killeen tests for equality of 
+variances.
 }
 \details{
 The model is fit on combined_data(object). Thus, column names
-in pData(object) can be specified. To make the formulas flexible, the word "Feature"
-must be used to signal the role of the features in the formula. "Feature" will be replaced
-by the actual Feature IDs during model fitting. For example, if testing for equality of
-variances in study groups, use "Feature ~ Group".
+in pData(object) can be specified. To make the formulas flexible, the word 
+"Feature" must be used to signal the role of the features in the formula. 
+"Feature" will be replaced by the actual Feature IDs during model fitting. 
+For example, if testing for equality of variances in study groups, use 
+"Feature ~ Group".
 }
 \examples{
 perform_homoscedasticity_tests(example_set, formula_char = "Feature ~ Group")
 
 }
 \seealso{
-\code{\link{bartlett.test}}, \code{\link[car]{leveneTest}}, \code{\link{fligner.test}}
+\code{\link{bartlett.test}}, \code{\link[car]{leveneTest}}, 
+\code{\link{fligner.test}}
 }

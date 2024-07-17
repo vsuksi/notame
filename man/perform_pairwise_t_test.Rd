@@ -20,27 +20,31 @@ perform_pairwise_t_test(
 
 \item{is_paired}{logical, use pairwise paired t-test}
 
-\item{id}{character, name of the subject identification column for paired version}
+\item{id}{character, name of the subject identification column for paired 
+version}
 
 \item{all_features}{should all features be included in FDR correction?}
 
-\item{...}{other parameters passed to perform_t_test, and eventually to base R t.test}
+\item{...}{other parameters passed to perform_t_test, and eventually to base 
+R t.test}
 }
 \value{
-data frame with the results
+A data frame with the results.
 }
 \description{
 Performs pairwise t-tests between all study groups.
 Use \code{is_paired} for pairwise paired t-tests.
-NOTE! Does not use formula interface
+NOTE! Does not use formula interface.
 }
 \details{
-P-values of each comparison are corrected separately from each other.
+P-values of each comparison are corrected separately from each 
+other.
 }
 \examples{
 # Including QCs as a study group for example
 t_test_results <- perform_pairwise_t_test(merged_sample, group = "Group")
-# Using paired mode (pairs with QC are skipped as there are no common IDs in 'example_set')
+# Using paired mode (pairs with QC are skipped as there are no common IDs in 
+# 'example_set')
 t_test_results <- perform_pairwise_t_test(example_set, group = "Time",
   is_paired = TRUE, id = "Subject_ID")
 

@@ -27,12 +27,14 @@ plot_tsne_arrows(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
-\item{center}{logical, should the data be centered prior to PCA? (usually yes)}
+\item{center}{logical, should the data be centered prior to PCA? (usually 
+yes)}
 
-\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit 
+variance}
 
 \item{perplexity}{the perplexity used in t-SNE}
 
@@ -44,9 +46,11 @@ flagged features are removed before visualization.}
 
 \item{subject}{character, name of the column containing subject identifiers}
 
-\item{alpha}{numeric, value for the alpha parameter of the arrows (transparency)}
+\item{alpha}{numeric, value for the alpha parameter of the arrows 
+(transparency)}
 
-\item{arrow_style}{a description of arrow heads, the size and angle can be modified, see \code{?arrow}}
+\item{arrow_style}{a description of arrow heads, the size and angle can be 
+modified, see \code{?arrow}}
 
 \item{title, subtitle}{the titles of the plot}
 
@@ -59,15 +63,15 @@ flagged features are removed before visualization.}
 \item{...}{additional arguments passed to \code{Rtsne::Rtsne}}
 }
 \value{
-a ggplot object. If \code{density} is \code{TRUE}, the plot will consist of multiple
-parts and is harder to modify.
+A ggplot object. If \code{density} is \code{TRUE}, the plot will 
+consist of multiple parts and is harder to modify.
 }
 \description{
 Computes t-SNE into two dimensions and plots changes according to time.
-All the observations of a single subject are connected by an arrow ending at the last observation.
-In case there are missing values, PCA is performed using the nipals method of \code{pcaMethods::pca},
-the  method can be changed to "ppca" if nipals fails.
-\strong{CITATION:} When using this function, cite the \code{pcaMethods} and \code{Rtsne} packages
+All the observations of a single subject are connected by an arrow ending at 
+the last observation. In case there are missing values, PCA is performed 
+using the nipals method of \code{pcaMethods::pca}, the method can be changed 
+to "ppca" if nipals fails.
 }
 \examples{
 plot_tsne_arrows(drop_qcs(example_set), perplexity = 5)

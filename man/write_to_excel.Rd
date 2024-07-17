@@ -18,8 +18,8 @@ None, the function is invoked for its side effect.
 }
 \description{
 Writes all the data in a MetaboSet object to an Excel spreadsheet.
-The format is similar to the one used to read data in, except for the fact that
-EVERYTHING NEEDS TO BE WRITTEN AS TEXT. To fix numeric values in Excel,
+The format is similar to the one used to read data in, except for the fact 
+that EVERYTHING NEEDS TO BE WRITTEN AS TEXT. To fix numeric values in Excel,
 choose any cell with a number, press Ctrl + A, then go to the dropdown menu
 in upper left corner and choose "Convert to Number". This will fix the file,
 but can take quite a while.

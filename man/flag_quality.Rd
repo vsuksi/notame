@@ -15,28 +15,32 @@ flag_quality(object, condition =
 \item{condition}{character, condition for keeping the features, see Details}
 }
 \value{
-a MetaboSet object with the features flagged
+a MetaboSet object with the features flagged.
 }
 \description{
-Flags low-quality features using the quality metrics defined in (Broadhurst 2018). The metrics are described in
-more detain in Details. A condition for keeping the features is given as a character,
-which is passed to \code{dplyr::filter}.
+Flags low-quality features using the quality metrics defined in (Broadhurst 
+2018). The metrics are described in more detain in Details. A condition for 
+keeping the features is given as a character, which is passed to 
+\code{dplyr::filter}.
 }
 \details{
 The quality metrics measure two things: internal spread of the QCs,
 and spread of the QCs compared to the spread of the biological samples.
-  Internal spread is measured with relative standard deviation (RSD), also known as coefficient of variation (CV).
-  \deqn{RSD = sd(QC) / mean(QC) }
-  Where \eqn{sd(QC)} is the standard deviation of the QC samples and \eqn{mean(QC)} is
-  the sample mean of the signal in the QC samples.
-  RSD can also be replaced by a non-parametric, robust version based on the median and
-  median absolute deviation (MAD):
+Internal spread is measured with relative standard deviation (RSD), also 
+known as coefficient of variation (CV).
+\deqn{RSD = sd(QC) / mean(QC) }
+Where \eqn{sd(QC)} is the standard deviation of the QC samples and 
+'\eqn{mean(QC)} is the sample mean of the signal in the QC samples.
+RSD can also be replaced by a non-parametric, robust version based on the 
+median and median absolute deviation (MAD):
   \deqn{RSD_r = 1.4826 * MAD(QC) / median(QC)}
-  The spread of the QC samples compared to the biological samples is measured using a metric called D-ratio:
+The spread of the QC samples compared to the biological samples is measured 
+using a metric called D-ratio:
   \deqn{D_ratio = sd(QC) / sd(biological)}
-  Or, as before, a non-parametric, robust alternative:
+Or, as before, a non-parametric, robust alternative:
   \deqn{D_ratio_r = MAD(QC) / MAD(biolofical) }
-The default condition keeps features that pass either of the two following conditions:
+The default condition keeps features that pass either of the two following 
+conditions:
 \deqn{RSD_r < 0.2 \& D_ratio_r < 0.4}
 \deqn{RSD < 0.1 \& RSD_r < 0.1 \& D_ratio < 0.1}
 }
@@ -44,12 +48,15 @@ The default condition keeps features that pass either of the two following condi
 ex_set <- flag_quality(merged_sample)
 fData(ex_set)
 # Custom condition
-ex_set <- flag_quality(merged_sample, condition = "RSD_r < 0.3 & D_ratio_r < 0.6")
+ex_set <- flag_quality(merged_sample, 
+  condition = "RSD_r < 0.3 & D_ratio_r < 0.6")
 fData(ex_set)
 
 }
 \references{
-Broadhurst, David et al. Guidelines and considerations for the use of system suitability
-and quality control samples in mass spectrometry assays applied in untargeted clinical metabolomic studies.
-Metabolomics : Official journal of the Metabolomic Society vol. 14,6 (2018): 72. doi:10.1007/s11306-018-1367-3
+Broadhurst, David et al. Guidelines and considerations for the 
+use of system suitability and quality control samples in mass spectrometry 
+assays applied in untargeted clinical metabolomic studies.
+Metabolomics : Official journal of the Metabolomic Society vol. 14,6 (2018): 
+72. doi:10.1007/s11306-018-1367-3
 }

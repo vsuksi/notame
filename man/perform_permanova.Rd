@@ -20,18 +20,21 @@ perform_permanova(
 
 \item{all_features}{should all features be included?}
 
-\item{transform}{Transformation to use in \code{IniTransform}. By default uses "Standardize columns".}
+\item{transform}{Transformation to use in \code{IniTransform}. By default 
+uses "Standardize columns".}
 
-\item{coef}{Coefficient to calculate continuous distances in \code{DistContinuous}.
+\item{coef}{Coefficient to calculate continuous distances in 
+\code{DistContinuous}.
 By default uses Pythagorean distances.}
 
 \item{...}{other parameters to \code{\link[PERMANOVA]{PERMANOVA}}}
 }
 \value{
-PERMANOVA object
+A PERMANOVA object.
 }
 \description{
-Performs permutational multivariate analysis of variance. Uses package called PERMANOVA.
+Performs permutational multivariate analysis of variance. Uses package 
+called PERMANOVA.
 }
 \examples{
 permanova_res <- perform_permanova(drop_qcs(example_set), group = "Group")

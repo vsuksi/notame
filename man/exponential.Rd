@@ -15,10 +15,10 @@ exponential(object, base = exp(1))
 \item{base}{base of the exponential}
 }
 \value{
-a MetaboSet object with altered feature abundances
+A MetaboSet object with altered feature abundances.
 }
 \description{
-Apply the exponential function to feature abundances (exprs)
+Apply the exponential function to feature abundances (exprs).
 }
 \examples{
 example_set <- mark_nas(example_set, value = 0)

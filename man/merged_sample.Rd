@@ -10,8 +10,10 @@
 \title{Sample dataset}
 \format{
 \describe{
-  \item{hilic_neg_sample}{features from HILIC column with negative ionization}
-  \item{hilic_pos_sample}{features from HILIC column with positive ionization}
+  \item{hilic_neg_sample}{features from HILIC column with negative
+ionization}
+  \item{hilic_pos_sample}{features from HILIC column with positive 
+ionization}
   \item{rp_neg_sample}{features from RP column with negative ionization}
   \item{rp_pos_sample}{features from RP column with positive ionization}
   \item{merged_sample}{all features merged together}

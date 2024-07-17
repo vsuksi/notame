@@ -13,13 +13,15 @@ assign_cluster_id(data, clusters, features, name_col)
 
 \item{features}{data frame with feature information, fData(object)}
 
-\item{name_col}{character, name of the column in features that contains feature names}
+\item{name_col}{character, name of the column in features that contains 
+feature names}
 }
 \value{
-a data frame similar to features, with cluster ID added
+A data frame similar to features, with cluster ID added.
 }
 \description{
-Assigns a cluster ID to all features that are part of a cluster with 2 or more features.
+Assigns a cluster ID to all features that are part of a cluster with 2 or 
+more features.
 }
 \examples{
 \dontshow{.old_wd <- setwd(tempdir())}

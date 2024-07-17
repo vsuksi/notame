@@ -26,18 +26,23 @@ muvr_analysis(
 
 \item{y}{character, column name in pData of the target variable to predict}
 
-\item{id}{character, column name in pData of the subject ID variable in case of repeated measurements}
+\item{id}{character, column name in pData of the subject ID variable in case 
+of repeated measurements}
 
-\item{multi_level}{logical, whether multi-level modeling should be applied, see Details}
+\item{multi_level}{logical, whether multi-level modeling should be applied, 
+see Details}
 
-\item{multi_level_var}{character, column name in pData of the variable for splitting the data in multi-level modeling}
+\item{multi_level_var}{character, column name in pData of the variable for 
+splitting the data in multi-level modeling}
 
-\item{covariates, static_covariates}{character, column names of pData to use as covariates in the model,
-in addition to molecular features. For multi-level moddels, the change in \code{covariates} is computed, while
-\code{static_covariates} are taken from the first time point. \code{static_covariates} are ignored for
-non-multi-level models.}
+\item{covariates, static_covariates}{character, column names of pData to use 
+as covariates in the model, in addition to molecular features. 
+For multi-level moddels, the change in \code{covariates} is computed, while
+\code{static_covariates} are taken from the first time point. 
+\code{static_covariates} are ignored for non-multi-level models.}
 
-\item{all_features}{logical, should all features be included in the model? if FALSE, flagged features are left out}
+\item{all_features}{logical, should all features be included in the model? 
+if FALSE, flagged features are left out}
 
 \item{nRep}{Number of repetitions of double CV, parameter of MUVR}
 
@@ -45,34 +50,37 @@ non-multi-level models.}
 
 \item{nInner}{Number of inner CV loop segments, parameter of MUVR}
 
-\item{varRatio}{Ratio of variables to include in subsequent inner loop iteration,
-parameter of MUVR}
+\item{varRatio}{Ratio of variables to include in subsequent inner loop 
+iteration, parameter of MUVR}
 
 \item{method}{Multivariate method. Supports 'PLS' and 'RF', parameter of MUVR}
 
 \item{...}{other parameters to \code{MUVR::MUVR}}
 }
+\value{
+A MUVR object. (make this more descriptive)
+}
 \description{
-A wrapper around the MUVR algorithm from the MUVR package. For more information
-about the algorithm, visit https://gitlab.com/CarlBrunius/MUVR.
+A wrapper around the MUVR algorithm from the MUVR package. For more 
+information about the algorithm, visit https://gitlab.com/CarlBrunius/MUVR.
 }
 \details{
-For example, sex should be entered as a static covariate, since the change in sex
-is zero for all individuals, so computing the change and using that as a covariate does not make sense.
+For example, sex should be entered as a static covariate, since the 
+change in sex is zero for all individuals, so computing the change and using 
+that as a covariate does not make sense.
 }
 \examples{
-\dontrun{
 # Simple model, only 1 repetition for a quick example
-rf_model <- muvr_analysis(drop_qcs(merged_sample), y = "Group", nRep = 1, method = "RF")
+rf_model <- muvr_analysis(drop_qcs(merged_sample), 
+  y = "Group", nRep = 1, method = "RF")
 
 # PLS on multilevel variable
-pls_model <- muvr_analysis(drop_qcs(example_set),
-  multi_level = TRUE,
-  id = "Subject_ID", multi_level_var = "Time"
+pls_model <- muvr_analysis(drop_qcs(example_set), multi_level = TRUE, 
+id = "Subject_ID", multi_level_var = "Time", method = "RF"
 )
-}
+
 
 }
 \seealso{
-\code{\link[MUVR]{MUVR}}
+\code{\link[MUVR2]{MUVR2}}
 }

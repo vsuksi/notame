@@ -7,8 +7,8 @@
 plot_sample_boxplots(
   object,
   all_features = FALSE,
-  order_by = as.character(na.omit(c(group_col(object), time_col(object)))),
-  fill_by = as.character(na.omit(c(group_col(object), time_col(object)))),
+  order_by = as.character(stats::na.omit(c(group_col(object), time_col(object)))),
+  fill_by = as.character(stats::na.omit(c(group_col(object), time_col(object)))),
   title = "Boxplot of samples",
   subtitle = NULL,
   fill_scale = getOption("notame.fill_scale_dis"),
@@ -18,8 +18,8 @@ plot_sample_boxplots(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? If FALSE (the 
+default), flagged features are removed before visualization.}
 
 \item{order_by}{character vector, names of columns used to order the samples}
 
@@ -27,18 +27,20 @@ flagged features are removed before visualization.}
 
 \item{title, subtitle}{character, title and subtitle of the plot}
 
-\item{fill_scale}{a scale for the fill of the boxplots, as returned by a ggplot function}
+\item{fill_scale}{a scale for the fill of the boxplots, as returned by a 
+ggplot function}
 
-\item{zoom_boxplot}{logical, whether outliers should be left outside the plot and only
-the boxplots shown. Defaults to TRUE.}
+\item{zoom_boxplot}{logical, whether outliers should be left outside the 
+plot and only the boxplots shown. Defaults to TRUE.}
 }
 \value{
-a ggplot object
+A ggplot object.
 }
 \description{
-Plots a boxplot of the distribution of the metabolite values for each sample. The boxplots can
-be ordered and filled by any combination of columns in the pheno data. By default, order and
-fill are both determined by the combination of group and time columns.
+Plots a boxplot of the distribution of the metabolite values for each 
+sample. The boxplots can be ordered and filled by any combination of columns 
+in the pheno data. By default, order and fill are both determined by the 
+combination of group and time columns.
 }
 \examples{
 plot_sample_boxplots(merged_sample, order_by = "Group", fill_by = "Group")

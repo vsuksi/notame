@@ -12,12 +12,13 @@ join_fData(object, dframe)
 \item{dframe}{a data frame with the new information}
 }
 \value{
-a MetaboSet object with the new information added to fData(object)
+A MetaboSet object with the new information added to fData(object).
 }
 \description{
 Join a new data frame of information to feature data of a MetaboSet object.
 The data frame needs to have a column "Feature_ID".
-This function is usually used internally by some of the functions in the package, but can be useful.
+This function is usually used internally by some of the functions in the 
+package, but can be useful.
 }
 \examples{
 new_info <- data.frame(

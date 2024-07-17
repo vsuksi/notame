@@ -1,30 +1,37 @@
 #' Cluster correlated features
 #'
-#' Clusters features potentially originating from the same compound. Features with high
-#' Pearson correlation coefficient and small retention time difference are linked together.
-#' Then clusters are formed by setting a threshold for the relative degree that each node in a cluster needs
-#' to fulfil. Each cluster is named after the feature with the highest median peak area (median abundance)
-#' This is a wrapper around numerous functions that are based on the MATLAB code by David Broadhurst.
+#' Clusters features potentially originating from the same compound. Features 
+#' with high Pearson correlation coefficient and small retention time 
+#' difference are linked together. Then clusters are formed by setting a 
+#' threshold for the relative degree that each node in a cluster needs
+#' to fulfil. Each cluster is named after the feature with the highest median 
+#' peak area (median abundance). This is a wrapper around numerous functions 
+#' that are based on the MATLAB code by David Broadhurst.
 #'
 #' @param object a MetaboSet object
-#' @param mz_col the column name in fData(object) that holds mass-to-charge ratios
+#' @param mz_col the column name in fData(object) that holds mass-to-charge 
+#' ratios
 #' @param rt_col the column name in fData(object) that holds retention times
-#' @param all_features logical, should all features be included in the clustering? If FALSE
-#' as the default, flagged features are not included in clustering
+#' @param all_features logical, should all features be included in the 
+#' clustering? If FALSE, as the default, flagged features are not included in 
+#' clustering
 #' @param rt_window the retention time window for potential links
 #' NOTE: use the same unit as the retention time
-#' @param corr_thresh the correlation threshold required for potential links between features
+#' @param corr_thresh the correlation threshold required for potential links 
+#' between features
 #' @param d_thresh the threshold for the relative degree required by each node
 #' @param plotting should plots be drawn for each cluster?
-#' @param min_size_plotting the minimum number of features a cluster needs to have to be plotted
+#' @param min_size_plotting the minimum number of features a cluster needs to 
+#' have to be plotted
 #' @param prefix the prefix to the files to be plotted
 #'
-#' @return a MetaboSet object, with median peak area (MPA), the cluster ID, the features in the cluster,
-#' and cluster size added to fData.
+#' @return a MetaboSet object, with median peak area (MPA), the cluster ID, the 
+#' features in the cluster, and cluster size added to fData.
 #'
 #' @examples
 #' # The parameters are really weird because example data is imaginary
-#' clustered <- cluster_features(example_set, rt_window = 1, corr_thresh = 0.5, d_thresh = 0.6)
+#' clustered <- cluster_features(example_set, rt_window = 1, corr_thresh = 0.5, 
+#' d_thresh = 0.6)
 #'
 #' @seealso \code{\link{find_connections}}, \code{\link{find_clusters}},
 #' \code{\link{visualize_clusters}}, \code{\link{assign_cluster_id}},
@@ -96,16 +103,18 @@ cluster_features <- function(object, mz_col = NULL, rt_col = NULL,
 
 #' Assign Cluster ID to features
 #'
-#' Assigns a cluster ID to all features that are part of a cluster with 2 or more features.
+#' Assigns a cluster ID to all features that are part of a cluster with 2 or 
+#' more features.
 #'
 #' @param data data frame of the original LC-MS data
 #' @param clusters a list of clusters as returned by find_clusters
 #' @param features data frame with feature information, fData(object)
-#' @param name_col character, name of the column in features that contains feature names
+#' @param name_col character, name of the column in features that contains 
+#' feature names
 #'
 #' @inherit find_connections return examples
 #'
-#' @return a data frame similar to features, with cluster ID added
+#' @return A data frame similar to features, with cluster ID added.
 #'
 #' @export
 assign_cluster_id <- function(data, clusters, features, name_col) {
@@ -139,15 +148,17 @@ assign_cluster_id <- function(data, clusters, features, name_col) {
 
 #' Compress clusters of features to a single feature
 #'
-#' This function compresses clusters found by cluster_features, keeping only the feature with the highest
-#' median peak area. The features that were discarded are recorded in the fData part, under Cluster_features.
+#' This function compresses clusters found by cluster_features, keeping only 
+#' the feature with the highest median peak area. The features that were 
+#' discarded are recorded in the fData part, under Cluster_features.
 #'
 #' @param object a MetaboSet object
 #'
-#' @return a MetaboSet object with only one feature per cluster
+#' @return A MetaboSet object with only one feature per cluster.
 #'
 #' @examples
-#' clustered <- cluster_features(example_set, rt_window = 1, corr_thresh = 0.5, d_thresh = 0.6)
+#' clustered <- cluster_features(example_set, 
+#'   rt_window = 1, corr_thresh = 0.5, d_thresh = 0.6)
 #' compressed <- compress_clusters(clustered)
 #'
 #' @seealso \code{\link{cluster_features}}
@@ -174,16 +185,17 @@ compress_clusters <- function(object) {
 
 #' Extract information of the features in clusters
 #'
-#' For each cluster, the LC-MS data of the feature with largest median peak area is retained,
-#' all the features inside every cluster are recorded
+#' For each cluster, the LC-MS data of the feature with largest median peak 
+#' area is retained, all the features inside every cluster are recorded.
 #'
 #' @param data data frame of the original LC-MS data
 #' @param features data frame holding the feature information
-#' @param name_col name_col character, name of the column in features that contains feature names
+#' @param name_col name_col character, name of the column in features that
+#' contains feature names
 #'
 #' @inherit find_connections return examples
 #'
-#' @return a list of two items:
+#' @return A list of two items:
 #' \itemize{
 #' \item cdata: a new data frame with the combined LC-MS data
 #' \item cfeatures: data frame, feature information per cluster
@@ -213,21 +225,27 @@ pull_clusters <- function(data, features, name_col) {
 }
 
 
-#' Find out which features are correlated within a specified retention time window
+#' Find out which features are correlated within a specified retention time 
+#' window
 #'
-#' A part of the peak clustering algorithm. Iterates over all possible pairs of features
-#' and records a connection between them if a) they have a Pearson correlation coefficient
-#' higher than \code{corr_thresh} and b) their retention time difference is less than
-#' \code{rt_window}
+#' A part of the peak clustering algorithm. Iterates over all possible pairs of 
+#' features and records a connection between them if a) they have a Pearson 
+#' correlation coefficient higher than \code{corr_thresh} and b) their 
+#' retention time difference is less than \code{rt_window}. 
 #'
-#' @param data data frame with the abundances of features, with features as columns
+#' @param data data frame with the abundances of features, with features as 
+#' columns
 #' @param features data frame with feature information, fData(object)
-#' @param corr_thresh numeric, the threshold of correlation to use in linking features
-#' @param rt_window numeric, the retention time window to use in linking features. NOTE you
-#' need to use the same unit as in the retention time column
-#' @param name_col character, name of the column in features that contains feature names
-#' @param mz_col character, name of the column in features that contains mass-to-charge ratios
-#' @param rt_col character, name of the column in features that contains retention times
+#' @param corr_thresh numeric, the threshold of correlation to use in linking 
+#' features
+#' @param rt_window numeric, the retention time window to use in linking 
+#' features. NOTE: you need to use the same unit as in the retention time column
+#' @param name_col character, name of the column in features that contains 
+#' feature names
+#' @param mz_col character, name of the column in features that contains mass-
+#' to-charge ratios
+#' @param rt_col character, name of the column in features that contains 
+#' retention times
 #'
 #' @examples 
 #' \dontshow{.old_wd <- setwd(tempdir())}
@@ -246,14 +264,12 @@ pull_clusters <- function(data, features, name_col) {
 #' pulled <- pull_clusters(data, features_clustered, name_col = "Feature_ID")
 #' \dontshow{setwd(.old_wd)}
 #'
-#' @return a data frame of pairs of signals that are linked together
+#' @return A data frame of pairs of signals that are linked together:
 #' \itemize{
 #' \item x & y: indexes and names of the signals
 #' \item cor: correlation coefficient
 #' \item mz_diff & rt_diff: mass and retention time difference
 #' }
-#'
-#' @importFrom stats cor
 #'
 #' @export
 find_connections <- function(data, features, corr_thresh = 0.9,
@@ -271,7 +287,7 @@ find_connections <- function(data, features, corr_thresh = 0.9,
     connections_tmp <- data.frame()
     for (j in (i + 1):n) {
       rt_diff <- features[j, rt_col] - features[i, rt_col]
-      cor_coef <- cor(d[, i], d[, j], use = "na.or.complete")
+      cor_coef <- stats::cor(d[, i], d[, j], use = "na.or.complete")
       if (!is.na(cor_coef)) {
         if (abs(rt_diff) < rt_window && cor_coef > corr_thresh) {
           mz_diff <- features[j, mz_col] - features[i, mz_col]
@@ -291,20 +307,21 @@ find_connections <- function(data, features, corr_thresh = 0.9,
 
 #' Extract the densely connected clusters
 #'
-#' First forms clusters of compounds that are linked together. Then the clusters are pruned
-#' so that in the final clusters, each feature is linked to at least a set percentage
-#' of the other features in the cluster.
+#' First forms clusters of compounds that are linked together. Then the 
+#' clusters are pruned so that in the final clusters, each feature is linked to 
+#' at least a set percentage of the other features in the cluster.
 #'
 #' @param connections data frame of pairs of signals that are linked together,
 #' output of find_connections
-#' @param d_thresh numeric, the minimum degree required for each signal in a cluster
-#' expressed as a percentage of the maximum degree in the cluster
+#' @param d_thresh numeric, the minimum degree required for each signal in a 
+#' cluster expressed as a percentage of the maximum degree in the cluster
 #'
 #' @inherit find_connections return examples
 #'
-#' @return a list of clusters, each a list of:
+#' @return  A list of clusters, each a list of:
 #' \itemize{
-#' \item features: character vector of the names of the features included in the cluster
+#' \item features: character vector of the names of the features included in 
+#' the cluster
 #' \item graph: an igraph object of the cluster
 #' }
 #'
@@ -392,6 +409,7 @@ find_clusters <- function(connections, d_thresh = 0.8) {
     stop("Package \'igraph\' needed for this function to work.",
          " Please install it.", call. = FALSE)
   }
+  
   .add_citation(paste0("igraph package was used to construct networks of ",
                        "features for feature clustering:"), 
                 citation("igraph"))
@@ -423,10 +441,7 @@ find_clusters <- function(connections, d_thresh = 0.8) {
 
 .plot_features <- function(features, cluster, name_col, 
                           mz_col, rt_col, rt_window) {
-  if (!requireNamespace("ggrepel", quietly = TRUE)) {
-    stop("Package \'ggrepel\' needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
+
   features_tmp <- features[features[, name_col] %in% cluster$features, ]
   p1 <- ggplot(features_tmp, aes(.data[[mz_col]], .data[["MPA"]])) +
     geom_point(size = 3, color = "steelblue4") +
@@ -493,17 +508,23 @@ find_clusters <- function(connections, d_thresh = 0.8) {
 
 #' Visualize clusters of features
 #'
-#' Draws multiple visualizations of each cluster, creating a separate file for each cluster.
+#' Draws multiple visualizations of each cluster, creating a separate file for
+#' each cluster.
 #'
-#' @param data data frame with the abundances of features, with features as columns
+#' @param data data frame with the abundances of features, with features as 
+#' columns
 #' @param features data frame with feature information, fData(object)
 #' @param clusters a list of clusters as returned by find_clusters
-#' @param min_size the minimum number of features a cluster needs to have to be plotted
-#' @param rt_window numeric, the retention time window to use in linking features. NOTE you
-#' need to use the same unit as in the retention time column
-#' @param name_col character, name of the column in features that contains feature names
-#' @param mz_col character, name of the column in features that contains mass-to-charge ratios
-#' @param rt_col character, name of the column in features that contains retention times
+#' @param min_size the minimum number of features a cluster needs to have to be 
+#' plotted
+#' @param rt_window numeric, the retention time window to use in linking 
+#' features. NOTE you need to use the same unit as in the retention time column
+#' @param name_col character, name of the column in features that contains 
+#' feature names
+#' @param mz_col character, name of the column in features that contains
+#' mass-to-charge ratios
+#' @param rt_col character, name of the column in features that contains 
+#' retention times
 #' @param file_path the prefix to the files to be plotted
 #'
 #' @inherit find_connections return examples
@@ -519,11 +540,12 @@ visualize_clusters <- function(data, features, clusters, min_size, rt_window,
     if (length(cluster$features) >= min_size) {
       features_tmp <- features[features[, name_col] %in% cluster$features, ]
       cluster_id <- features_tmp$Cluster_ID[1]
-      pdf(paste0(file_path, cluster_id, ".pdf"), width = 10, height = 10)
+      grDevices::pdf(paste0(file_path, cluster_id, ".pdf"), 
+                     width = 10, height = 10)
       .plot_heatmaps(data, features, cluster, name_col, mz_col, rt_col)
       .plot_features(features, cluster, name_col, mz_col, rt_col, rt_window)
       .plot_graph(features, cluster, name_col, mz_col, rt_col)
-      dev.off()
+      grDevices::dev.off()
     }
   }
 }

@@ -19,28 +19,31 @@ pca_bhattacharyya_dist(
 
 \item{batch}{column name of pData givinh the batch labels}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before imputation.}
+\item{all_features}{logical, should all features be used? If FALSE
+(the default), flagged features are removed before imputation.}
 
-\item{center}{logical, should the data be centered prior to PCA? (usually yes)}
+\item{center}{logical, should the data be centered prior to PCA?
+(usually yes)}
 
-\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit variance}
+\item{scale}{scaling used, as in pcaMethods::prep. Default is "uv" for unit
+variance}
 
 \item{nPcs}{the number of principal components to use}
 
 \item{...}{other parameters to pcaMethods::pca}
 }
 \value{
-matrix of Bhattacharyya distances between batches
+A matrix of Bhattacharyya distances between batches.
 }
 \description{
 Computes Bhattacharyya distance between all pairs of batches after
-projecting the samples into PCA space with pcaMethods::pca
+projecting the samples into PCA space with pcaMethods::pca.
 }
 \examples{
 # Batch correction
 replicates <- list(which(merged_sample$QC == "QC"))
-batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
+batch_corrected <- ruvs_qc(merged_sample, 
+  batch = "Batch", replicates = replicates)
 # Evaluate batch correction
 pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 pca_bhattacharyya_dist(batch_corrected, batch = "Batch")

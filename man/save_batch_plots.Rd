@@ -18,7 +18,8 @@ save_batch_plots(
 )
 }
 \arguments{
-\item{orig, corrected}{MetaboSet objects before and after batch effect correction}
+\item{orig, corrected}{MetaboSet objects before and after batch effect 
+correction}
 
 \item{file}{path to the PDF file where the plots will be saved}
 
@@ -27,7 +28,8 @@ save_batch_plots(
 \item{batch, color, shape}{column names of pData for batch labels,
 and column used for coloring and shaping points (by default batch and QC)}
 
-\item{color_scale, shape_scale}{scales for color and scale as returned by ggplot functions.}
+\item{color_scale, shape_scale}{scales for color and scale as returned by 
+ggplot functions.}
 }
 \value{
 None, the function is invoked for its plot-saving side effect.
@@ -45,8 +47,9 @@ the default scale only has 2 values, so it can only accomodate 2 shapes.
 \dontshow{.old_wd <- setwd(tempdir())}
 # Batch correction
 replicates <- list(which(merged_sample$QC == "QC"))
-batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
-# Plots of each features
+batch_corrected <- ruvs_qc(merged_sample, 
+  batch = "Batch", replicates = replicates)
+# Plots of each feature
 save_batch_plots(
   orig = merged_sample[1:10], corrected = batch_corrected[1:10],
   file = "batch_plots.pdf"

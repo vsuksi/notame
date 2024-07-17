@@ -7,16 +7,18 @@
 mark_qcs(data, cols)
 }
 \arguments{
-\item{data}{a data frame such as pheno_data returned by \code{\link{read_from_excel}}}
+\item{data}{a data frame such as pheno_data returned by 
+\code{\link{read_from_excel}}}
 
 \item{cols}{the columns to fix}
 }
 \value{
-a data frame with the column modified
+A data frame with the column modified.
 }
 \description{
-Loops through specified columns in pheno data and replaces all NA values with "QC". Also transforms
-the column to factor and sets "QC" as the last level.
+Loops through specified columns in pheno data and replaces all NA values 
+with "QC". Also transforms the column to factor and sets "QC" as the last 
+level.
 }
 \examples{
 # Remove QC labels first

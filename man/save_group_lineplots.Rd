@@ -31,28 +31,35 @@ save_group_lineplots(
 \arguments{
 \item{object}{a MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default), flagged features are removed before visualization}
+\item{all_features}{logical, should all features be used? 
+If FALSE (the default), flagged features are removed before visualization}
 
 \item{save}{logical, if false, the plots are not saved but returned as a list}
 
-\item{file_path}{character, a file path for PDF or prefix added to the file paths for other formats}
+\item{file_path}{character, a file path for PDF or prefix added to the file 
+paths for other formats}
 
 \item{format}{character, format in which the plots should be saved}
 
 \item{x}{character, name of the column to be used as x-axis}
 
-\item{group}{character, name of the column containing group information, used for coloring}
+\item{group}{character, name of the column containing group information, 
+used for coloring}
 
-\item{title, subtitle}{column names from fData to use as plot title/filename and subtitle.
+\item{title, subtitle}{column names from fData to use as plot title/filename 
+and subtitle.
 Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{fun.data}{passed to ggplot2::stat_summary and used for errorbars,
-"A function that is given the complete data and should return a data frame with variables ymin, y, and ymax."}
+"A function that is given the complete data and should return a data frame 
+with variables ymin, y, and ymax."}
 
-\item{fun.min, fun, fun.max}{Alternative to fun.data, passed to ggplot2::stat_summary,
-"supply three individual functions that are each passed a vector of x's and should return a single number"}
+\item{fun.min, fun, fun.max}{Alternative to fun.data, passed to 
+\code{ggplot2::stat_summary}, "supply three individual functions that are 
+each passed a vector of x's and should return a single number"}
 
-\item{position_dodge_amount}{numeric: how much the group mean points should dodge away from each other}
+\item{position_dodge_amount}{numeric: how much the group mean points should 
+dodge away from each other}
 
 \item{color_scale}{the color scale as returned by a ggplot function}
 
@@ -62,14 +69,16 @@ Set to NULL for no title/subtitle, this creates running numbered filenames}
 
 \item{point_size}{numeric, size of the points}
 
-\item{title_line_length}{integer, maximum length of the title line in characters, passed to stringr::str_wrap}
+\item{title_line_length}{integer, maximum length of the title line in 
+characters, passed to stringr::str_wrap}
 
 \item{theme}{a ggplot theme to be added to the plot}
 
 \item{...}{other arguments to graphic device functions, like width and height}
 }
 \value{
-By default, the function is invoked for its plot-saving side effect. The function returns a list of plots when \code{save = FALSE}.
+By default, the function is invoked for its plot-saving side effect. 
+The function returns a list of plots when \code{save = FALSE}.
 }
 \description{
 Plots the change in the feature abundances as a function of e.g. time.

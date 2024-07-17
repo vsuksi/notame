@@ -21,43 +21,49 @@ perform_correlation_tests(
 
 \item{x}{character vector, names of variables to be correlated}
 
-\item{y}{character vector, either identical to x (the default) or a distinct set of variables
-to be correlated agains x}
+\item{y}{character vector, either identical to x (the default) or a distinct 
+set of variables to be correlated against x}
 
-\item{id}{character, column name for subject IDs. If provided, the correlation will be computed
-using the rmcorr package}
+\item{id}{character, column name for subject IDs. If provided, the 
+correlation will be computed using the rmcorr package}
 
-\item{object2}{optional second MeatboSet object. If provided, x variables will be taken from object and
-y variables will be taken from object2. Both objects should have the same number of samples.}
+\item{object2}{optional second MetaboSet object. If provided, x variables 
+will be taken from object and y variables will be taken from object2. Both 
+objects should have the same number of samples.}
 
-\item{fdr}{logical, whether p-values from the correlation test should be adjusted with FDR correction}
+\item{fdr}{logical, whether p-values from the correlation test should be 
+adjusted with FDR correction}
 
 \item{all_pairs}{logical, whether all pairs between x and y should be tested.
-If FALSE, x and y give the exact pairs of variables to test, and should have the same length.}
+If FALSE, x and y give the exact pairs of variables to test, and should have 
+the same length.}
 
-\item{duplicates}{logical, whether correlations should be dublicated. If \code{TRUE}, each correlation
-will be included in the results twice, where the order of the variables (which is x and which is y)
-is changed. Can be useful for e.g. plotting a heatmap of the results, see examples of
+\item{duplicates}{logical, whether correlations should be duplicated. If 
+\code{TRUE}, each correlation will be included in the results twice, where 
+the order of the variables '(which is x and which is y) is changed. Can be 
+useful for e.g. plotting a heatmap of the results, see examples of
 \code{\link{plot_effect_heatmap}}}
 
 \item{...}{other parameters passed to \code{\link{cor.test}}, such as method}
 }
 \value{
-a data frame with the results of correlation tests: the pair of variables,
-correlation coefficient and p-value
+A data frame with the results of correlation tests: the pair of 
+variables, correlation coefficient and p-value.
 }
 \description{
-Performs a correlation test between two sets of variables. All the variables must be either
-feature names or column names of pheno data (sample information).
+Performs a correlation test between two sets of variables. All the variables 
+must be either feature names or column names of pheno data (sample 
+information).
 There are two ways to use this function:
 either provide a set of variables as \code{x}, and all correlations between
-those variables are computed. Or
-provide two distinct sets of variables \code{x, y} and correlations between each x variable
+those variables are computed. Or provide two distinct sets of variables 
+\code{x, y} and correlations between each x variable
 and each y variable are computed.
 }
 \examples{
 # Correlations between all features
-correlations <- perform_correlation_tests(example_set, x = featureNames(example_set))
+correlations <- perform_correlation_tests(example_set, 
+  x = featureNames(example_set))
 
 # Spearman Correlations between features and sample information variables
 # Drop QCs and convert time to numeric

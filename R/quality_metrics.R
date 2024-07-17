@@ -1,10 +1,9 @@
-#
 
 #' Extract quality information of features
 #'
 #' @param object a MetaboSet object
 #' 
-#' @return a data frame with quality metrics for each feature.
+#' @return A data frame with quality metrics for each feature.
 #'
 #' @examples 
 #' example_set <- assess_quality(example_set)
@@ -32,9 +31,12 @@ quality <- function(object) {
 
 #' Assess quality information of features
 #'
+#' Assess features using the quality metrics defined in (Broadhurst 
+#' 2018). The quality metrics are described in Details section of 
+#' \code{flag_quality}
 #' @param object a MetaboSet object
 #'
-#' @return a MetaboSet object with quality metrics in fData.
+#' @return A MetaboSet object with quality metrics in fData.
 #' 
 #' @examples
 #' ex_set <- assess_quality(merged_sample)
@@ -70,35 +72,41 @@ assess_quality <- function(object) {
   
 #' Flag low-quality features
 #'
-#' Flags low-quality features using the quality metrics defined in (Broadhurst 2018). The metrics are described in
-#' more detain in Details. A condition for keeping the features is given as a character,
-#' which is passed to \code{dplyr::filter}.
+#' Flags low-quality features using the quality metrics defined in (Broadhurst 
+#' 2018). The metrics are described in more detain in Details. A condition for 
+#' keeping the features is given as a character, which is passed to 
+#' \code{dplyr::filter}.
 #'
 #' @param object a MetaboSet object
 #' @param condition character, condition for keeping the features, see Details
 #'
 #' @details The quality metrics measure two things: internal spread of the QCs,
 #' and spread of the QCs compared to the spread of the biological samples.
-#'   Internal spread is measured with relative standard deviation (RSD), also known as coefficient of variation (CV).
-#'   \deqn{RSD = sd(QC) / mean(QC) }
-#'   Where \eqn{sd(QC)} is the standard deviation of the QC samples and \eqn{mean(QC)} is
-#'   the sample mean of the signal in the QC samples.
-#'   RSD can also be replaced by a non-parametric, robust version based on the median and
-#'   median absolute deviation (MAD):
+#' Internal spread is measured with relative standard deviation (RSD), also 
+#' known as coefficient of variation (CV).
+#' \deqn{RSD = sd(QC) / mean(QC) }
+#' Where \eqn{sd(QC)} is the standard deviation of the QC samples and 
+#' '\eqn{mean(QC)} is the sample mean of the signal in the QC samples.
+#' RSD can also be replaced by a non-parametric, robust version based on the 
+#' median and median absolute deviation (MAD):
 #'   \deqn{RSD_r = 1.4826 * MAD(QC) / median(QC)}
-#'   The spread of the QC samples compared to the biological samples is measured using a metric called D-ratio:
+#' The spread of the QC samples compared to the biological samples is measured 
+#' using a metric called D-ratio:
 #'   \deqn{D_ratio = sd(QC) / sd(biological)}
-#'   Or, as before, a non-parametric, robust alternative:
+#' Or, as before, a non-parametric, robust alternative:
 #'   \deqn{D_ratio_r = MAD(QC) / MAD(biolofical) }
-#' The default condition keeps features that pass either of the two following conditions:
+#' The default condition keeps features that pass either of the two following 
+#' conditions:
 #' \deqn{RSD_r < 0.2 \& D_ratio_r < 0.4}
 #' \deqn{RSD < 0.1 \& RSD_r < 0.1 \& D_ratio < 0.1}
 #'
-#' @return a MetaboSet object with the features flagged
+#' @return a MetaboSet object with the features flagged.
 #'
-#' @references Broadhurst, David et al. Guidelines and considerations for the use of system suitability
-#' and quality control samples in mass spectrometry assays applied in untargeted clinical metabolomic studies.
-#' Metabolomics : Official journal of the Metabolomic Society vol. 14,6 (2018): 72. doi:10.1007/s11306-018-1367-3
+#' @references Broadhurst, David et al. Guidelines and considerations for the 
+#' use of system suitability and quality control samples in mass spectrometry 
+#' assays applied in untargeted clinical metabolomic studies.
+#' Metabolomics : Official journal of the Metabolomic Society vol. 14,6 (2018): 
+#' 72. doi:10.1007/s11306-018-1367-3
 #'
 #' @usage flag_quality
 #' flag_quality(object, condition =
@@ -109,7 +117,8 @@ assess_quality <- function(object) {
 #' ex_set <- flag_quality(merged_sample)
 #' fData(ex_set)
 #' # Custom condition
-#' ex_set <- flag_quality(merged_sample, condition = "RSD_r < 0.3 & D_ratio_r < 0.6")
+#' ex_set <- flag_quality(merged_sample, 
+#'   condition = "RSD_r < 0.3 & D_ratio_r < 0.6")
 #' fData(ex_set)
 #'
 #' @export
@@ -143,19 +152,24 @@ flag_quality <- function(object, condition =
 
 #' Flag features with low detection rate
 #'
-#' Flags features with too high amount of missing values. There are two detection rate limits, both defined as the
-#' minimum proportion of samples that need to have a value (not NA) for the feature to be kept. \code{qc_limit} is
-#' the detection rate limit for QC samples, \code{group_limit} is the detection rate limit for the actual study groups.
-#' If the group limit is passed for AT LEAST ONE GROUP, then the feature is kept. Features with low detection rate
-#' in QCs are flagged as "Low_qc_detection", while low detection rate in the study groups is flagged as
-#' "Low_group_detection". The detection rates for all the groups are recorded in \code{fData(object)}.
+#' Flags features with too high amount of missing values. There are two 
+#' detection rate limits, both defined as the minimum proportion of samples 
+#' that need to have a value (not NA) for the feature to be kept. 
+#' '\code{qc_limit} is the detection rate limit for QC samples, 
+#' '\code{group_limit} is the detection rate limit for the actual study groups.
+#' If the group limit is passed for AT LEAST ONE GROUP, then the feature is 
+#' kept. Features with low detection rate in QCs are flagged as 
+#' "Low_qc_detection", while low detection rate in the study groups is flagged 
+#' as "Low_group_detection". The detection rates for all the groups are 
+#' recorded in \code{fData(object)}.
 #'
 #' @param object a MetaboSet object
 #' @param qc_limit the detection rate limit for QC samples
 #' @param group_limit the detection rate limit for study groups
-#' @param group the columns name in sample information to use as the grouping variable
+#' @param group the columns name in sample information to use as the grouping 
+#' variable
 #'
-#' @return a MetaboSet object with the features flagged
+#' @return A MetaboSet object with the features flagged.
 #'
 #' @examples
 #' ex_set <- flag_detection(merged_sample)
@@ -216,21 +230,47 @@ flag_detection <- function(object, qc_limit = 0.7, group_limit = 0.5,
 
 #' Flag contaminants
 #'
-#' Flags contaminant features by comparing the median values of blanks and biological samples.
-#' Biological sampels are defined as samples that are not marked as blanks and are not QCs.
-#' If the median of blanks > the median of biological samples times a set ratio, the feature is
-#' flagged as contaminant
+#' Flags contaminant features by comparing the median values of blanks and 
+#' biological samples. Biological sampels are defined as samples that are not 
+#' marked as blanks and are not QCs. If the median of blanks > the median of 
+#' biological samples times a set ratio, the feature is flagged as contaminant.
 #'
 #' @param object a MetaboSet object
 #' @param blank_col character, the column name in pData with blank labels
 #' @param blank_label character, the label for blank samples in blank_col
 #' @param flag_thresh numeric, the ratio threshold for flagging contaminants.
-#' If the median of blanks > flag_thresh * median of biological samples, the feature gets flagged.
-#' @param flag_label character, the label used when flagging contaminants. Can be changed if
-#' sample processing contaminants and carryover contaminants are flagged separately.
+#' If the median of blanks > flag_thresh * median of biological samples, the 
+#' feature gets flagged.
+#' @param flag_label character, the label used when flagging contaminants. Can 
+#' be changed if sample processing contaminants and carryover contaminants are 
+#' flagged separately.
 #'
-#' @return MetaboSet object with contaminant features flagged.
+#' @return A MetaboSet object with contaminant features flagged.
 #'
+#' @examples 
+#' # Make a blank sample which has one (first) feature exceeding the threshold
+#' ## Abundance matrix
+#' exprs <- matrix(c(155, rep(0, 19)), ncol = 1, nrow = 20, 
+#'                 dimnames = list(NULL, "Demo_31"))
+#' exprs <- cbind(exprs(example_set), exprs)
+#' ## Sample metadata
+#' pheno_data <- pData(example_set)[1, ]
+#' rownames(pheno_data) <- "Demo_31"
+#' pheno_data$Sample_ID <- "Demo_31"
+#' pheno_data$Injection_order <- 31
+#' pheno_data[c("Subject_ID", "Group", "QC", "Time")] <- "Blank"
+#' pheno_data <- rbind(pData(example_set), pheno_data)
+#' ## Feature metadata
+#' feature_data <- fData(example_set)
+#' # Construct MetaboSet object with blank sample
+#' ex_set <- construct_metabosets(exprs = exprs, 
+#'                                pheno_data = pheno_data,
+#'                                feature_data = feature_data,
+#'                                split_data = FALSE)
+#' # Flag contaminant(s)
+#' contaminants_flagged <- flag_contaminants(ex_set, blank_col = "QC", 
+#'                                          blank_label = "Blank")
+#' 
 #' @export
 flag_contaminants <- function(object, blank_col, blank_label, 
                               flag_thresh = 0.05, flag_label = "Contaminant") {

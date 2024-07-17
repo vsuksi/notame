@@ -16,26 +16,30 @@ inspect_dc(orig, dc, check_quality, condition = "RSD_r < 0 & D_ratio_r < 0")
 \item{condition}{a character specifying the condition, see Details}
 }
 \value{
-MeatboSet object
+A MetaboSet object.
 }
 \description{
 Determines whether the drift correction worked.
-The primary reason is to search for features where there were too many missing values in the QCs,
-so it was not possible to run drift correction. If the drift correction is run on the original
-values (not log-transformed), then there is also a need to check that the correction did not result
-in any negative values. This can sometimes happen if the prediction curve takes an extreme shape.
-If quality is monitored,
-a quality condition is checked for each feature. If the condition is fulfilled,
-the drift corrected feature is retained,
-otherwise the original feature is retained and the drift corrected feature is discarded.
-The result of this operation is recorded in the feature data.
+The primary reason is to search for features where there were too many 
+missing values in the QCs, so it was not possible to run drift correction. 
+If the drift correction is run on the original values (not log-transformed), 
+then there is also a need to check that the correction did not result
+in any negative values. This can sometimes happen if the prediction curve 
+takes an extreme shape.
 }
 \details{
-The \code{condition} parameter should be a character giving a condition compatible
-with dplyr::filter. The condition is applied on the \strong{changes} in the quality metrics
-RSD, RSD_r, D_ratio and D_ratio_r. For example, the default is "RSD_r < 0 and D_ratio_r < 0",
-meaning that both RSD_r and D_ratio_r need to decrease in the drift correction, otherwise the
-drift corrected feature is discarded and the original is retained.
+If quality is monitored, a quality condition is checked for each feature. 
+If the condition is fulfilled, the drift corrected feature is retained,
+otherwise the original feature is retained and the drift corrected feature 
+is discarded. The result of this operation is recorded in the feature data.
+
+The \code{condition} parameter should be a character giving a 
+condition compatible with dplyr::filter. The condition is applied on the 
+\strong{changes} in the quality metrics RSD, RSD_r, D_ratio and D_ratio_r. 
+For example, the default is "RSD_r < 0 and D_ratio_r < 0",
+meaning that both RSD_r and D_ratio_r need to decrease in the drift 
+correction, otherwise the  drift corrected feature is discarded and the 
+original is retained.
 }
 \examples{
 dc <- dc_cubic_spline(merged_sample)

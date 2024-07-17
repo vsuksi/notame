@@ -13,16 +13,17 @@ merge_metabosets(..., merge = c("features", "samples"))
 samples is used for batches}
 }
 \value{
-A merged MetaboSet object
+A merged MetaboSet object.
 }
 \description{
-Merges two or more MetaboSet objects together. Can be used to merge analytical modes or batches.
+Merges two or more MetaboSet objects together. Can be used to merge 
+analytical modes or batches.
 }
 \details{
-When merging samples, sample IDs that beging with "QC" or "Ref" are combined so that they have
-running numbers on them. This means that if both bathces have samples called "QC_1",
-this will not result in an error,
-but the sample IDs will be adjusted so that they are unique
+When merging samples, sample IDs that beging with "QC" or "Ref" are 
+combined so that they have running numbers on them. This means that if both 
+batches have samples called "QC_1", this will not result in an error,
+but the sample IDs will be adjusted so that they are unique.
 }
 \examples{
 # Merge analytical modes

@@ -23,43 +23,52 @@
 
 #' Draw a heatmap of effects between variables, such as correlations
 #'
-#' Draws a heatmap of e.g. correlations between variables (see perform_correlation_tests).
-#' It is possible to draw only the lower triangular of the heatmap, order rows and columns
-#' with hierarchical clustering, and add circles for p-values.
+#' Draws a heatmap of e.g. correlations between variables 
+#' (see perform_correlation_tests).
+#' It is possible to draw only the lower triangular of the heatmap, order rows 
+#' and columns with hierarchical clustering, and add circles for p-values.
 #'
-#' @param data a data frame with x and y variables and the effect (used to fill the tiles)
+#' @param data a data frame with x and y variables and the effect 
 #' @param x,y the column names of data with the x and y variables
 #' @param effect the column name of the effect, e.g. correlation
-#' @param p optional, the column name with p-values. If provided, points that scale by p-value are drawn
-#' on top of the heatmap tiles
+#' @param p optional, the column name with p-values. If provided, points that 
+#' scale by p-value are drawn on top of the heatmap tiles
 #' @param p_limit numeric, only p-values below the limit are plotted as points
-#' @param point_size_range a numeric vector of length 2. The upper and lower limits for the point sizes.
-#' This needs to be adjusted to make the point size look good when compared to the tiles
-#' @param log2_effect logical, whether the effect should be plotted on a logarithmic scale (in case of fold change etc.)
-#' @param discretize_effect logical, whether the effect range should be divided into discrete levels instead of using
-#' a continuous scale. Can sometimes make patterns more visible, but the hard limits can blur the big picture as well.
-#' @param breaks if \code{discretize_effect = TRUE}, either the number of breaks or
-#' the points where to cut for the levels, see \code{\link{cut}}
-#' @param clustering logical, whether the order of rows and columns should be ordered by hierarchical clustering?
+#' @param point_size_range a numeric vector of length 2. The upper and lower 
+#' limits for the point sizes. This needs to be adjusted to make the point size 
+#' look good when compared to the tiles
+#' @param log2_effect logical, whether the effect should be plotted on a 
+#' logarithmic scale (in case of fold change etc.)
+#' @param discretize_effect logical, whether the effect range should be divided 
+#' into discrete levels instead of using a continuous scale. Can sometimes make 
+#' patterns more visible, but the hard limits can blur the big picture as well.
+#' @param breaks if \code{discretize_effect = TRUE}, either the number of 
+#' breaks or the points where to cut for the levels, see \code{\link{cut}}
+#' @param clustering logical, whether the order of rows and columns should be 
+#' ordered by hierarchical clustering?
 #' @param dist_method distance method used in clustering, see \code{\link{dist}}
-#' @param clust_method clustering method used in clustering, see \code{\link{hclust}}
+#' @param clust_method clustering method used in clustering, see 
+#' \code{\link{hclust}}
 #' @param lower_tri logical, should only the lower triangular be plotted?
-#' @param reverse_y logical, if \code{clustering = FALSE, lower_tri = FALSE}, should the order of the y-axis
+#' @param reverse_y logical, if \code{clustering = FALSE, lower_tri = FALSE}, 
+#' should the order of the y-axis
 #' be reversed so that the diagonal is from top left to bottom right?
 #' @param use_coord_fixed logical, should the heatmap tiles be squares?
 #' If yes, this uses \code{\link[ggplot2]{coord_fixed}}
 #' @param symmetric_aspect_ratio logical, should the plot panel be a square?
 #' If yes, uses ggplot2::theme(aspect.ratio = 1).
 #' @param title,subtitle the title and subtitle of the plot
-#' @param fill_scale fill scale for the heatmap as returned by a ggplot function.
-#' Set to NA to choose the appropriate scale based on the class of the effect variable.
+#' @param fill_scale fill scale for the heatmap as returned by a ggplot 
+#' function. Set to NA to choose the appropriate scale based on the class of 
+#' the effect variable.
 #'
-#' @return a ggplot object
+#' @return A ggplot object.
 #'
-#' @details All missing effects between variables are replaced by 0 before clustering,
-#' since \code{hclust} can't deal with missing values.
+#' @details All missing effects between variables are replaced by 0 before 
+#' clustering, since \code{hclust} can't deal with missing values.
 #'
-#' @seealso \code{\link{cut}} for discretizing the effect, \code{\link{dist}} for distance calculation for clustering,
+#' @seealso \code{\link{cut}} for discretizing the effect, \code{\link{dist}} 
+#' for distance calculation for clustering,
 #' \code{\link{hclust}} for hierarchical clustering.
 #'
 #' @examples
@@ -70,7 +79,8 @@
 #' )
 #'
 #' # Minimal example
-#' plot_effect_heatmap(correlations, x = "X", y = "Y", effect = "Correlation_coefficient")
+#' plot_effect_heatmap(correlations, 
+#' x = "X", y = "Y", effect = "Correlation_coefficient")
 #'
 #' # Lower triangular with discrete effect and p-value dots
 #' plot_effect_heatmap(correlations,
@@ -172,10 +182,10 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
   data_wide[is.na(data_wide)] <- 0
 
   # Separate clustering for y and x
-  x_order <- hclust(dist(data_wide, method = dist_method), 
-                    method = clust_method)$order
-  y_order <- hclust(dist(t(data_wide), method = dist_method), 
-                    method = clust_method)$order
+  x_order <- stats::hclust(stats::dist(data_wide, method = dist_method), 
+                           method = clust_method)$order
+  y_order <- stats::hclust(stats::dist(t(data_wide), method = dist_method), 
+                           method = clust_method)$order
   data_wide <- data_wide[x_order, y_order]
 
   data[x] <- factor(data[, x], levels = rev(rownames(data_wide)))
@@ -234,7 +244,8 @@ plot_effect_heatmap <- function(data, x, y, effect, p = NULL, p_limit = 0.1,
   if (clustering) {
     data_w_zeros <- dat_w_whole
     data_w_zeros[is.na(data_w_zeros)] <- 0
-    hc <- hclust(dist(data_w_zeros, dist_method), method = clust_method)
+    hc <- stats::hclust(stats::dist(data_w_zeros, dist_method), 
+                        method = clust_method)
     dat_w_whole <- dat_w_whole[hc$order, hc$order]
     dat_w_whole
   }

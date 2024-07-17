@@ -12,7 +12,8 @@ mark_nas(object, value)
 \item{value}{the value to be converted to NA}
 }
 \value{
-MetaboSet object as the one supplied, with missing values correctly set to NA
+MetaboSet object as the one supplied, with missing values correctly 
+set to NA.
 }
 \description{
 Replaces all values in the exprs part that equal the specified value with NA.

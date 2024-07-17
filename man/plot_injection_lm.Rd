@@ -9,15 +9,17 @@ plot_injection_lm(object, all_features = FALSE)
 \arguments{
 \item{object}{A MetaboSet object}
 
-\item{all_features}{logical, should all features be used? If FALSE (the default),
-flagged features are removed before visualization.}
+\item{all_features}{logical, should all features be used? 
+If FALSE (the default), flagged features are removed before visualization.}
 }
 \value{
-A ggplot object
+A ggplot object.
 }
 \description{
-Plots histograms of p-values from linear regression model, where each feature is predicted
-by injection order alone. The expected uniform distribution is represented by a dashed red line.
+Plots histograms of p-values from linear regression model, where each 
+feature is predicted
+by injection order alone. The expected uniform distribution is represented 
+by a dashed red line.
 }
 \examples{
 plot_injection_lm(merged_sample)

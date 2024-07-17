@@ -18,13 +18,14 @@ perform_paired_t_test(object, group, id, all_features = FALSE, ...)
 \item{...}{additional parameters to t.test}
 }
 \value{
-data frame with the results
+A data frame with the results.
 }
 \description{
 Performs paired t-tests between two groups.
 }
 \examples{
-paired_t_results <- perform_paired_t_test(drop_qcs(example_set), group = "Time", id = "Subject_ID")
+paired_t_results <- perform_paired_t_test(drop_qcs(example_set), 
+  group = "Time", id = "Subject_ID")
 
 }
 \seealso{

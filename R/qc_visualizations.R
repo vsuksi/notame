@@ -16,20 +16,23 @@
 
 #' Distance density plot
 #'
-#' Plot density of distances between samples in QC samples and actual samples
+#' Plot density of distances between samples in QC samples and actual samples.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? 
+#' If FALSE (the default), flagged features are removed before visualization.
 #' @param dist_method method for calculating the distances, passed to dist
 #' @param center logical, should the data be centered?
-#' @param scale scaling used, as in pcaMethods::prep. Default is "uv" for unit variance
-#' @param color_scale a scale for the color of the edge of density curves, as returned by a ggplot function
-#' @param fill_scale a scale for the fill of the density curves, as returned by a ggplot function
+#' @param scale scaling used, as in pcaMethods::prep. 
+#' Default is "uv" for unit variance
+#' @param color_scale a scale for the color of the edge of density curves, as 
+#' returned by a ggplot function
+#' @param fill_scale a scale for the fill of the density curves, as returned by 
+#' a ggplot function
 #' @param title the plot title
 #' @param subtitle the plot subtitle
 #'
-#' @return a ggplot object
+#' @return A ggplot object.
 #'
 #' @examples
 #' plot_dist_density(merged_sample)
@@ -59,8 +62,8 @@ plot_dist_density <- function(object, all_features = FALSE,
   qc_data <- t(exprs(object)[, object$QC == "QC"])
   sample_data <- t(exprs(object)[, object$QC != "QC"])
 
-  qc_dist <- dist(qc_data, method = dist_method) %>% as.numeric()
-  sample_dist <- dist(sample_data, method = dist_method) %>% as.numeric()
+  qc_dist <- stats::dist(qc_data, method = dist_method) %>% as.numeric()
+  sample_dist <- stats::dist(sample_data, method = dist_method) %>% as.numeric()
   qc <- rep(c("QC", "Sample"), times = c(length(qc_dist), length(sample_dist)))
   qc <- rep(c("QC", "Sample"), times = c(length(qc_dist), length(sample_dist)))
   distances <- data.frame(dist = c(qc_dist, sample_dist), qc = qc)
@@ -72,14 +75,16 @@ plot_dist_density <- function(object, all_features = FALSE,
 
 #' Estimate the magnitude of drift
 #'
-#' Plots histograms of p-values from linear regression model, where each feature is predicted
-#' by injection order alone. The expected uniform distribution is represented by a dashed red line.
+#' Plots histograms of p-values from linear regression model, where each 
+#' feature is predicted
+#' by injection order alone. The expected uniform distribution is represented 
+#' by a dashed red line.
 #'
 #' @param object A MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? 
+#' If FALSE (the default), flagged features are removed before visualization.
 #'
-#' @return A ggplot object
+#' @return A ggplot object.
 #'
 #' @seealso \code{\link{plot_p_histogram}}
 #'
@@ -107,14 +112,16 @@ plot_injection_lm <- function(object, all_features = FALSE) {
 
 #' Histogram of p-values
 #'
-#' Draws histograms of p-values with expected uniform distribution represented by a dashed red line
+#' Draws histograms of p-values with expected uniform distribution represented 
+#' by a dashed red line.
 #'
-#' @param p_values list or data frame, each element/column is a vector of p-values.
-#' The list names are used as plot titles
-#' @param hline logical, whether a horizontal line representing uniform distribution should be plotted
-#' @param combine logical, whether plots of individual p-value vectors should be combined into a single object.
-#'  Set to FALSE if
-#' you want to add other plots to the list before plotting
+#' @param p_values list or data frame, each element/column is a vector of p-
+#' values. The list names are used as plot titles
+#' @param hline logical, whether a horizontal line representing uniform 
+#' distribution should be plotted
+#' @param combine logical, whether plots of individual p-value vectors should 
+#' be combined into a single object.
+#' Set to FALSE if you want to add other plots to the list before plotting
 #' @param x_label the x-axis label
 #'
 #' @examples 
@@ -122,15 +129,12 @@ plot_injection_lm <- function(object, all_features = FALSE) {
 #' p_values <- list("Biological samples" = lm_sample$Injection_order_P)
 #' plot_p_histogram(p_values)
 #'
-#' @return if combine = TRUE, a ggplot object. Otherwise a list of ggplot objects
+#' @return If combine = TRUE, a ggplot object. Otherwise a list of ggplot 
+#' objects.
 #'
 #' @export
 plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE, 
                              x_label = "p-value") {
-  if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \'cowplot\' needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
   # Custom breaks for the x-axis
   breaks <- seq(0, 1, by = 0.05)
 
@@ -169,27 +173,23 @@ plot_p_histogram <- function(p_values, hline = TRUE, combine = TRUE,
 #' Plots distribution of each quality metric, and a distribution of the flags.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
-#' @param plot_flags logical, should the distribution of flags be added as a barplot?
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
+#' @param plot_flags logical, should the distribution of flags be added as a 
+#' barplot?
 #'
-#' @return a ggplot object
+#' @return A ggplot object.
 #'
 #' @examples
 #' plot_quality(example_set)
 #'
-#' @importFrom stats relevel
 #' @export
 plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
-  if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package \'cowplot\' needed for this function to work.", 
-         " Please install it.", call. = FALSE)
-  }
   if (plot_flags) {
     # Plot bar plot of flags
     flags <- flag(object)
     flags[is.na(flags)] <- "Good"
-    flags <- factor(flags) %>% relevel(ref = "Good")
+    flags <- factor(flags) %>% stats::relevel(ref = "Good")
 
     fp <- ggplot(data.frame(flags), aes(x = flags)) +
       geom_bar(col = "grey50", fill = "grey80", size = 1) +
@@ -224,31 +224,34 @@ plot_quality <- function(object, all_features = FALSE, plot_flags = TRUE) {
 
 #' Plot a boxplot for each sample
 #'
-#' Plots a boxplot of the distribution of the metabolite values for each sample. The boxplots can
-#' be ordered and filled by any combination of columns in the pheno data. By default, order and
-#' fill are both determined by the combination of group and time columns.
+#' Plots a boxplot of the distribution of the metabolite values for each 
+#' sample. The boxplots can be ordered and filled by any combination of columns 
+#' in the pheno data. By default, order and fill are both determined by the 
+#' combination of group and time columns.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before visualization.
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before visualization.
 #' @param order_by character vector, names of columns used to order the samples
 #' @param fill_by character vector, names of columns used to fill the boxplots
 #' @param title,subtitle character, title and subtitle of the plot
-#' @param fill_scale a scale for the fill of the boxplots, as returned by a ggplot function
-#' @param zoom_boxplot logical, whether outliers should be left outside the plot and only
-#' the boxplots shown. Defaults to TRUE.
+#' @param fill_scale a scale for the fill of the boxplots, as returned by a 
+#' ggplot function
+#' @param zoom_boxplot logical, whether outliers should be left outside the 
+#' plot and only the boxplots shown. Defaults to TRUE.
 #'
-#' @return a ggplot object
+#' @return A ggplot object.
 #'
 #' @examples
 #' plot_sample_boxplots(merged_sample, order_by = "Group", fill_by = "Group")
 #'
-#' @importFrom grDevices boxplot.stats
 #' @export
 plot_sample_boxplots <- function(
     object, all_features = FALSE,
-    order_by = as.character(na.omit(c(group_col(object), time_col(object)))),
-    fill_by = as.character(na.omit(c(group_col(object), time_col(object)))),
+    order_by = as.character(stats::na.omit(c(group_col(object),
+                                             time_col(object)))),
+    fill_by = as.character(stats::na.omit(c(group_col(object),
+                                            time_col(object)))),
     title = "Boxplot of samples", subtitle = NULL,
     fill_scale = getOption("notame.fill_scale_dis"), zoom_boxplot = TRUE) {
   # Drop flagged compounds if not told otherwise
@@ -281,8 +284,8 @@ plot_sample_boxplots <- function(
     # compute lower and upper whiskers
     ylimits <- data %>%
       dplyr::group_by(.data$Sample_ID) %>%
-      dplyr::summarise(low = boxplot.stats(.data$Value)$stats[1],
-                       high = boxplot.stats(.data$Value)$stats[5])
+      dplyr::summarise(low = grDevices::boxplot.stats(.data$Value)$stats[1],
+                       high = grDevices::boxplot.stats(.data$Value)$stats[5])
 
 
     ylimits <- c(0, max(ylimits$high))

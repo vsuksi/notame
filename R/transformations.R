@@ -7,7 +7,8 @@
 #' @param object a MetaboSet object
 #' @param value the value to be converted to NA
 #'
-#' @return MetaboSet object as the one supplied, with missing values correctly set to NA
+#' @return MetaboSet object as the one supplied, with missing values correctly 
+#' set to NA.
 #'
 #' @examples
 #' nas_marked <- mark_nas(merged_sample, value = 0)
@@ -23,12 +24,14 @@ mark_nas <- function(object, value) {
 #' Transform the MS/MS output to publication ready
 #'
 #' Change the MS/MS output from MS-DIAL format to publication-ready format.
-#' Original spectra is sorted according to abundance percentage and clarified. See the example below.
+#' Original spectra is sorted according to abundance percentage and clarified. 
+#' See the example below.
 #'
 #' Original MS/MS spectra from MS-DIAL:
 #' m/z:Raw Abundance
 #'
-#' 23.193:254 26.13899:5 27.50986:25 55.01603:82 70.1914:16 73.03017:941 73.07685:13 73.13951:120
+#' 23.193:254 26.13899:5 27.50986:25 55.01603:82 70.1914:16 73.03017:941 
+#' 73.07685:13 73.13951:120
 #'
 #' Spectra after transformation:
 #' m/z  (Abundance)
@@ -41,23 +44,23 @@ mark_nas <- function(object, value) {
 #' @param min_abund minimum relative abundance to be kept (Recommended: 1-5)
 #' @param deci_num maximum number of decimals to m/z value (Recommended: >2)
 #'
-#' @return MetaboSet object as the one supplied, with publication-ready MS/MS peak information
+#' @return A MetaboSet object as the one supplied, with publication-ready MS/MS 
+#' peak information.
 #'
 #' @examples
 #' # Spectra before fixing
-#' fData(merged_sample)$MS_MS_spectrum[!is.na(fData(merged_sample)$MS_MS_spectrum)]
+#' fData(merged_sample)$MS_MS_spectrum[
+#'   !is.na(fData(merged_sample)$MS_MS_spectrum)]
 #' # Fixing spectra with default settings
 #' fixed_MSMS_peaks <- fix_MSMS(merged_sample)
 #' # Spectra after fixing
-#' fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean[!is.na(fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean)]
+#' fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean[
+#'   !is.na(fData(fixed_MSMS_peaks)$MS_MS_Spectrum_clean)]
 #'
 #' @export
 fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum",
                      peak_num = 10, min_abund = 5, deci_num = 3) {
-  if (!requireNamespace("stringr", quietly = TRUE)) {
-    stop("Package \'stringr\' needed for this function to work.",
-         " Please install it.", call. = FALSE)
-  }
+
   spec <- fData(object)[, ms_ms_spectrum_col]
   to_metab <- NULL
 
@@ -101,13 +104,15 @@ fix_MSMS <- function(object, ms_ms_spectrum_col = "MS_MS_spectrum",
 
 #' Replace NA values in pheno data columns with "QC"
 #'
-#' Loops through specified columns in pheno data and replaces all NA values with "QC". Also transforms
-#' the column to factor and sets "QC" as the last level.
+#' Loops through specified columns in pheno data and replaces all NA values 
+#' with "QC". Also transforms the column to factor and sets "QC" as the last 
+#' level.
 #'
-#' @param data a data frame such as pheno_data returned by \code{\link{read_from_excel}}
+#' @param data a data frame such as pheno_data returned by 
+#' \code{\link{read_from_excel}}
 #' @param cols the columns to fix
 #'
-#' @return a data frame with the column modified
+#' @return A data frame with the column modified.
 #'
 #' @examples
 #' # Remove QC labels first
@@ -135,14 +140,12 @@ mark_qcs <- function(data, cols) {
 #'
 #' @param object a MetaboSet object
 #'
-#' @return MetaboSet object as the one supplied, without QC samples
+#' @return A MetaboSet object as the one supplied, without QC samples.
 #'
 #' @examples
 #' dim(merged_sample)
 #' noqc <- drop_qcs(merged_sample)
 #' dim(noqc)
-#'
-#' @importFrom Biobase pData "pData<-"
 #'
 #' @export
 drop_qcs <- function(object) {
@@ -158,9 +161,10 @@ drop_qcs <- function(object) {
 #' Only features that do not have a flag (Flag == NA) are retained.
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be retained? Mainly used by internal functions
+#' @param all_features logical, should all features be retained? Mainly used by 
+#' internal functions
 #' 
-#' @return a MetaboSet object without the previously flagged features.
+#' @return A MetaboSet object without the previously flagged features.
 #'
 #' @examples
 #' dim(merged_sample)
@@ -179,14 +183,14 @@ drop_flagged <- function(object, all_features = FALSE) {
 #' Partially replace exprs field with new values
 #'
 #' Replaces a subset of data in exprs of an object by new values.
-#' Used after an operation such as imputation is computed only for a subset of features or samples
-#' such as only good-quality features that have not been flagged.
-#' This function is mainly used internally, but can be useful.
+#' Used after an operation such as imputation is computed only for a subset of 
+#' features or samples such as only good-quality features that have not been 
+#' flagged. This function is mainly used internally, but can be useful.
 #'
 #' @param object a MetaboSet object
 #' @param y matrix containing new values to be merged into exprs
 #'
-#' @return a MetaboSet object with the new exprs values
+#' @return A MetaboSet object with the new exprs values.
 #'
 #' @examples
 #' ex_set <- merged_sample[1:5, 1:5]
@@ -228,21 +232,21 @@ merge_exprs <- function(object, y) {
 #' This a wrapper around \code{missForest::missForest}.
 #' Use parallelize = "variables" to run in parallel for faster testing.
 #' NOTE: running in parallel prevents user from setting a seed number.
-#' \strong{CITATION:} When using this function, cite the \code{missForest} package
 #'
 #' @param object a MetaboSet object
-#' @param all_features logical, should all features be used? If FALSE (the default),
-#' flagged features are removed before imputation.
+#' @param all_features logical, should all features be used? If FALSE (the 
+#' default), flagged features are removed before imputation.
 #' @param ... passed to MissForest function
 #'
-#' @return MetaboSet object as the one supplied, with missing values imputed.
+#' @return A MetaboSet object as the one supplied, with missing values imputed.
 #'
 #' @examples
 #' missing <- mark_nas(example_set, 0)
 #' set.seed(38)
 #' imputed <- impute_rf(missing)
 #'
-#' @seealso \code{\link[missForest]{missForest}} for detail about the algorithm and the parameters
+#' @seealso \code{\link[missForest]{missForest}} for detail about the algorithm 
+#' and the parameters
 #'
 #' @export
 impute_rf <- function(object, all_features = FALSE, ...) {
@@ -280,26 +284,35 @@ impute_rf <- function(object, all_features = FALSE, ...) {
 #'
 #' Impute missing values using a simple imputation strategy. All missing values
 #' of a feature are imputed with the same value. It is possible
-#' to only impute features with a large number of missing values this way. This can be useful
-#' for using this function before random forest imputation to speed things up.
+#' to only impute features with a large number of missing values this way. This 
+#' can be useful for using this function before random forest imputation to 
+#' speed things up.
 #' The imputation strategies available are:
 #' \itemize{
-#' \item a numeric value: impute all missing values in all features with the same value, e.g. 1
-#' \item "mean": impute missing values of a feature with the mean of observed values of that feature
-#' \item "median": impute missing values of a feature with the median of observed values of that feature
-#' \item "min": impute missing values of a feature with the minimum observed value of that feature
-#' \item "half_min": impute missing values of a feature with half the minimum observed value of that feature
-#' \item "small_random": impute missing values of a feature with random numbers between 0 and the
-#' minimum of that feature (uniform distribution, remember to set the seed number!).
+#' \item a numeric value: impute all missing values in all features with the 
+#' same value, e.g. 1
+#' \item "mean": impute missing values of a feature with the mean of observed 
+#' values of that feature
+#' \item "median": impute missing values of a feature with the median of 
+#' observed values of that feature
+#' \item "min": impute missing values of a feature with the minimum observed 
+#' value of that feature
+#' \item "half_min": impute missing values of a feature with half the minimum 
+#' observed value of that feature
+#' \item "small_random": impute missing values of a feature with random numbers 
+#' between 0 and the
+#' minimum of that feature (uniform distribution, remember to set the seed 
+#' number!).
 #' }
 #'
 #' @param object a MetaboSet object
-#' @param value the value used for imputation, either a numeric or one of "min", "half_min", "small_random",
-#' see above
-#' @param na_limit only impute features with the proportion of NAs over this limit. For example, if
-#' \code{na_limit = 0.5}, only features with at least half of the values missing are imputed.
+#' @param value the value used for imputation, either a numeric or one of 
+#' '"min", "half_min", "small_random", see above
+#' @param na_limit only impute features with the proportion of NAs over this 
+#' limit. For example, if \code{na_limit = 0.5}, only features with at least 
+#' half of the values missing are imputed.
 #'
-#' @return An object with an imputed assay.
+#' @return A MetaboSet object with an imputed assay.
 #'
 #' @examples
 #' missing <- mark_nas(merged_sample, 0)
@@ -341,7 +354,8 @@ impute_simple <- function(object, value, na_limit = 0) {
     }))
   } else if (value == "small_random") {
     imp <- t(apply(imp, 1, function(x) {
-      x[is.na(x)] <- runif(n = sum(is.na(x)), min = 0, max = finite_min(x))
+      x[is.na(x)] <- stats::runif(n = sum(is.na(x)), 
+                                  min = 0, max = finite_min(x))
       x
     }))
   } else {
@@ -360,16 +374,15 @@ impute_simple <- function(object, value, na_limit = 0) {
 #'
 #' @param object a MetaboSet object
 #'
-#' @return MetaboSet object as the one supplied, with normalized features
+#' @return A MetaboSet object as the one supplied, with normalized features.
 #'
 #' @examples
 #' normalized <- inverse_normalize(merged_sample)
-#' @importFrom stats qnorm
 #' @export
 inverse_normalize <- function(object) {
   exprs(object) <- exprs(object) %>%
     apply(1, function(x) {
-      qnorm((rank(x, na.last = "keep") - 0.5) / sum(!is.na(x)))
+      stats::qnorm((rank(x, na.last = "keep") - 0.5) / sum(!is.na(x)))
     }) %>%
     t()
   object
@@ -382,7 +395,7 @@ inverse_normalize <- function(object) {
 #'
 #' @param object a MetaboSet object
 #'
-#' @return data frame with the number of features at each stage of flagging
+#' @return A data frame with the number of features at each stage of flagging.
 #'
 #' @examples
 #' flagged <- merged_sample %>%
@@ -418,13 +431,14 @@ flag_report <- function(object) {
 
 #' Logarithm
 #'
-#' Log-transforms the exprs part of a MetaboSet object. Shortcust log2 and log10 also implemented.
-#' For more information, see \code{\link{log}}
+#' Log-transforms the exprs part of a MetaboSet object. Shortcuts for log2 and 
+#' log10 also implemented.
+#' For more information, see \code{\link{log}}.
 #'
 #' @param x a MetaboSet object
 #' @param base the base of the logarithm
 #'
-#' @return An object with the assay transformed.
+#' @return A MetaboSet object with the assay transformed.
 #'
 #' @export
 setMethod("log", "MetaboSet", 
@@ -457,7 +471,8 @@ setGeneric("scale")
 
 #' Scale exprs data
 #'
-#' Applies the base R function scale to transposed exprs matrix. See ?scale for details
+#' Applies the base R function scale to transposed exprs matrix. See ?scale for 
+#' details.
 #'
 #' @param x a MetaboSet object
 #' @param center,scale as in base scale function
@@ -474,13 +489,13 @@ setMethod("scale", "MetaboSet",
 
 #' Exponential function
 #'
-#' Apply the exponential function to feature abundances (exprs)
+#' Apply the exponential function to feature abundances (exprs).
 #'
 #' @param object a MetaboSet object
 #' @param base base of the exponential
 #'
 #'
-#' @return a MetaboSet object with altered feature abundances
+#' @return A MetaboSet object with altered feature abundances.
 #'
 #' @examples 
 #' example_set <- mark_nas(example_set, value = 0)
@@ -503,16 +518,19 @@ setMethod("exponential", c(object = "MetaboSet"),
 
 #' Probabilistic quotient normalization
 #'
-#' Apply probabilistic quotient normalization (PQN) to the exprs part of a MetaboSet object. By default, reference
-#' is calculated from high-quality QC samples and the median of the reference is used for normalization.
+#' Apply probabilistic quotient normalization (PQN) to the exprs part of a 
+#' MetaboSet object. By default, reference is calculated from high-quality QC 
+#' samples and the median of the reference is used for normalization.
 #' Check parameters for more options.
 #'
 #' @param object a MetaboSet object
 #' @param ref character, the type of reference samples to use for normalization.
-#' @param method character, the method to use for calculating the reference sample.
-#' @param all_features logical, should all features be used for calculating the reference sample?
+#' @param method character, the method to use for calculating the reference 
+#' sample.
+#' @param all_features logical, should all features be used for calculating the 
+#' reference sample?
 #'
-#' @return a MetaboSet object with altered feature abundances
+#' @return A MetaboSet object with altered feature abundances.
 #'
 #' @examples
 #' pqn_set <- pqn_normalization(merged_sample)

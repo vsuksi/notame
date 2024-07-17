@@ -12,7 +12,7 @@ perform_repeatability(object, group)
 \item{group}{column name of pData givinh the group labels}
 }
 \value{
-data frame with one row per feature with the repeatability measure
+A data frame with one row per feature with the repeatability measure.
 }
 \description{
 Computes repeatability for each feature with the following formula:
@@ -23,7 +23,8 @@ variation between batches.
 \examples{
 # Batch correction
 replicates <- list(which(merged_sample$QC == "QC"))
-batch_corrected <- ruvs_qc(merged_sample, batch = "Batch", replicates = replicates)
+batch_corrected <- ruvs_qc(merged_sample, 
+  batch = "Batch", replicates = replicates)
 # Evaluate batch correction
 rep_orig <- perform_repeatability(merged_sample, group = "Group")
 mean(rep_orig$Repeatability, na.rm = TRUE)

@@ -157,14 +157,14 @@ test_that("Fold change works with all NA features", {
 test_that("P-value correction works", {
   ps <- data.frame(
     x = letters,
-    x_P = runif(26),
-    P_x = runif(26),
-    y_P = runif(26)
+    x_P = stats::runif(26),
+    P_x = stats::runif(26),
+    y_P = stats::runif(26)
   )
 
   adj <- .adjust_p_values(ps, flags = rep(NA, 26))
 
-  expect_equal(adj$x_P_FDR, p.adjust(ps$x_P, method = "BH"))
+  expect_equal(adj$x_P_FDR, stats::p.adjust(ps$x_P, method = "BH"))
   expect_equal(adj[colnames(ps)], ps)
   expect_equal(ncol(adj), ncol(ps) + 2)
 
@@ -175,14 +175,14 @@ test_that("P-value correction works", {
 
   expect_equal(
     adj2$x_P_FDR,
-    c(rep(NA, 3), p.adjust(ps$x_P[4:26], method = "BH"))
+    c(rep(NA, 3), stats::p.adjust(ps$x_P[4:26], method = "BH"))
   )
 })
 
 # Linear model ----
 test_that("Linear model works", {
   cd <- combined_data(drop_qcs(example_set))
-  lm_fit <- lm(HILIC_pos_259_9623a4_4322 ~ Time,
+  lm_fit <- stats::lm(HILIC_pos_259_9623a4_4322 ~ Time,
     data = cd
   )
   smry <- summary(lm_fit)
@@ -220,9 +220,9 @@ test_that("Linear model works", {
 # Logistic regression ----
 test_that("Logistic regression works", {
   cd <- combined_data(drop_qcs(example_set))
-  glm_fit <- glm(Group ~ HILIC_pos_259_9623a4_4322,
+  glm_fit <- stats::glm(Group ~ HILIC_pos_259_9623a4_4322,
     data = cd,
-    family = binomial()
+    family = stats::binomial()
   )
   smry <- summary(glm_fit)
 
@@ -235,8 +235,8 @@ test_that("Logistic regression works", {
   expect_equal(glm_res$Feature_Std_Error[1], smry$coefficients[2, 2])
   expect_equal(glm_res$Feature_z_value[1], smry$coefficients[2, 3])
   expect_equal(glm_res$Feature_P[1], smry$coefficients[2, 4])
-  expect_equal(glm_res$Feature_LCI95[1], confint(glm_fit)[2, 1])
-  expect_equal(glm_res$Feature_UCI95[1], confint(glm_fit)[2, 2])
+  expect_equal(glm_res$Feature_LCI95[1], stats::confint(glm_fit)[2, 1])
+  expect_equal(glm_res$Feature_UCI95[1], stats::confint(glm_fit)[2, 2])
 
 
   ex_set_na <- drop_qcs(mark_nas(example_set, 0))
@@ -291,8 +291,8 @@ test_that("Cohens D values between time points are counted right", {
   data <- combined_data(object)
   features <- featureNames(object)
 
-  group_combos <- combn(levels(pData(object)[, "Group"]), 2)
-  time_combos <- combn(levels(pData(object)[, "Time"]), 2)
+  group_combos <- utils::combn(levels(pData(object)[, "Group"]), 2)
+  time_combos <- utils::combn(levels(pData(object)[, "Time"]), 2)
   for (i in seq_len(ncol(group_combos))) {
     group1 <- data[which(data[, "Group"] == group_combos[1, i]), ]
     group2 <- data[which(data[, "Group"] == group_combos[2, i]), ]
@@ -536,7 +536,7 @@ test_that("Mann-Whitney U-tests work", {
 
   expect_identical(colnames(mw_res), cols)
 
-  expect_equal(cor(sign(median_diffs), sign(mw_res$A_vs_B_Mann_Whitney_Estimate), method = "spearman"), 1)
+  expect_equal(stats::cor(sign(median_diffs), sign(mw_res$A_vs_B_Mann_Whitney_Estimate), method = "spearman"), 1)
   expect_identical(unname(us), mw_res$A_vs_B_Mann_Whitney_U)
 })
 
@@ -560,7 +560,7 @@ test_that("Wilcoxon signed rank tests work", {
   wil_res <- perform_wilcoxon_signed_rank(object, group = "Time", id = "Subject_ID")
 
   expect_identical(colnames(wil_res), cols)
-  expect_equal(cor(sign(median_diffs), sign(wil_res$`1_vs_2_Wilcox_Estimate`)), 1)
+  expect_equal(stats::cor(sign(median_diffs), sign(wil_res$`1_vs_2_Wilcox_Estimate`)), 1)
 })
 
 test_that("Pairwise Mann-Whitney tests work", {
