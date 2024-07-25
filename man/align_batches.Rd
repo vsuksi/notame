@@ -10,6 +10,7 @@ align_batches(
   batch,
   mz,
   rt,
+  NAhard = 0.8,
   mzdiff = 0.002,
   rtdiff = 15,
   plot_folder = NULL
@@ -25,6 +26,9 @@ well)}
 \item{batch}{character, column name of pData with batch labels}
 
 \item{mz, rt}{column names of m/z and retention time columns in fData}
+
+\item{NAhard}{proportion of NAs within batch for feature to be considered
+missing}
 
 \item{mzdiff, rtdiff}{the windows for m/z and retention time for aligning 
 features}
@@ -51,6 +55,10 @@ exprs(merged_sample_na)[
   3, c(79, 92, 105, 118, 131, 144, 157, 170, 183, 196, 209)] <- NA
 batch_aligned <- align_batches(merged_sample_na, merged_sample_fill, 
   batch = "Batch", mz = "Average_Mz", rt = "Average_Rt_min_", 
-  mzdiff = 0.002, rtdiff = 15, plot_folder = "~")
+  mzdiff = 0.002, rtdiff = 15, plot_folder = "./Figures")
 \dontshow{setwd(.old_wd)}
+
+}
+\seealso{
+\code{\link[batchCorr]{alignBatches}}
 }

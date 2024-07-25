@@ -118,6 +118,7 @@ importance_rf <- function(rf) {
     labs(x = paste("X1:", var_exp[1], "%"),
          y = paste("X2:", var_exp[2], "%"),
          title = title)
+  grDevices::dev.new()
   plot(p)
 }
 
@@ -244,8 +245,6 @@ mixomics_pls_optimize <- function(object, y, ncomp, folds = 5, nrepeat = 50,
   
   plot(cowplot::plot_grid(p1, p2, nrow = 1))
 
-
-
   # Find the optimal number of components
   ncomp_opt <- which(perf_pls$measure$MSEP$summary$mean ==
     min(perf_pls$measure$MSEP$summary$mean))[1]
@@ -307,13 +306,15 @@ mixomics_spls_optimize <- function(object, y, ncomp, n_features =
 .plot_plsda <- function(model, y, title, dist = "max.dist") {
   background <- mixOmics::background.predict(model, comp.predicted = 2, 
                                              dist = dist)
+  grDevices::dev.new()
+  mixOmics::plotIndiv(model, comp = seq_len(2), group = y, 
+                      ind.names = FALSE, title = paste(title), 
+                      legend = TRUE, ellipse = TRUE)
+  grDevices::dev.new()
   mixOmics::plotIndiv(model, comp = seq_len(2), group = y, ind.names = FALSE,
-                      title = paste(title), legend = TRUE, ellipse = TRUE)
-  mixOmics::plotIndiv(model, comp = seq_len(2), group = y, ind.names = FALSE,
-                      title = paste(title, "prediction areas"), legend = TRUE,
-                      background = background)
+                      title = paste(title, "prediction areas"), 
+                      legend = TRUE, background = background)
 }
-
 
 #' PLS-DA
 #'
@@ -480,10 +481,10 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
                                    keepX = keep_x)
   # Scatterplots with prediction surface and ellipses
   if (plot_scores && ncomp_opt > 1) {
+    grDevices::dev.new()
     .plot_plsda(splsda_final, outcome, title = "Final sPLS-DA model", 
                dist = dist)
   }
-
   splsda_final
 }
 
@@ -491,10 +492,10 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
 
 # ------------------- MUVR --------------------------------
 
-#' MUVR
+#' Multivariate modelling with minimally biased variable selection (MUVR)
 #'
-#' A wrapper around the MUVR algorithm from the MUVR package. For more 
-#' information about the algorithm, visit https://gitlab.com/CarlBrunius/MUVR.
+#' A wrapper around the MUVR2 (random forest, PLS(-DA)) and MUVR2_EN (elastic 
+#' net) functions from the MUVR2 package. 
 #'
 #' @param object a MetaboSet object
 #' @param y character, column name in pData of the target variable to predict
@@ -508,57 +509,86 @@ mixomics_splsda_optimize <- function(object, y, ncomp, dist,
 #' if FALSE, flagged features are left out
 #' @param covariates,static_covariates character, column names of pData to use 
 #' as covariates in the model, in addition to molecular features. 
-#' For multi-level moddels, the change in \code{covariates} is computed, while
-#' \code{static_covariates} are taken from the first time point. 
 #' \code{static_covariates} are ignored for non-multi-level models.
+#' For multi-level models, the change in \code{covariates} is computed, while
+#' \code{static_covariates} are taken from the first time point. 
 #' @param nRep Number of repetitions of double CV, parameter of MUVR
 #' @param nOuter Number of outer CV loop segments, parameter of MUVR
 #' @param nInner Number of inner CV loop segments, parameter of MUVR
 #' @param varRatio Ratio of variables to include in subsequent inner loop 
 #' iteration, parameter of MUVR
-#' @param method Multivariate method. Supports 'PLS' and 'RF', parameter of MUVR
-#' @param ... other parameters to \code{MUVR::MUVR}
+#' @param method Multivariate method. Supports 'PLS', 'RF' and 'EN'
+#' @param ... other parameters to MUVR2::MUVR2 or MUVR2::MUVR2_EN 
+#' and MUVR2::getVar (when method == "EN")
 #'
 #' @return A MUVR object. (make this more descriptive)
 #'
-#' @details For example, sex should be entered as a static covariate, since the 
-#' change in sex is zero for all individuals, so computing the change and using 
-#' that as a covariate does not make sense.
+#' @details This function is now using the MUVR2 package, characterized as an 
+#' upgrade extending the original MUVR package by the inclusion of elastic net 
+#' regression (EN) and other functionality not covered by this wrapper. Elastic 
+#' net regression supports covariate adjustment by suppressing regularization 
+#' of specified features from the regularization procedure. Note that this is 
+#' different from simply including covariates such as sex. EN also differs from 
+#' PLS and RF in that no recursive variable elimination is performed, so an 
+#' additional scheme is used to obtain the 'min', 'mid' and 'max' models using
+#' MUVR2::getVar in this wrapper. 
+#' 
+#' Sex would be entered as a static covariate, since the change in sex is zero 
+#' for all individuals, so computing the change and using that as a covariate 
+#' does not make sense.
 #'
+#' Note that there are several more plots available in MUVR2 for inspecting the 
+#' results, notably MUVR2::plotMV, MUVR2::plotStability and MUVR2::plotVIRank. 
+#' Many of these return different plots depending on the model specification.
 #'
 #' @examples
-#' # Simple model, only 1 repetition for a quick example
+#' # PLS simple
 #' rf_model <- muvr_analysis(drop_qcs(merged_sample), 
-#'   y = "Group", nRep = 1, method = "RF")
+#'   y = "Group", nRep = 2, method = "PLS")
 #'
-#' # PLS on multilevel variable
-#' pls_model <- muvr_analysis(drop_qcs(example_set), multi_level = TRUE, 
-#' id = "Subject_ID", multi_level_var = "Time", method = "RF"
-#' )
+#' # RF with covariate and repeated measures (not longitudinal)
+#' ex_set <- drop_qcs(example_set)
+#' ex_set$Injection_order %<>% as.numeric()
+#' en_model <- muvr_analysis(drop_qcs(ex_set), y = "Group", id = "Subject_ID", 
+#'   nRep = 2, method = "RF", covariates = "Injection_order")
 #'
+#' # RF on multilevel variable comparing levels of y
+#' rf_model_ <- muvr_analysis(drop_qcs(example_set), 
+#'   y = "Group", multi_level = TRUE, id = "Subject_ID", 
+#'   multi_level_var = "Time", method = "RF", nRep = 2)
 #'
-#' @seealso \code{\link[MUVR2]{MUVR2}}
+#' # EN on multilevel variable with covariate and static covariate
+#' ex_set <- drop_qcs(example_set)
+#' example_set$Injection_order %<>% as.numeric()
+#' example_set$Group %<>% as.numeric()
+#' en_model <- muvr_analysis(drop_qcs(example_set), id = "Subject_ID", 
+#'  multi_level = TRUE, multi_level_var = "Time", 
+#'  covariates = "Injection_order", static_covariates = "Group", 
+#'  method = "EN", nRep = 2)
+#'
+#' @seealso \code{\link[MUVR2]{MUVR2}} \code{\link[MUVR2]{MUVR2_EN}} 
+#' \code{\link[MUVR2]{getVar}} \code{\link[MUVR2]{plotMV}} 
+#' \code{\link[MUVR2]{plotStability}} \code{\link[MUVR2]{plotVIRank}}
 #'
 #' @export
 muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
                           multi_level_var = NULL, covariates = NULL,
                           static_covariates = NULL, all_features = FALSE,
-                          nRep = 5, nOuter = 6, nInner = nOuter - 1,
+                          nRep = 50, nOuter = 6, nInner = nOuter - 1,
                           varRatio = 0.75, method = c("PLS", "RF"), ...) {
   if (!requireNamespace("MUVR2", quietly = TRUE)) {
-    stop("Package \"MUVR2\" needed for this function to work.", 
-         " Please install it from https://gitlab.com/CarlBrunius/MUVR",
-         call. = FALSE)
+    stop("Package \"MUVR2\" needed for this function to work.",
+         " Please install it.", call. = FALSE)
   }
   .add_citation(paste("MUVR2 package was used to fit multivariate models",
                       "with variable selection:"),
                 citation("MUVR2"))
 
-  # MUVR can only use numeric input
+  # MUVR2 can only use numeric predictors
   classes <- vapply(pData(object)[, c(covariates, static_covariates)], 
                     class, character(1))
   if (length(classes) && any(classes != "numeric")) {
-    stop("MUVR can only deal with numeric inputs,", 
+    stop("MUVR2 can only deal with numeric inputs,", 
          " please transform all covariates to numeric", call. = FALSE)
   }
 
@@ -568,7 +598,18 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
     stop("All covariates should be convertable to numeric.")
   }
   pData(object)[covariates] <- lapply(pData(object)[covariates], as.numeric)
-
+  
+  # Do do.call with MUVR2::MUVR2_EN if method == "EN", to avoid nesting
+  if (method == "EN") {
+    func <- MUVR2::MUVR2_EN
+  } else {
+    func <- MUVR2::MUVR2
+  }
+  
+  # Substitute additional arguments to formal arguments of MUVR2 or MUVR2_EN
+  add_args <- substitute(...())
+  add_args <- add_args[names(add_args) %in% formalArgs(func)]
+  
   # Classic MUVR
   if (!multi_level) {
     if (is.null(y)) {
@@ -579,15 +620,19 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
 
     # Independent samples
     if (is.null(id)) {
-      muvr_model <- MUVR::MUVR(X = predictors, Y = outcome, nRep = nRep, 
-                               nOuter = nOuter, nInner = nInner,
-                               varRatio = varRatio, method = method, ...)
+      # Make list of arguments for do.call, match additional arguments to 
+      # formal arguments of MUVR2 or MUVR2_EN
+      args <- list(X = predictors, Y = outcome, nRep = nRep, nOuter = nOuter, 
+                   nInner = nInner, varRatio = varRatio, method = method)
+      muvr_model <- do.call(func, c(args, add_args))
     } else {
       # Multiple measurements
-      ID <- pData(object)[, id]
-      muvr_model <- MUVR::MUVR(X = predictors, Y = outcome, ID = ID, 
-                               nRep = nRep, nOuter = nOuter, nInner = nInner,
-                               varRatio = varRatio, method = method, ...)
+      ID <- as.numeric(pData(object)[, id])
+      args <- list(X = predictors, Y = outcome, ID = ID, nRep = nRep, 
+                   nOuter = nOuter, nInner = nInner, varRatio = varRatio, 
+                   method = method)
+
+      muvr_model <- do.call(func, c(args, add_args))
     }
   } else { # Multi-level analysis
     if (is.null(id) || is.null(multi_level_var)) {
@@ -619,18 +664,26 @@ muvr_analysis <- function(object, y = NULL, id = NULL, multi_level = FALSE,
     # Modeling
     if (!is.null(y)) { # Compare change of multi_level_var between levels of y
       outcome <- cd[cd[, multi_level_var] == levels(ml_var)[1], y]
-      muvr_model <- MUVR::MUVR(X = predictors, Y = outcome, nRep = nRep, 
-                               nOuter = nOuter, nInner = nInner, 
-                               varRatio = varRatio, method = method, ...)
+      args <- list(X = predictors, Y = outcome, nRep = nRep, nOuter = nOuter,
+                   nInner = nInner, varRatio = varRatio, method = method)
+      muvr_model <- do.call(func, c(args, add_args))
     } else { # Compare levels of multi_level_var
-      muvr_model <- MUVR::MUVR(X = predictors, ML = TRUE, nRep = nRep, 
-                               nOuter = nOuter, nInner = nInner,
-                               varRatio = varRatio, method = method, ...)
+      args <- list(X = predictors, ML = TRUE, nRep = nRep, nOuter = nOuter,
+                   nInner = nInner, varRatio = varRatio, method = method)
+      muvr_model <- do.call(func, c(args, add_args))
     }
   }
+  
+  if (method == "EN") {
+    add_args <- substitute(...())
+    add_args <- add_args[names(add_args) %in% formalArgs(MUVR2::getVar)]    
+    muvr_model <- do.call(MUVR2::getVar, 
+                          c(list(rdCVnetObject = muvr_model), add_args))
+  }
+  
   # Plot performance
-  MUVR::plotVAL(muvr_model)
-
+  MUVR2::plotVAL(muvr_model)
+  
   muvr_model
 }
 

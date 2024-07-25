@@ -103,8 +103,9 @@ tests
 
 Multivariate analysis (return various objects):
 \itemize{
-\item \code{\link{muvr_analysis}} MUVR with random forest, PLS(-DA)
-or elastic net regression
+\item \code{\link{muvr_analysis}} multivariate modelling with minimally 
+biased variable selection (MUVR2) with random forest, PLS(-DA)
+and elastic net regression
 \item \code{\link{mixomics_pls}}, \code{\link{mixomics_plsda}} PLS(-DA)
 \item \code{\link{mixomics_pls_optimize}},
 \code{\link{mixomics_plsda_optimize}} optimal number of components for

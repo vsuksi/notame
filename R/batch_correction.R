@@ -193,6 +193,8 @@ perform_repeatability <- function(object, group) {
 #' well)
 #' @param batch character, column name of pData with batch labels
 #' @param mz,rt column names of m/z and retention time columns in fData
+#' @param NAhard proportion of NAs within batch for feature to be considered
+#' missing
 #' @param mzdiff,rtdiff the windows for m/z and retention time for aligning 
 #' features
 #' @param plot_folder path to the location where the plots should be saved, if 
@@ -212,11 +214,15 @@ perform_repeatability <- function(object, group) {
 #'   3, c(79, 92, 105, 118, 131, 144, 157, 170, 183, 196, 209)] <- NA
 #' batch_aligned <- align_batches(merged_sample_na, merged_sample_fill, 
 #'   batch = "Batch", mz = "Average_Mz", rt = "Average_Rt_min_", 
-#'   mzdiff = 0.002, rtdiff = 15, plot_folder = "~")
+#'   mzdiff = 0.002, rtdiff = 15, plot_folder = "./Figures")
 #' \dontshow{setwd(.old_wd)}
+#'
+#' @seealso \code{\link[batchCorr]{alignBatches}}
+#'
 #' @export
 align_batches <- function(object_na, object_fill, batch, mz, rt,
-                          mzdiff = 0.002, rtdiff = 15, plot_folder = NULL) {
+                          NAhard = 0.8, mzdiff = 0.002, rtdiff = 15, 
+                          plot_folder = NULL) {
   if (!requireNamespace("batchCorr", quietly = TRUE)) {
     stop("Package \"batchCorr\" needed for this function to work.",
          " Please install it from https://gitlab.com/CarlBrunius/batchCorr.",
@@ -224,10 +230,8 @@ align_batches <- function(object_na, object_fill, batch, mz, rt,
   }
   .add_citation("batchCorr was used for batch correction:",
                 citation("batchCorr"))
-  # Set working directory for plotting (batchCorr saves in working directory)
+  # Set report
   if (!is.null(plot_folder)) {
-    old_wd <- getwd()
-    setwd(plot_folder)
     report <- TRUE
   } else {
     report <- FALSE
@@ -241,12 +245,9 @@ align_batches <- function(object_na, object_fill, batch, mz, rt,
                                      PeakTabFilled = t(exprs(object_fill)),
                                      batches = pData(object_na)[, batch],
                                      sampleGroups = object_na$QC, 
-                                     selectGroup = "QC", mzdiff = mzdiff,
-                                     rtdiff = rtdiff, report = report)
-  # Reset working directory
-  if (!is.null(plot_folder)) {
-    setwd(old_wd)
-  }
+                                     selectGroup = "QC", NAhard = NAhard,
+                                     mzdiff = mzdiff, rtdiff = rtdiff, 
+                                     report = report, reportPath = plot_folder)
   # Attach aligned features
   exprs(object_fill) <- t(aligned$PTalign)
   object_fill
@@ -255,7 +256,7 @@ align_batches <- function(object_na, object_fill, batch, mz, rt,
 
 #' Normalize batches
 #'
-#' Between-batch normalization by either reference samples of population median.
+#' Between-batch normalization by either reference samples or population median.
 #' Uses normalizeBatches function from the batchCorr package.
 #'
 #' @param object a MetaboSet object
@@ -265,7 +266,9 @@ align_batches <- function(object_na, object_fill, batch, mz, rt,
 #' constant through batches
 #' @param population Identifier of population samples in group column
 #' (all (default) or any type of samples present in group)
-#' @param ... additional parameters passed to batchCorr::normalizeBatches
+#' @param ... additional parameters passed to batchCorr::normalizeBatches, for 
+#' example to tune the heuristic used for choosing between normalization by 
+#' reference samples or population median
 #'
 #' @return  A MetaboSet object the one supplied with normalized features
 #'
@@ -276,13 +279,15 @@ align_batches <- function(object_na, object_fill, batch, mz, rt,
 #' # Evaluate batch correction
 #' pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 #' pca_bhattacharyya_dist(batch_normalized, batch = "Batch")
-#' 
+#'
+#' @seealso \code{\link[batchCorr]{normalizeBatches}} 
+#'
 #' @export
 normalize_batches <- function(object, batch, group, ref_label, 
                               population = "all", ...) {
   if (!requireNamespace("batchCorr", quietly = TRUE)) {
     stop("Package \'batchCorr\' needed for this function to work.", 
-         " Please install it from https://gitlab.com/CarlBrunius/batchCorr.",
+         " Please install it.",
          call. = FALSE)
   }
   .add_citation("batchCorr was used for batch correction:",

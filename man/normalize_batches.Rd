@@ -18,13 +18,15 @@ constant through batches}
 \item{population}{Identifier of population samples in group column
 (all (default) or any type of samples present in group)}
 
-\item{...}{additional parameters passed to batchCorr::normalizeBatches}
+\item{...}{additional parameters passed to batchCorr::normalizeBatches, for 
+example to tune the heuristic used for choosing between normalization by 
+reference samples or population median}
 }
 \value{
 A MetaboSet object the one supplied with normalized features
 }
 \description{
-Between-batch normalization by either reference samples of population median.
+Between-batch normalization by either reference samples or population median.
 Uses normalizeBatches function from the batchCorr package.
 }
 \examples{
@@ -35,4 +37,7 @@ batch_normalized <- normalize_batches(merged_sample,
 pca_bhattacharyya_dist(merged_sample, batch = "Batch")
 pca_bhattacharyya_dist(batch_normalized, batch = "Batch")
 
+}
+\seealso{
+\code{\link[batchCorr]{normalizeBatches}}
 }
